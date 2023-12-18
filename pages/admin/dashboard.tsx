@@ -21,6 +21,7 @@ export default function Index() {
                 <Header />
                 <Container>
                     <h1>Dash board</h1>
+
                 </Container>
             </>
         );
