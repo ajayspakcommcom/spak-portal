@@ -1,0 +1,38 @@
+@font-face {
+    font-family: 'Lt';
+    src: url('../fonts/Lt/Lt.eot');
+    src: url('../fonts/Lt/Lt.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Lt/Lt.woff2') format('woff2'),
+        url('../fonts/Lt/Lt.woff') format('woff'),
+        url('../fonts/Lt/Lt.ttf') format('truetype'),
+        url('../fonts/Lt/Lt.svg#Lt') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Md';
+    src: url('../fonts/Md/Md.eot');
+    src: url('../fonts/Md/Md.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Md/Md.woff2') format('woff2'),
+        url('../fonts/Md/Md.woff') format('woff'),
+        url('../fonts/Md/Md.ttf') format('truetype'),
+        url('../fonts/Md/Md.svg#Md') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Roman';
+    src: url('../fonts/roman/Roman.eot');
+    src: url('../fonts/roman/Roman.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/roman/Roman.woff2') format('woff2'),
+        url('../fonts/roman/Roman.woff') format('woff'),
+        url('../fonts/roman/Roman.ttf') format('truetype'),
+        url('../fonts/roman/Roman.svg#Roman') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
