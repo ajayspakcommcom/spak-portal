@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../libs/mongodb';
 import { ObjectId } from 'mongodb';
 import jwt from 'jsonwebtoken';
+import Cors from 'cors';
+import runMiddleware from '@/libs/runMiddleware';
 
 // Define a type for the user object
 type User = {
@@ -16,8 +18,16 @@ type LoginRequest = {
     password: string;
 };
 
+const cors = Cors({
+    // Only allow requests with GET, POST and OPTIONS
+    methods: ['GET', 'POST', 'OPTIONS'],
+});
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Only allow POST requests
+
+    await runMiddleware(req, res, cors);
+
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Only POST requests allowed' });
     }
