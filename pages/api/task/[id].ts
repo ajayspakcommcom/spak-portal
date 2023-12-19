@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../libs/mongodb';
 import { ObjectId } from 'mongodb';
 import { verifyToken } from '../libs/verifyToken';
+import runMiddleware from '@/libs/runMiddleware';
+import Cors from 'cors';
 
 type Task = {
     _id: ObjectId;
@@ -18,7 +20,17 @@ type Task = {
 
 type ApiResponse = | { message: string } | Task | Task[] | { id: any } | { error: string };
 
+const cors = Cors({
+    // Only allow requests with GET, POST and OPTIONS
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse>) {
+
+    // console.log('Manish');
+    // res.status(500).json({ message: 'Ram' });
+
+    await runMiddleware(req, res, cors);
 
     const user = verifyToken(req);
 
@@ -28,8 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const { id } = req.query;
         try {
             const client = await clientPromise;
-            const db = client.db("user");
-            const collection = db.collection<Task>("tasks");
+            const db = client.db("Spak");
+            const collection = db.collection<Task>("task");
             const item = await collection.findOne({ _id: new ObjectId(id?.toString()) });
 
             if (!item) {
@@ -44,6 +56,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 res.status(500).json({ error: 'An unknown error occurred' });
             }
         }
-
     }
+
 }

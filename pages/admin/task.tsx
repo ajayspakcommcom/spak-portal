@@ -114,7 +114,6 @@ export default function Index() {
     const openEditModeHandler = async (id: string) => {
         isFormEditModeHandler(true);
 
-        console.log(`${publicRuntimeConfig.API_URL}task/${id}`);
 
         try {
             if (userData && userData.token) {
@@ -126,8 +125,11 @@ export default function Index() {
                     },
                 };
 
+                console.log(`${publicRuntimeConfig.API_URL}task/${id}`);
+
                 const response = await axios.get(`${publicRuntimeConfig.API_URL}task/${id}`, config);
                 setEditData(response.data);
+
             } else {
                 console.error('No token available');
             }
