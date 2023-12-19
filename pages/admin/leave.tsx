@@ -16,12 +16,11 @@ import axios from 'axios';
 type FormValues = {
     _id?: string | undefined;
     title: string;
+    reason: string;
     date: Date | undefined | string;
 };
 
 const Index: React.FC = () => {
-
-
 
     //const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
@@ -43,10 +42,12 @@ const Index: React.FC = () => {
     const formik = useFormik<FormValues>({
         initialValues: {
             title: '',
+            reason: '',
             date: '',
         },
         validationSchema: Yup.object({
             title: Yup.string().min(2).required('Title is required'),
+            reason: Yup.string().min(2).required('Reason is required'),
             date: Yup.date().required('Date is Required')
         }),
         onSubmit: (values) => {
@@ -55,7 +56,7 @@ const Index: React.FC = () => {
 
 
             if (isEditMode) {
-                const editHoliday = async (obj: FormValues) => {
+                const editLeave = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
                             const config = {
@@ -67,12 +68,13 @@ const Index: React.FC = () => {
 
                             const objData = {
                                 title: obj.title,
+                                reason: obj.reason,
                                 date: obj.date,
                                 type: "UPDATE",
                                 id: updateId
                             };
 
-                            const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify(objData), config);
+                            const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), config);
                             console.log(response);
 
                             if (response.status === 200) {
@@ -88,11 +90,11 @@ const Index: React.FC = () => {
                     }
                 };
 
-                editHoliday(values);
+                editLeave(values);
 
             } else {
 
-                const createHoliday = async (obj: FormValues) => {
+                const createLeave = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
                             const config = {
@@ -104,11 +106,12 @@ const Index: React.FC = () => {
 
                             const objData = {
                                 title: obj.title,
+                                reason: obj.reason,
                                 date: obj.date,
                                 type: "CREATE"
                             };
 
-                            const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify(objData), config);
+                            const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), config);
                             console.log(response);
 
                             if (response.status === 200) {
@@ -124,7 +127,7 @@ const Index: React.FC = () => {
                     }
                 };
 
-                createHoliday(values);
+                createLeave(values);
             }
 
             setToggleModal(false);
@@ -146,7 +149,7 @@ const Index: React.FC = () => {
                         },
                     };
 
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify({ "type": "LIST" }), config);
+                    const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify({ "type": "LIST" }), config);
 
                     if (response.status === 200) {
                         setHolidayList(response.data)
@@ -192,12 +195,13 @@ const Index: React.FC = () => {
                     type: "DETAIL"
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify(objData), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), config);
                 console.log(response);
                 console.log(response.data);
 
                 if (response.status === 200) {
                     formik.setFieldValue('title', response.data.title);
+                    formik.setFieldValue('reason', response.data.reason);
                     formik.setFieldValue('date', response.data.date);
                 }
 
@@ -231,7 +235,7 @@ const Index: React.FC = () => {
                     type: "DELETE"
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify(objData), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), config);
                 console.log(response);
 
                 if (response.status === 200) {
@@ -323,6 +327,25 @@ const Index: React.FC = () => {
                                     error={formik.touched.title && Boolean(formik.errors.title)}
                                     helperText={formik.touched.title && formik.errors.title} />
                             </Box>
+
+                            <Box margin={1}>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    id="reason"
+                                    name="reason"
+                                    label="Reason"
+                                    multiline
+                                    rows={3}
+                                    value={formik.values.reason}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.reason && Boolean(formik.errors.reason)}
+                                    helperText={formik.touched.reason && formik.errors.reason}
+                                    sx={{ mb: 3 }}
+                                />
+                            </Box>
+
 
                             <Box margin={1}>
                                 <TextField
