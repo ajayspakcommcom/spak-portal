@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 const pages = ['Products'];
-const settings = ['Profile', 'Task', 'Dashboard', 'Logout'];
+const settings = ['Holiday', 'Task', 'Dashboard', 'Logout'];
 
 export default function Index() {
 
