@@ -26,7 +26,7 @@ type ApiResponse = | { message: string } | Task | Task[] | { data: any } | { err
 
 const cors = Cors({
   // Only allow requests with GET, POST and OPTIONS
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse>) {
