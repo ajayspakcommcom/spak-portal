@@ -2,12 +2,21 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../libs/mongodb';
 import { ObjectId } from 'mongodb';
 import { verifyToken } from '../libs/verifyToken';
+import runMiddleware from '@/libs/runMiddleware';
+import Cors from 'cors';
 
 type Holiday = { id: ObjectId; title: string; date: number; };
 
 type ApiResponse = | { message: string } | Holiday | Holiday[] | { data: any } | { error: string };
 
+const cors = Cors({
+  // Only allow requests with GET, POST and OPTIONS
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse>) {
+
+  await runMiddleware(req, res, cors);
 
   const user = verifyToken(req);
 
