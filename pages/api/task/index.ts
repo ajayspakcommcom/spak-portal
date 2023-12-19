@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../libs/mongodb';
 import { ObjectId } from 'mongodb';
 import { verifyToken } from '../libs/verifyToken';
+import runMiddleware from '@/libs/runMiddleware';
+import Cors from 'cors';
 
 // Define a type for the user object
 //type Task = { _id: ObjectId; name: string; age: number; };
@@ -22,7 +24,14 @@ type Task = {
 // Define a type for the API response in various cases
 type ApiResponse = | { message: string } | Task | Task[] | { data: any } | { error: string };
 
+const cors = Cors({
+  // Only allow requests with GET, POST and OPTIONS
+  methods: ['GET', 'POST', 'OPTIONS'],
+});
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse>) {
+
+  await runMiddleware(req, res, cors);
 
   const user = verifyToken(req);
 

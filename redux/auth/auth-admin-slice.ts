@@ -24,7 +24,7 @@ const initialState: DataState = {
 // Define your async thunk function
 export const postLogin = createAsyncThunk('post/postLogin', async (data: { username: string, password: string }) => {
 
-    console.log(`${publicRuntimeConfig.API_URL}`);
+    console.log(`${publicRuntimeConfig.API_URL}auth`);
 
 
     const config = {
