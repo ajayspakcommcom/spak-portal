@@ -22,6 +22,7 @@ import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddTaskIcon from '@mui/icons-material/AddTask';
 
 
 function createData(clientName: string, taskName: string, taskDescription: string, startDate: Date, endDate: Date, status: string, deadLine: string, timeIn: Date, timeOut: Date) {
@@ -285,7 +286,7 @@ export default function Index() {
                                             <Box display="flex" alignItems="center" gap={2}>
                                                 <span className='pointer' onClick={() => openEditModeHandler(row._id)}><EditIcon color='primary' /></span>
                                                 <span className='pointer' onClick={() => openDeleteModeHandler(row._id)}><DeleteIcon color='error' /></span>
-                                                <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}>Check Icon</span>
+                                                <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}><AddTaskIcon /></span>
                                             </Box>
 
                                         </TableCell>

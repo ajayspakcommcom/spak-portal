@@ -45,7 +45,7 @@ const Index: React.FC = () => {
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
-    const [holdayList, setHolidayList] = useState<FormValues[]>([]);
+    const [voucherList, setVoucherList] = useState<FormValues[]>([]);
     const [toggleModal, setToggleModal] = useState<boolean>(false);
     const [toggleDialogue, setToggleDialogue] = useState<boolean>(false);
     const [deleteId, setDeleteId] = useState<string>();
@@ -178,7 +178,7 @@ const Index: React.FC = () => {
                     const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify({ "type": "LIST" }), config);
 
                     if (response.status === 200) {
-                        setHolidayList(response.data)
+                        setVoucherList(response.data)
                     }
 
                 } else {
@@ -321,7 +321,7 @@ const Index: React.FC = () => {
                         </TableHead>
 
                         <TableBody>
-                            {Array.isArray(holdayList) && holdayList.map((row, index) => (
+                            {Array.isArray(voucherList) && voucherList.map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
                                     <TableCell component="th" scope="row">{row.person}</TableCell>
