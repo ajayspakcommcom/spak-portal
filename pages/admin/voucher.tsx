@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
+import EditIcon from '@mui/icons-material/Edit';
 
 type FormValues = {
     _id?: string | undefined;
@@ -327,7 +328,7 @@ const Index: React.FC = () => {
                                     <TableCell>{row.summary}</TableCell>
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="center" gap={2}>
-                                            <span className='pointer' onClick={() => editHandler(row._id)}>Edit</span>
+                                            <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon /></span>
                                             <span className='pointer' onClick={() => deleteHandler(row._id)}>Delete</span>
                                         </Box>
                                     </TableCell>
