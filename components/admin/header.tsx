@@ -19,7 +19,7 @@ import { RootState } from '@/redux/store';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
-const pages = ['Products'];
+const pages = ['Products', 'Voucher', 'Holiday', 'Leave', 'Task',];
 const settings = ['Voucher', 'Holiday', 'Leave', 'Task', 'Dashboard', 'Logout'];
 
 export default function Index() {
@@ -38,8 +38,12 @@ export default function Index() {
         setAnchorElUser(event.currentTarget);
     };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
+    const handleCloseNavMenu = (link: string) => {
+        if (typeof link === 'string') {
+            router.push(`/admin/${link.toLowerCase()}`);
+            setAnchorElUser(null);
+        }
+        //setAnchorElNav(null);
     };
 
     const handleCloseUserMenu = (link: string) => {
@@ -65,7 +69,7 @@ export default function Index() {
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
                         <Typography variant="h6" noWrap component="a" sx={{ mr: 2, display: { xs: 'none', md: 'flex' }, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', color: 'inherit', textDecoration: 'none' }}>
-                            <span onClick={() => handleCloseUserMenu('dashboard')}>Admin</span>
+                            <span onClick={() => handleCloseUserMenu('dashboard')} className='pointer'>Admin</span>
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                             <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit">
@@ -73,7 +77,7 @@ export default function Index() {
                             </IconButton>
                             <Menu id="menu-appbar" anchorEl={anchorElNav} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'left' }} open={Boolean(anchorElNav)} onClose={handleCloseNavMenu} sx={{ display: { xs: 'block', md: 'none' } }}>
                                 {pages.map((page) => (
-                                    <MenuItem key={page} onClick={handleCloseNavMenu}>
+                                    <MenuItem key={page} onClick={() => handleCloseNavMenu(page)}>
                                         <Typography textAlign="center">{page}</Typography>
                                     </MenuItem>
                                 ))}
@@ -84,8 +88,7 @@ export default function Index() {
                             LOGO
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                            {pages.map((page) => (<Button key={page} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
-                            ))}
+                            {pages.map((page) => (<Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>))}
                         </Box>
 
                         <Box sx={{ flexGrow: 0 }}>
