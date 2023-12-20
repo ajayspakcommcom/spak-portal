@@ -271,6 +271,7 @@ const Index: React.FC = () => {
             <Container component="main">
 
                 <div className='create-data-wrapper'>
+                    <h2>Holiday</h2>
                     <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                 </div>
 

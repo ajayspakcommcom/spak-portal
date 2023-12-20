@@ -19,8 +19,8 @@ import { RootState } from '@/redux/store';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
-const pages = ['Products', 'Voucher', 'Holiday', 'Leave', 'Task',];
-const settings = ['Voucher', 'Holiday', 'Leave', 'Task', 'Dashboard', 'Logout'];
+const pages = ['Voucher', 'Holiday', 'Leave', 'Task',];
+const settings = ['Profile', 'Logout'];
 
 export default function Index() {
 

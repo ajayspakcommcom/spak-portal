@@ -231,6 +231,7 @@ export default function Index() {
                 <Container component="main">
 
                     <div className='create-data-wrapper'>
+                        <h2>Task</h2>
                         <Button variant="contained" color="success" onClick={() => isFormEditModeHandler(false)}>Create</Button>
                     </div>
 

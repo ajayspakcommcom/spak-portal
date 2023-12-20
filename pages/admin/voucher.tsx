@@ -5,9 +5,8 @@ import * as Yup from "yup";
 import Header from '@/components/admin/header';
 import CloseIcon from '@mui/icons-material/Close';
 import { formatDateToDDMMYYYY } from '@/utils/common';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { ThunkDispatch } from '@reduxjs/toolkit';
 import { useRouter } from 'next/router';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
@@ -38,10 +37,8 @@ const persons: personName[] = [
 ];
 
 
-
 const Index: React.FC = () => {
 
-    //const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
@@ -51,7 +48,6 @@ const Index: React.FC = () => {
     const [deleteId, setDeleteId] = useState<string>();
     const [updateId, setUpdateId] = useState<string>();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
-    const [perName, setPerName] = useState('');
 
 
     if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
@@ -304,6 +300,7 @@ const Index: React.FC = () => {
             <Container component="main">
 
                 <div className='create-data-wrapper'>
+                    <h2>Voucher</h2>
                     <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                 </div>
 
