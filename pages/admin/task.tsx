@@ -20,6 +20,8 @@ import { formatDateToDDMMYYYY } from '@/utils/common';
 import Image from 'next/image';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 function createData(clientName: string, taskName: string, taskDescription: string, startDate: Date, endDate: Date, status: string, deadLine: string, timeIn: Date, timeOut: Date) {
@@ -281,8 +283,8 @@ export default function Index() {
                                             </Menu> */}
 
                                             <Box display="flex" alignItems="center" gap={2}>
-                                                <span className='pointer' onClick={() => openEditModeHandler(row._id)}>Edit</span>
-                                                <span className='pointer' onClick={() => openDeleteModeHandler(row._id)}>Delete</span>
+                                                <span className='pointer' onClick={() => openEditModeHandler(row._id)}><EditIcon color='primary' /></span>
+                                                <span className='pointer' onClick={() => openDeleteModeHandler(row._id)}><DeleteIcon color='error' /></span>
                                                 <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}>Check Icon</span>
                                             </Box>
 
