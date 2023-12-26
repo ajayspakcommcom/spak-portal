@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 const pages = ['Voucher', 'Holiday', 'Leave', 'Task', 'User'];
 const settings = ['Profile', 'Logout'];
@@ -68,7 +69,8 @@ export default function Index() {
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
                         <Typography variant="h6" noWrap component="a" sx={{ mr: 2, display: { xs: 'none', md: 'flex' }, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', color: 'inherit', textDecoration: 'none' }}>
-                            <span onClick={() => handleCloseUserMenu('dashboard')} className='pointer'>Admin</span>
+                            {/* <span onClick={() => handleCloseUserMenu('dashboard')} className='pointer'>Admin</span> */}
+                            <Image src={require('../../public/assets/img/logo.png')} alt="Description of the image" layout="responsive" />
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                             <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit">
