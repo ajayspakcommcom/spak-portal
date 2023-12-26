@@ -55,8 +55,7 @@ export default function Index() {
 
     const logoutHandler = async () => {
         const resp = await dispatch(logout());
-        console.log(userData);
-        //router.push('/admin/login');
+        router.push('/admin/login');
     };
 
     React.useEffect(() => {

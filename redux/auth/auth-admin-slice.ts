@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios, { Axios } from 'axios';
 import getConfig from 'next/config';
 
+
 const { publicRuntimeConfig } = getConfig();
 
 // Define your state type
@@ -65,8 +66,8 @@ const authAdminSlice = createSlice({
             console.log('logout');
             // state.token = '';
             // state.data = '';
-            // localStorage.removeItem('jwtToken');
-            // localStorage.removeItem('userData');
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('userData');
         }
     },
     extraReducers: (builder) => {
