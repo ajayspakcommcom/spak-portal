@@ -349,6 +349,9 @@ const Index: React.FC = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
+
+                            {/* {JSON.stringify(leaveList)} */}
+
                             {Array.isArray(leaveList) && leaveList.map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{row.firstName}</TableCell>

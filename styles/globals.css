@@ -412,3 +412,13 @@ body {
 .pointer {
   cursor: pointer;
 }
+
+.dashboard-container {
+  padding: 15px;
+}
+
+.dashboard-btn-wrapper {
+  justify-content: flex-end;
+  padding-bottom: 20px !important;
+  padding-right: 15px !important;
+}
