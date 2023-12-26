@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Voucher>("voucher");
-            const data = await collection.find({}).toArray();
+            const data = await collection.find({}).limit(5).toArray();
             res.status(200).json(data);
           }
           catch (err) {
@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Holiday>("holiday");
-            const data = await collection.find({}).toArray();
+            const data = await collection.find({}).limit(5).toArray();
             res.status(200).json(data);
           }
           catch (err) {
@@ -75,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Leave>("leave");
-            const data = await collection.find({}).toArray();
+            const data = await collection.find({}).limit(5).toArray();
             res.status(200).json(data);
           }
           catch (err) {
@@ -92,7 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Task>("task");
-            const data = await collection.find({}).toArray();
+            const data = await collection.find({}).limit(5).toArray();
             res.status(200).json(data);
           }
           catch (err) {
@@ -109,7 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<User>("user");
-            const data = await collection.find({}).toArray();
+            const data = await collection.find({}).limit(3).toArray();
             res.status(200).json(data);
           }
           catch (err) {
