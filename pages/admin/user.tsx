@@ -459,9 +459,9 @@ const Index: React.FC = () => {
 
                             <Box margin={1}>
                                 <FormControl fullWidth error={formik.touched.designation && Boolean(formik.errors.designation)}>
-                                    <InputLabel id="person-label">Person</InputLabel>
+                                    <InputLabel id="designation">Designation</InputLabel>
                                     <Select
-                                        labelId="person-label"
+                                        labelId="designation"
                                         id="designation"
                                         name="designation"
                                         value={formik.values.designation}

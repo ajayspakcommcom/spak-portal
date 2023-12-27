@@ -45,6 +45,8 @@ export default function Index() {
         router.push(`/admin/${url.toLowerCase()}`);
     };
 
+
+
     React.useEffect(() => {
 
         const fetchVoucherData = async () => {
