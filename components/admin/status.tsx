@@ -28,7 +28,7 @@ const Index: React.FC<componentProps> = ({ onClick, defaultSelected }) => {
                     displayEmpty
                     inputProps={{ 'aria-label': 'Without label' }}>
                     <MenuItem value={''}><em>Not Started</em></MenuItem>
-                    <MenuItem value={'Pending'}>Pending</MenuItem>
+                    <MenuItem value={'Started Working'}>Started Working</MenuItem>
                     <MenuItem value={'Stuck'}>Stuck</MenuItem>
                     <MenuItem value={'Completed'}>Completed</MenuItem>
                 </Select>

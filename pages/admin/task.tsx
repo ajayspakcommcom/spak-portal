@@ -62,6 +62,12 @@ type TaskListObject = {
     id: string;
 };
 
+type userList = {
+    _id: string;
+    username: string;
+    name: string;
+};
+
 
 export default function Index() {
 
@@ -72,6 +78,7 @@ export default function Index() {
     const [isEditForm, setIsEditForm] = useState<boolean>(false);
     const [editData, setEditData] = useState<Task>({ _id: '', clientName: '', taskName: '', taskDescription: '', startDate: new Date(), endDate: new Date(), status: '', deadLine: '', imageDataUrl: '', token: '', createdBy: '', updatedBy: '' });
 
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [error, setError] = useState('');
     const [dialogue, setDialogue] = useState(false);
@@ -79,6 +86,8 @@ export default function Index() {
     const [isCompleted, setIsCompleted] = useState(false);
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const [userList, setUserList] = useState<userList[]>([]);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -93,6 +102,30 @@ export default function Index() {
         router.push('/admin/login');
         return false;
     }
+
+    const getUsersWithIdUserName = async () => {
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const objData = {
+            "type": "LIST",
+            "userList": "Task"
+        };
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}user`, JSON.stringify(objData), taskConfig);
+        setUserList(response.data);
+
+    };
+
+    const getName = (id: string): string => {
+        return userList.find(item => item._id === id)?.name || '';
+    };
+
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -120,6 +153,7 @@ export default function Index() {
         };
 
         fetchData();
+        getUsersWithIdUserName();
 
 
     }, [toggle, deleteId]);
@@ -259,11 +293,9 @@ export default function Index() {
         };
 
         const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
-        console.log(response);
-
         //setTasks(response.data);
-
     };
+
 
     if (userData.token || window.localStorage.getItem('jwtToken')) {
         return (
@@ -285,13 +317,15 @@ export default function Index() {
                                 <TableRow>
                                     <TableCell>Client Name</TableCell>
                                     <TableCell>Task Name</TableCell>
-                                    <TableCell align="right">Description</TableCell>
-                                    <TableCell align="right">Start Date</TableCell>
+                                    <TableCell>Created By</TableCell>
+                                    <TableCell>Assigned To</TableCell>
+                                    <TableCell>Description</TableCell>
+                                    <TableCell>Start Date</TableCell>
                                     {/* <TableCell align="right">End Date</TableCell> */}
-                                    <TableCell align="right">Status</TableCell>
-                                    <TableCell align="right">Deadline</TableCell>
+                                    <TableCell>Status</TableCell>
+                                    <TableCell>Deadline</TableCell>
                                     {/* <TableCell align="right">Image</TableCell> */}
-                                    <TableCell align="right">Action</TableCell>
+                                    <TableCell>Action</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -299,11 +333,13 @@ export default function Index() {
                                     <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row">{row.clientName}</TableCell>
                                         <TableCell component="th" scope="row">{row.taskName}</TableCell>
-                                        <TableCell align="right">{row.taskDescription}</TableCell>
-                                        <TableCell align="right">{formatDateToDDMMYYYY(row.startDate)}</TableCell>
+                                        <TableCell>{getName(row.createdBy)}</TableCell>
+                                        <TableCell>{getName(row.updatedBy)}</TableCell>
+                                        <TableCell>{row.taskDescription}</TableCell>
+                                        <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
                                         {/* <TableCell align="right">{formatDateToDDMMYYYY(row.endDate)}</TableCell> */}
-                                        <TableCell align="right"><Status onClick={(event) => selectedStatus(event, row._id)} defaultSelected={row.status} /></TableCell>
-                                        <TableCell align="right">{row.deadLine + ' Days'}</TableCell>
+                                        <TableCell><Status onClick={(event) => selectedStatus(event, row._id)} defaultSelected={row.status} /></TableCell>
+                                        <TableCell>{row.deadLine + ' Days'}</TableCell>
                                         {/* <TableCell align="right">
                                             {row.imageDataUrl
                                                 && <a href={row.imageDataUrl} target="_blank">
@@ -311,7 +347,7 @@ export default function Index() {
                                                 </a>
                                             }
                                         </TableCell> */}
-                                        <TableCell align="right">
+                                        <TableCell>
 
                                             {/* <IconButton aria-label="more" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
                                                 <MoreVertIcon />

@@ -30,11 +30,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         case 'LIST':
           try {
-            const client = await clientPromise;
-            const db = client.db("Spak");
-            const collection = db.collection<User>("user");
-            const data = await collection.find({}).toArray();
-            res.status(200).json(data);
+
+            if (req.body.userList === 'Task') {
+              const client = await clientPromise;
+              const db = client.db("Spak");
+              const collection = db.collection<User>("user");
+              const data = await collection.find({}, {
+                projection: {
+                  _id: 1, username: 1, name: {
+                    $concat: [{ $substrBytes: ["$firstName", 0, 1] }, '.', "$lastName"]
+                  }
+                }
+              }).toArray();
+              res.status(200).json(data);
+            } else {
+              const client = await clientPromise;
+              const db = client.db("Spak");
+              const collection = db.collection<User>("user");
+              const data = await collection.find({}).toArray();
+              res.status(200).json(data);
+            }
           }
           catch (err) {
             if (err instanceof Error) {
