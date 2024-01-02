@@ -365,7 +365,7 @@ export default function Index() {
                                             <Box display="flex" alignItems="center" gap={2} >
                                                 <span className='pointer' onClick={() => openEditModeHandler(row._id)}><EditIcon color='primary' /></span>
                                                 <span className='pointer' onClick={() => openDeleteModeHandler(row._id)}><DeleteIcon color='error' /></span>
-                                                <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}><AddTaskIcon /></span>
+                                                {/* <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}><AddTaskIcon /></span> */}
                                             </Box>
 
                                         </TableCell>
