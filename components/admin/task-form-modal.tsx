@@ -79,6 +79,8 @@ interface Task {
     deadLine: string;
     imageDataUrl: string;
     token: string;
+    createdBy: string;
+    updatedBy: string;
 }
 
 const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isCompleted }) => {
@@ -110,6 +112,8 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
             reader.readAsDataURL(file);
         }
     };
+
+
 
     const [errors, setErrors] = useState({ clientName: '', taskName: '', taskDescription: '', startDate: '', endDate: '', status: '', deadLine: '' });
 
@@ -176,15 +180,26 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
         if (validate()) {
 
             if (!isEditMode) {
-                const objData = { clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: endDate, status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl };
-                const resp: ResponseType = await dispatch(postTask({ ...objData }));
-                if (resp.payload.status === 200) {
+
+                const objData = { clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: endDate, status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl, createdBy: userData.data._id, updatedBy: '' };
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify({ ...objData, type: "CREATE" }), config);
+                console.log(response);
+
+                if (response.status === 200) {
                     onClick();
                 }
-                resp.error ? 'Error' : 'No Error';
+
             } else {
-                const objData = { id: taskId, clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: endDate, status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl };
-                console.log(objData);
+
+                const objData = { id: taskId, clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: endDate, status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl, createdBy: userData.data._id, updatedBy: '' };
 
                 const config = {
                     headers: {
@@ -193,8 +208,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                     },
                 };
 
-                const response = await axios.put(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), config);
-                console.log(response);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify({ ...objData, type: "UPDATE" }), config);
 
                 if (response.status === 200) {
                     onClick();
@@ -229,6 +243,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
             setDeadLine('');
             setImageDataUrl('');
         }
+
     }, [isEditMode, editData]);
 
     return (
@@ -320,7 +335,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                                 }
 
 
-                                {isEditMode &&
+                                {/* {isEditMode &&
                                     <TextField
                                         label="Status"
                                         variant="outlined"
@@ -330,7 +345,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                                         helperText={errors.status}
                                         sx={{ mb: 3 }}
                                     />
-                                }
+                                } */}
 
 
 

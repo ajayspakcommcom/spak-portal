@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem } from '@mui/material';
+import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, SelectChangeEvent } from '@mui/material';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { useDispatch } from 'react-redux';
 import { getTask } from '../../redux/task/task-admin-slice';
@@ -23,6 +23,7 @@ const { publicRuntimeConfig } = getConfig();
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddTaskIcon from '@mui/icons-material/AddTask';
+import Status from '@/components/admin/status';
 
 
 function createData(clientName: string, taskName: string, taskDescription: string, startDate: Date, endDate: Date, status: string, deadLine: string, timeIn: Date, timeOut: Date) {
@@ -52,7 +53,14 @@ interface Task {
     deadLine: string;
     imageDataUrl: string;
     token: string;
+    createdBy: string;
+    updatedBy: string;
 }
+
+type TaskListObject = {
+    token: string;
+    id: string;
+};
 
 
 export default function Index() {
@@ -62,7 +70,7 @@ export default function Index() {
     const router = useRouter();
     const [toggle, setToggle] = useState<boolean>(false);
     const [isEditForm, setIsEditForm] = useState<boolean>(false);
-    const [editData, setEditData] = useState<Task>({ _id: '', clientName: '', taskName: '', taskDescription: '', startDate: new Date(), endDate: new Date(), status: '', deadLine: '', imageDataUrl: '', token: '' });
+    const [editData, setEditData] = useState<Task>({ _id: '', clientName: '', taskName: '', taskDescription: '', startDate: new Date(), endDate: new Date(), status: '', deadLine: '', imageDataUrl: '', token: '', createdBy: '', updatedBy: '' });
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [error, setError] = useState('');
@@ -91,10 +99,17 @@ export default function Index() {
 
             try {
                 if (userData && userData.token) {
-                    const response: ResponseType = await dispatch(getTask(userData.token));
-                    console.log(response);
 
-                    setTasks(response.payload.data)
+                    const taskConfig = {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                        },
+                    };
+
+                    const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify({ "type": "LIST" }), taskConfig);
+                    setTasks(response.data);
+
                 } else {
                     console.error('No token available');
                 }
@@ -105,6 +120,7 @@ export default function Index() {
         };
 
         fetchData();
+
 
     }, [toggle, deleteId]);
 
@@ -128,10 +144,16 @@ export default function Index() {
                     },
                 };
 
-                console.log(`${publicRuntimeConfig.API_URL}task/${id}`);
+                const objData = {
+                    id: id,
+                    type: "DETAIL"
+                };
 
-                const response = await axios.get(`${publicRuntimeConfig.API_URL}task/${id}`, config);
-                setEditData(response.data);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), config);
+
+                if (response.status === 200) {
+                    setEditData(response.data);
+                }
 
             } else {
                 console.error('No token available');
@@ -163,6 +185,7 @@ export default function Index() {
 
                 const response = await axios.get(`${publicRuntimeConfig.API_URL}task/${id}`, config);
                 setEditData(response.data);
+
             } else {
                 console.error('No token available');
             }
@@ -186,16 +209,7 @@ export default function Index() {
                     },
                 };
 
-                const response = await fetch(`${publicRuntimeConfig.API_URL}task`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
-                    },
-                    body: JSON.stringify({ id: deleteId })
-                })
-
-                console.log(response);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify({ "type": "DELETE", "id": deleteId }), config);
 
                 if (response.status === 200) {
                     setDeleteId('');
@@ -221,10 +235,35 @@ export default function Index() {
         setToggle(!toggle);
         isEditForm
         setIsEditForm(false);
-        setEditData({ _id: '', clientName: '', taskName: '', taskDescription: '', startDate: new Date(), endDate: new Date(), status: '', deadLine: '', imageDataUrl: '', token: '' });
+        setEditData({ _id: '', clientName: '', taskName: '', taskDescription: '', startDate: new Date(), endDate: new Date(), status: '', deadLine: '', imageDataUrl: '', token: '', createdBy: '', updatedBy: '' });
         setIsCompleted(false);
     };
 
+    const selectedStatus = async (event: SelectChangeEvent, id: string) => {
+        console.log('Selected Value : ', event.target.value);
+        console.log('Task Id : ', id);
+        console.log('User Id : ', userData.data._id);
+
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const objData = {
+            type: "UPDATE",
+            status: event.target.value,
+            id: id,
+            userId: userData.data._id
+        };
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
+        console.log(response);
+
+        //setTasks(response.data);
+
+    };
 
     if (userData.token || window.localStorage.getItem('jwtToken')) {
         return (
@@ -248,10 +287,10 @@ export default function Index() {
                                     <TableCell>Task Name</TableCell>
                                     <TableCell align="right">Description</TableCell>
                                     <TableCell align="right">Start Date</TableCell>
-                                    <TableCell align="right">End Date</TableCell>
+                                    {/* <TableCell align="right">End Date</TableCell> */}
                                     <TableCell align="right">Status</TableCell>
                                     <TableCell align="right">Deadline</TableCell>
-                                    <TableCell align="right">Image</TableCell>
+                                    {/* <TableCell align="right">Image</TableCell> */}
                                     <TableCell align="right">Action</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -262,17 +301,16 @@ export default function Index() {
                                         <TableCell component="th" scope="row">{row.taskName}</TableCell>
                                         <TableCell align="right">{row.taskDescription}</TableCell>
                                         <TableCell align="right">{formatDateToDDMMYYYY(row.startDate)}</TableCell>
-                                        <TableCell align="right">{formatDateToDDMMYYYY(row.endDate)}</TableCell>
-                                        <TableCell align="right">{row.status}</TableCell>
-                                        <TableCell align="right">{row.deadLine}</TableCell>
-                                        <TableCell align="right">
+                                        {/* <TableCell align="right">{formatDateToDDMMYYYY(row.endDate)}</TableCell> */}
+                                        <TableCell align="right"><Status onClick={(event) => selectedStatus(event, row._id)} defaultSelected={row.status} /></TableCell>
+                                        <TableCell align="right">{row.deadLine + ' Days'}</TableCell>
+                                        {/* <TableCell align="right">
                                             {row.imageDataUrl
                                                 && <a href={row.imageDataUrl} target="_blank">
                                                     <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
                                                 </a>
                                             }
-                                        </TableCell>
-
+                                        </TableCell> */}
                                         <TableCell align="right">
 
                                             {/* <IconButton aria-label="more" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
@@ -286,7 +324,7 @@ export default function Index() {
                                             <Box display="flex" alignItems="center" gap={2}>
                                                 <span className='pointer' onClick={() => openEditModeHandler(row._id)}><EditIcon color='primary' /></span>
                                                 <span className='pointer' onClick={() => openDeleteModeHandler(row._id)}><DeleteIcon color='error' /></span>
-                                                <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}><AddTaskIcon /></span>
+                                                {/* <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}><AddTaskIcon /></span> */}
                                             </Box>
 
                                         </TableCell>
