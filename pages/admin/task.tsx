@@ -77,6 +77,7 @@ export default function Index() {
     const [toggle, setToggle] = useState<boolean>(false);
     const [isEditForm, setIsEditForm] = useState<boolean>(false);
     const [editData, setEditData] = useState<Task>({ _id: '', clientName: '', taskName: '', taskDescription: '', startDate: new Date(), endDate: new Date(), status: '', deadLine: '', imageDataUrl: '', token: '', createdBy: '', updatedBy: '' });
+    const [updatedRowId, setUpdatedRowId] = useState<string>("");
 
 
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -207,26 +208,27 @@ export default function Index() {
     const openCompletedModeHandler = async (id: string) => {
         isFormEditModeHandler(true);
         setIsCompleted(true);
+        setUpdatedRowId(id);
 
-        try {
-            if (userData && userData.token) {
+        // try {
+        //     if (userData && userData.token) {
 
-                const config = {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
-                    },
-                };
+        //         const config = {
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
+        //             },
+        //         };
 
-                const response = await axios.get(`${publicRuntimeConfig.API_URL}task/${id}`, config);
-                setEditData(response.data);
+        //         const response = await axios.get(`${publicRuntimeConfig.API_URL}task/${id}`, config);
+        //         setEditData(response.data);
 
-            } else {
-                console.error('No token available');
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+        //     } else {
+        //         console.error('No token available');
+        //     }
+        // } catch (error) {
+        //     console.error('Error fetching data:', error);
+        // }
 
     };
 
@@ -275,6 +277,7 @@ export default function Index() {
     };
 
     const selectedStatus = async (event: SelectChangeEvent, id: string) => {
+
         console.log('Selected Value : ', event.target.value);
         console.log('Task Id : ', id);
         console.log('User Id : ', userData.data._id);
@@ -295,7 +298,7 @@ export default function Index() {
         };
 
         const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
-        //setTasks(response.data);
+
     };
 
 

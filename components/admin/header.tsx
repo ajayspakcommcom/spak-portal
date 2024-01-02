@@ -68,8 +68,8 @@ export default function Index() {
             <AppBar position="static">
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
+
                         <Typography variant="h6" noWrap component="a" sx={{ mr: 2, display: { xs: 'none', md: 'flex' }, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', color: 'inherit', textDecoration: 'none' }}>
-                            {/* <span onClick={() => handleCloseUserMenu('dashboard')} className='pointer'>Admin</span> */}
                             <Image className='pointer' src={require('../../public/assets/img/logo.png')} alt="Description of the image" layout="responsive" onClick={() => handleCloseUserMenu('dashboard')} />
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -84,10 +84,9 @@ export default function Index() {
                                 ))}
                             </Menu>
                         </Box>
+
                         <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                        <Typography variant="h5" noWrap component="a" href="#app-bar-with-responsive-menu" sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, flexGrow: 1, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', color: 'inherit', textDecoration: 'none' }}>
-                            LOGO
-                        </Typography>
+                        <Typography variant="h5" noWrap component="a" href="#app-bar-with-responsive-menu" sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, flexGrow: 1, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', color: 'inherit', textDecoration: 'none' }}>LOGO</Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (<Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>))}
                         </Box>
@@ -106,6 +105,7 @@ export default function Index() {
                                 ))}
                             </Menu>
                         </Box>
+
                     </Toolbar>
                 </Container>
             </AppBar>

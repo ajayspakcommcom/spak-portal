@@ -201,7 +201,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
 
             } else {
 
-                const objData = { id: taskId, clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: new Date(), status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl, createdBy: createdBy, updatedBy: updatedBy };
+                const objData = { id: taskId, clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: endDate, status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl, createdBy: createdBy, updatedBy: updatedBy };
 
                 console.log(objData);
 
@@ -330,7 +330,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                                     sx={{ mb: 3 }}
                                 />
 
-                                {/* {isEditMode &&
+                                {isCompleted &&
                                     <TextField
                                         type='date'
                                         label="End Date"
@@ -341,7 +341,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                                         helperText={errors.endDate}
                                         sx={{ mb: 3 }}
                                     />
-                                } */}
+                                }
 
 
                                 {/* {isEditMode &&
@@ -372,6 +372,17 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                         {
                             isCompleted &&
                             <>
+                                <TextField
+                                    type='date'
+                                    label="End Date"
+                                    variant="outlined"
+                                    value={endDate instanceof Date ? endDate.toISOString().split('T')[0] : ''}
+                                    onChange={(e) => setEndDate(e.target.value ? new Date(e.target.value) : null)}
+                                    error={!!errors.endDate}
+                                    helperText={errors.endDate}
+                                    sx={{ mb: 3 }}
+                                />
+
                                 <br />
                                 <input type="file" id='image' name='image' onChange={handleFileChange} accept="image/*" className='preview-input-image' />
                                 <br />
