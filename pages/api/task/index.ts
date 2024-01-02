@@ -98,12 +98,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         case 'UPDATE':
           try {
 
-            if (req.body.status) {
+            console.log(req.body);
+
+
+            if (req.body.isUpdateStatus) {
               const client = await clientPromise;
               const db = client.db("Spak");
               const collection = db.collection<Task>("task");
               const query = { _id: new ObjectId(req.body.id) };
-              const update = { $set: { "updatedBy": req.body.userId, "status": req.body.status } };
+              const update = { $set: { "updatedBy": req.body.userId, "status": req.body.status, "endDate": new Date() } };
               const result = await collection.findOneAndUpdate(query, update);
               res.status(200).json({ data: result });
             } else {

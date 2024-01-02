@@ -97,6 +97,8 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
     const [status, setStatus] = useState('');
     const [deadLine, setDeadLine] = useState('');
     const [imageDataUrl, setImageDataUrl] = useState('');
+    const [createdBy, setCreatedBy] = useState('');
+    const [updatedBy, setUpdatedBy] = useState('');
 
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,7 +183,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
 
             if (!isEditMode) {
 
-                const objData = { clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: endDate, status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl, createdBy: userData.data._id, updatedBy: '' };
+                const objData = { clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: endDate, status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl, createdBy: userData.data._id, updatedBy: updatedBy };
 
                 const config = {
                     headers: {
@@ -199,7 +201,9 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
 
             } else {
 
-                const objData = { id: taskId, clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: endDate, status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl, createdBy: userData.data._id, updatedBy: '' };
+                const objData = { id: taskId, clientName: clientName, taskName: taskName, taskDescription: taskDescription, startDate: startDate, endDate: new Date(), status: status, deadLine: deadLine, token: token, imageDataUrl: imageDataUrl, createdBy: createdBy, updatedBy: updatedBy };
+
+                console.log(objData);
 
                 const config = {
                     headers: {
@@ -222,6 +226,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
 
     useEffect(() => {
 
+
         if (editData) {
             setTaskId(editData._id);
             setClientName(editData.clientName);
@@ -232,6 +237,8 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
             setStatus(editData.status);
             setDeadLine(editData.deadLine);
             setImageDataUrl(editData.imageDataUrl);
+            setCreatedBy(editData.createdBy);
+            setUpdatedBy(editData.updatedBy);
         } else {
             setTaskId('');
             setClientName('');
@@ -242,6 +249,8 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
             setStatus('');
             setDeadLine('');
             setImageDataUrl('');
+            setUpdatedBy('');
+            setUpdatedBy('');
         }
 
     }, [isEditMode, editData]);
@@ -321,7 +330,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                                     sx={{ mb: 3 }}
                                 />
 
-                                {isEditMode &&
+                                {/* {isEditMode &&
                                     <TextField
                                         type='date'
                                         label="End Date"
@@ -332,7 +341,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                                         helperText={errors.endDate}
                                         sx={{ mb: 3 }}
                                     />
-                                }
+                                } */}
 
 
                                 {/* {isEditMode &&

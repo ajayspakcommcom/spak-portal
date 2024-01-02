@@ -12,7 +12,7 @@ interface componentProps {
 
 const Index: React.FC<componentProps> = ({ onClick, defaultSelected }) => {
 
-    const [age, setAge] = React.useState(defaultSelected);
+    const [age, setAge] = React.useState(defaultSelected ? defaultSelected : 'Not Started');
 
     const handleChange = (event: SelectChangeEvent) => {
         setAge(event.target.value);
@@ -26,8 +26,22 @@ const Index: React.FC<componentProps> = ({ onClick, defaultSelected }) => {
                     value={age}
                     onChange={handleChange}
                     displayEmpty
-                    inputProps={{ 'aria-label': 'Without label' }}>
-                    <MenuItem value={''}><em>Not Started</em></MenuItem>
+                    inputProps={{ 'aria-label': 'Without label' }}
+                    className='default-status-color'
+                    sx={{
+                        backgroundColor: age === 'Not Started' ? 'lightgray' :
+                            age === 'Started Working' ? '#ffe599' :
+                                age === 'Stuck' ? '#e06666' :
+                                    age === 'Completed' ? '#38761d' :
+                                        'white',
+                        color: age === 'Not Started' ? '#000' :
+                            age === 'Started Working' ? '#000' :
+                                age === 'Stuck' ? '#fff' :
+                                    age === 'Completed' ? '#fff' :
+                                        '#000',
+                    }}
+                >
+                    <MenuItem value={'Not Started'} selected><em>Not Started</em></MenuItem>
                     <MenuItem value={'Started Working'}>Started Working</MenuItem>
                     <MenuItem value={'Stuck'}>Stuck</MenuItem>
                     <MenuItem value={'Completed'}>Completed</MenuItem>

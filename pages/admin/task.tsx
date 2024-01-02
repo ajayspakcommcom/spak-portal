@@ -184,6 +184,7 @@ export default function Index() {
                 };
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), config);
+                console.log(response);
 
                 if (response.status === 200) {
                     setEditData(response.data);
@@ -289,7 +290,8 @@ export default function Index() {
             type: "UPDATE",
             status: event.target.value,
             id: id,
-            userId: userData.data._id
+            userId: userData.data._id,
+            isUpdateStatus: true
         };
 
         const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
@@ -315,16 +317,16 @@ export default function Index() {
                         <Table sx={{ minWidth: 800 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Client Name</TableCell>
-                                    <TableCell>Task Name</TableCell>
+                                    <TableCell>Client</TableCell>
+                                    <TableCell>Task</TableCell>
                                     <TableCell>Created By</TableCell>
                                     <TableCell>Assigned To</TableCell>
                                     <TableCell>Description</TableCell>
                                     <TableCell>Start Date</TableCell>
-                                    {/* <TableCell align="right">End Date</TableCell> */}
+                                    <TableCell>End Date</TableCell>
                                     <TableCell>Status</TableCell>
                                     <TableCell>Deadline</TableCell>
-                                    {/* <TableCell align="right">Image</TableCell> */}
+                                    <TableCell align="right">Photo</TableCell>
                                     <TableCell>Action</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -337,16 +339,16 @@ export default function Index() {
                                         <TableCell>{getName(row.updatedBy)}</TableCell>
                                         <TableCell>{row.taskDescription}</TableCell>
                                         <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
-                                        {/* <TableCell align="right">{formatDateToDDMMYYYY(row.endDate)}</TableCell> */}
+                                        <TableCell align="right">{formatDateToDDMMYYYY(row.endDate)}</TableCell>
                                         <TableCell><Status onClick={(event) => selectedStatus(event, row._id)} defaultSelected={row.status} /></TableCell>
                                         <TableCell>{row.deadLine + ' Days'}</TableCell>
-                                        {/* <TableCell align="right">
+                                        <TableCell align="right">
                                             {row.imageDataUrl
                                                 && <a href={row.imageDataUrl} target="_blank">
                                                     <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
                                                 </a>
                                             }
-                                        </TableCell> */}
+                                        </TableCell>
                                         <TableCell>
 
                                             {/* <IconButton aria-label="more" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
@@ -357,10 +359,10 @@ export default function Index() {
                                                 <MenuItem></MenuItem>
                                             </Menu> */}
 
-                                            <Box display="flex" alignItems="center" gap={2}>
+                                            <Box display="flex" alignItems="center" gap={2} >
                                                 <span className='pointer' onClick={() => openEditModeHandler(row._id)}><EditIcon color='primary' /></span>
                                                 <span className='pointer' onClick={() => openDeleteModeHandler(row._id)}><DeleteIcon color='error' /></span>
-                                                {/* <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}><AddTaskIcon /></span> */}
+                                                <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}><AddTaskIcon /></span>
                                             </Box>
 
                                         </TableCell>
@@ -368,8 +370,8 @@ export default function Index() {
                                     </TableRow>
                                 ))}
                             </TableBody>
-                        </Table>
-                    </TableContainer>
+                        </Table >
+                    </TableContainer >
 
 
                     <Dialog
@@ -389,7 +391,7 @@ export default function Index() {
                         </DialogActions>
                     </Dialog>
 
-                </Container>
+                </Container >
 
             </>
         );
