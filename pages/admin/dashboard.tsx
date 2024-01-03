@@ -9,6 +9,7 @@ const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
 import { formatDateToDDMMYYYY } from '@/utils/common';
 import Image from 'next/image';
+import TaskList from '@/components/admin/task-list';
 
 type Voucher = { _id?: string | undefined; voucherNo: string; person: string; amount: number; date: Date | undefined | string; summary: string };
 
@@ -197,46 +198,14 @@ export default function Index() {
             <>
                 <Header />
                 <Grid container spacing={2} className='dashboard-container'>
-                    <Grid item xs={6} md={6}>
+                    <Grid item xs={12} md={12}>
                         <Card>
                             <CardContent>
                                 <Typography gutterBottom variant="h5" component="div">
-                                    Voucher
+                                    Task
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
-
-                                    <TableContainer>
-                                        <Table aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Voucher No</TableCell>
-                                                    <TableCell>Person</TableCell>
-                                                    <TableCell>Amount</TableCell>
-                                                    <TableCell>Date</TableCell>
-                                                    <TableCell>Summary</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-
-                                            <TableBody>
-                                                {Array.isArray(voucherList) && voucherList.map((row, index) => (
-                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                        <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
-                                                        <TableCell component="th" scope="row">{row.person}</TableCell>
-                                                        <TableCell component="th" scope="row">{row.amount}</TableCell>
-                                                        <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
-                                                        <TableCell>{row.summary}</TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-
-                                        </Table>
-                                    </TableContainer>
-
-                                </Typography>
+                                <TaskList isHeaderVisible={false} />
                             </CardContent>
-                            <CardActions className='dashboard-btn-wrapper'>
-                                <Button variant="contained" onClick={() => goto('voucher')}>More...</Button>
-                            </CardActions>
                         </Card>
                     </Grid>
                     <Grid item xs={6} md={6}>
