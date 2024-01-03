@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent } from '@mui/material';
+import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent, TextField, FormControl } from '@mui/material';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { useDispatch } from 'react-redux';
 import { getTask } from '../../redux/task/task-admin-slice';
@@ -102,11 +102,19 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
     const [updatedRowId, setUpdatedRowId] = useState<string>("");
 
 
+    const [isSuccess, setIsSuccess] = useState<boolean>(false);
+    const [successEndDate, setSuccessEndDate] = useState<Date | null>(new Date());
+    const [imageDataUrl, setImageDataUrl] = useState('');
+    const [completedTaskId, setCompletedTaskId] = useState('');
+    const [completedStatus, setCompletedStatus] = useState('');
+
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [error, setError] = useState('');
     const [dialogue, setDialogue] = useState(false);
     const [deleteId, setDeleteId] = useState('');
     const [isCompleted, setIsCompleted] = useState(false);
+
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -148,37 +156,33 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
         return userList.find(item => item._id === id)?.name || '';
     };
 
+    const fetchData = async () => {
 
+        try {
+            if (userData && userData.token) {
+
+                const taskConfig = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify({ "type": "LIST" }), taskConfig);
+                setTasks(response.data);
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-
-            try {
-                if (userData && userData.token) {
-
-                    const taskConfig = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
-
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify({ "type": "LIST" }), taskConfig);
-                    setTasks(response.data);
-
-                } else {
-                    console.error('No token available');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-
-        };
-
         fetchData();
         getUsersWithIdUserName();
-
-
     }, [toggle, deleteId]);
 
     const isFormEditModeHandler = (mode: boolean) => {
@@ -304,13 +308,37 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
     const selectedStatus = async (event: SelectChangeEvent, taskId: string) => {
 
-        console.log('Selected Value : ', event.target.value);
-        console.log('Task Id : ', taskId);
-        console.log('User Id : ', userData.data._id);
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        // console.log('Selected Value : ', event.target.value);
+        // console.log('Task Id : ', taskId);
+        // console.log('User Id : ', userData.data._id);
 
         if (event.target.value.toLowerCase() === 'completed') {
+            setIsSuccess(true);
+            setCompletedTaskId(taskId)
+            setCompletedStatus(event.target.value)
+        } else {
+            const objData = {
+                type: "UPDATE",
+                status: event.target.value,
+                id: taskId,
+                userId: userData.data._id,
+                isUpdateStatus: true
+            };
 
+            const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
         }
+
+    };
+
+
+    const saveCompletedTask = async () => {
 
         const taskConfig = {
             headers: {
@@ -321,14 +349,40 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
         const objData = {
             type: "UPDATE",
-            status: event.target.value,
-            id: taskId,
+            status: completedStatus,
+            id: completedTaskId,
             userId: userData.data._id,
-            isUpdateStatus: true
+            isCompletedTask: true,
+            successEndDate: successEndDate,
+            imageDataUrl: imageDataUrl
         };
 
         const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
 
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files ? event.target.files[0] : null;
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result;
+                if (typeof result === 'string') {
+                    setImageDataUrl(result);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const onCompleteFailedHandler = () => {
+        setIsSuccess(false);
+    };
+
+    const onCompleteSuccessHandler = () => {
+        saveCompletedTask();
+        setIsSuccess(false);
+        fetchData();
     };
 
 
@@ -423,6 +477,40 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                         <Button onClick={deleteHandler} color="secondary" autoFocus>Delete</Button>
                     </DialogActions>
                 </Dialog>
+
+                <Dialog
+                    open={isSuccess}
+                    onClose={() => console.log('Ram')}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description">
+                    <DialogTitle id="alert-dialog-title">{"Complete Task"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+
+                            <Box>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        type='date'
+                                        label="End Date"
+                                        variant="outlined"
+                                        value={successEndDate instanceof Date ? successEndDate.toISOString().split('T')[0] : ''}
+                                        onChange={(e) => setSuccessEndDate(e.target.value ? new Date(e.target.value) : null)}
+                                        sx={{ mb: 3 }}
+                                    />
+                                </FormControl>
+                                <input type="file" id='image' name='image' onChange={handleFileChange} accept="image/*" className='preview-input-image' />
+                            </Box>
+
+                            <br />
+                            {imageDataUrl && <Image src={imageDataUrl} alt="Description of the image" width={70} height={70} />}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={onCompleteFailedHandler} color="primary">Cancel</Button>
+                        <Button onClick={onCompleteSuccessHandler} color="secondary" autoFocus>Save</Button>
+                    </DialogActions>
+                </Dialog>
+
             </>
         );
     }
