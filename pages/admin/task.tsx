@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, SelectChangeEvent } from '@mui/material';
+import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent } from '@mui/material';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { useDispatch } from 'react-redux';
 import { getTask } from '../../redux/task/task-admin-slice';
@@ -16,14 +16,28 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { formatDateToDDMMYYYY } from '@/utils/common';
+import { formatDateToDDMMYYYY, truncateString, getDayText } from '@/utils/common';
 import Image from 'next/image';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import Status from '@/components/admin/status';
+import { makeStyles } from '@mui/styles';
+import TaskDetailModal from '@/components/admin/task-detail-modal';
+
+
+
+const tableStyle = makeStyles({
+    head: {
+        backgroundColor: 'lightgrey',
+    },
+    text: {
+        color: 'red',
+    },
+});
 
 
 function createData(clientName: string, taskName: string, taskDescription: string, startDate: Date, endDate: Date, status: string, deadLine: string, timeIn: Date, timeOut: Date) {
@@ -69,7 +83,11 @@ type userList = {
 };
 
 
+
+
 export default function Index() {
+
+    const classes = tableStyle();
 
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
@@ -205,6 +223,10 @@ export default function Index() {
         setDialogue(true);
     };
 
+    const openViewModeHandler = (id: string): void => {
+        console.log(id);
+    };
+
     const openCompletedModeHandler = async (id: string) => {
         isFormEditModeHandler(true);
         setIsCompleted(true);
@@ -276,11 +298,15 @@ export default function Index() {
         setIsCompleted(false);
     };
 
-    const selectedStatus = async (event: SelectChangeEvent, id: string) => {
+    const selectedStatus = async (event: SelectChangeEvent, taskId: string) => {
 
         console.log('Selected Value : ', event.target.value);
-        console.log('Task Id : ', id);
+        console.log('Task Id : ', taskId);
         console.log('User Id : ', userData.data._id);
+
+        if (event.target.value.toLowerCase() === 'completed') {
+
+        }
 
         const taskConfig = {
             headers: {
@@ -292,7 +318,7 @@ export default function Index() {
         const objData = {
             type: "UPDATE",
             status: event.target.value,
-            id: id,
+            id: taskId,
             userId: userData.data._id,
             isUpdateStatus: true
         };
@@ -318,19 +344,19 @@ export default function Index() {
 
                     <TableContainer component={Paper}>
                         <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                            <TableHead>
+                            <TableHead className={classes.head}>
                                 <TableRow>
-                                    <TableCell>Client</TableCell>
-                                    <TableCell>Task</TableCell>
-                                    <TableCell>Created By</TableCell>
-                                    <TableCell>Assigned To</TableCell>
-                                    <TableCell>Description</TableCell>
-                                    <TableCell>Start Date</TableCell>
-                                    <TableCell>End Date</TableCell>
-                                    <TableCell>Status</TableCell>
-                                    <TableCell>Deadline</TableCell>
-                                    <TableCell align="right">Photo</TableCell>
-                                    <TableCell>Action</TableCell>
+                                    <TableCell className={classes.text}>Client</TableCell>
+                                    <TableCell className={classes.text}>Task</TableCell>
+                                    <TableCell className={classes.text}>Created By</TableCell>
+                                    <TableCell className={classes.text}>Assigned To</TableCell>
+                                    <TableCell className={classes.text}>Description</TableCell>
+                                    <TableCell className={classes.text}>Start Date</TableCell>
+                                    <TableCell className={classes.text}>End Date</TableCell>
+                                    <TableCell className={classes.text}>Status</TableCell>
+                                    <TableCell className={classes.text}>Deadline</TableCell>
+                                    <TableCell className={classes.text}>Photo</TableCell>
+                                    <TableCell className={classes.text}>Action</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -340,12 +366,12 @@ export default function Index() {
                                         <TableCell component="th" scope="row">{row.taskName}</TableCell>
                                         <TableCell>{getName(row.createdBy)}</TableCell>
                                         <TableCell>{getName(row.updatedBy)}</TableCell>
-                                        <TableCell>{row.taskDescription}</TableCell>
+                                        <TableCell>{truncateString(row.taskDescription)}</TableCell>
                                         <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
-                                        <TableCell align="right">{formatDateToDDMMYYYY(row.endDate)}</TableCell>
-                                        <TableCell><Status onClick={(event) => selectedStatus(event, row._id)} defaultSelected={row.status} /></TableCell>
-                                        <TableCell>{row.deadLine + ' Days'}</TableCell>
-                                        <TableCell align="right">
+                                        <TableCell>{formatDateToDDMMYYYY(row.endDate)}</TableCell>
+                                        <TableCell><Status onClick={(event) => selectedStatus(event, row._id)} defaultSelected={row.status} isDisabled={false} /></TableCell>
+                                        <TableCell>{getDayText(+row.deadLine)}</TableCell>
+                                        <TableCell>
                                             {row.imageDataUrl
                                                 && <a href={row.imageDataUrl} target="_blank">
                                                     <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
@@ -363,8 +389,9 @@ export default function Index() {
                                             </Menu> */}
 
                                             <Box display="flex" alignItems="center" gap={2} >
-                                                <span className='pointer' onClick={() => openEditModeHandler(row._id)}><EditIcon color='primary' /></span>
-                                                <span className='pointer' onClick={() => openDeleteModeHandler(row._id)}><DeleteIcon color='error' /></span>
+                                                <span className='pointer' onClick={() => openViewModeHandler(row._id)}><TaskDetailModal rowData={{ data: row, createdBy: getName(row.createdBy), updatedBy: getName(row.updatedBy) }} /></span>
+                                                <span className='pointer' onClick={() => openEditModeHandler(row._id)}><EditIcon color='inherit' /></span>
+                                                {userData.data._id === row.createdBy && <span className='pointer' onClick={() => openDeleteModeHandler(row._id)}><DeleteIcon color='error' /></span>}
                                                 {/* <span className='pointer' onClick={() => openCompletedModeHandler(row._id)}><AddTaskIcon /></span> */}
                                             </Box>
 
@@ -393,6 +420,8 @@ export default function Index() {
                             <Button onClick={deleteHandler} color="secondary" autoFocus>Delete</Button>
                         </DialogActions>
                     </Dialog>
+
+
 
                 </Container >
 

@@ -7,10 +7,11 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 interface componentProps {
     onClick: (event: SelectChangeEvent, val: string) => void;
-    defaultSelected: string
+    defaultSelected: string,
+    isDisabled: boolean
 }
 
-const Index: React.FC<componentProps> = ({ onClick, defaultSelected }) => {
+const Index: React.FC<componentProps> = ({ onClick, defaultSelected, isDisabled = false }) => {
 
     const [age, setAge] = React.useState(defaultSelected ? defaultSelected : 'Not Started');
 
@@ -40,6 +41,7 @@ const Index: React.FC<componentProps> = ({ onClick, defaultSelected }) => {
                                     age === 'Completed' ? '#fff' :
                                         '#000',
                     }}
+                    disabled={isDisabled}
                 >
                     <MenuItem value={'Not Started'} selected><em>Not Started</em></MenuItem>
                     <MenuItem value={'Started Working'}>Started Working</MenuItem>

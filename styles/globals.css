@@ -430,3 +430,22 @@ body {
 .css-1t6c9ts {
   justify-content: end !important;
 }
+
+.updatedby-span {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.update-detial-name {
+  font-size: 16px;
+}
+
+.detail-task-status-wrapper {
+  margin: 0 0 0 -10px;
+}
+
+.custom-task-detail-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

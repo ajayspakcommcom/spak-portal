@@ -11,7 +11,7 @@ export function formatDateToDDMMYYYY(date: Date | string): string {
     return `${day}/${month}/${year}`;
 }
 
-function formatDateToDDMMYYYYWithTime(date: Date | string): string {
+export function formatDateToDDMMYYYYWithTime(date: Date | string): string {
     if (!(date instanceof Date)) {
         date = new Date(date);
     }
@@ -23,4 +23,18 @@ function formatDateToDDMMYYYYWithTime(date: Date | string): string {
     let minutes = date.getMinutes().toString().padStart(2, '0');
 
     return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
+export function truncateString(str: string) {
+    if (str.length > 20)
+        return str.substring(0, 20) + '...';
+    else
+        return str;
+}
+
+export function getDayText(day: number) {
+    if (day === 1)
+        return `${day} Day`;
+    else
+        return `${day} Days`;
 }
