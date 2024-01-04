@@ -387,7 +387,10 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
     const onCompleteFailedHandler = () => {
         setIsSuccess(false);
-        fetchData();
+        setTasks([]);
+        setTimeout(() => {
+            fetchData();
+        }, 100);
     };
 
     const onCompleteSuccessHandler = () => {
