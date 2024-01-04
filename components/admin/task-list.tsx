@@ -25,7 +25,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import Status from '@/components/admin/status';
-import { makeStyles } from '@mui/styles';
+
 import TaskDetailModal from '@/components/admin/task-detail-modal';
 
 interface componentProps {
@@ -34,14 +34,7 @@ interface componentProps {
 
 
 
-const tableStyle = makeStyles({
-    head: {
-        backgroundColor: 'lightgrey',
-    },
-    text: {
-        color: 'red',
-    },
-});
+
 
 
 function createData(clientName: string, taskName: string, taskDescription: string, startDate: Date, endDate: Date, status: string, deadLine: string, timeIn: Date, timeOut: Date) {
@@ -91,7 +84,7 @@ type userList = {
 
 const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
-    const classes = tableStyle();
+
 
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
@@ -401,19 +394,19 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                        <TableHead className={classes.head}>
+                        <TableHead>
                             <TableRow>
-                                <TableCell className={classes.text}>Client</TableCell>
-                                <TableCell className={classes.text}>Task</TableCell>
-                                <TableCell className={classes.text}>Created By</TableCell>
-                                <TableCell className={classes.text}>Assigned To</TableCell>
-                                <TableCell className={classes.text}>Description</TableCell>
-                                <TableCell className={classes.text}>Start Date</TableCell>
-                                <TableCell className={classes.text}>End Date</TableCell>
-                                <TableCell className={classes.text}>Status</TableCell>
-                                <TableCell className={classes.text}>Deadline</TableCell>
-                                <TableCell className={classes.text}>Photo</TableCell>
-                                <TableCell className={classes.text}>Action</TableCell>
+                                <TableCell>Client</TableCell>
+                                <TableCell>Task</TableCell>
+                                <TableCell>Created By</TableCell>
+                                <TableCell>Assigned To</TableCell>
+                                <TableCell>Description</TableCell>
+                                <TableCell>Start Date</TableCell>
+                                <TableCell>End Date</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Deadline</TableCell>
+                                <TableCell>Photo</TableCell>
+                                <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
