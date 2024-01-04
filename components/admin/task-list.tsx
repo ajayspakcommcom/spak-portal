@@ -506,7 +506,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                                     </Box>
 
                                     <Box flex={1} marginRight={2}>
-                                        <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Filter</Button>
+                                        <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Search</Button>
                                     </Box>
 
                                 </Box>
