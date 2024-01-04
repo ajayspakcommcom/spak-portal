@@ -32,11 +32,6 @@ interface componentProps {
     isHeaderVisible: boolean;
 }
 
-
-
-
-
-
 function createData(clientName: string, taskName: string, taskDescription: string, startDate: Date, endDate: Date, status: string, deadLine: string, timeIn: Date, timeOut: Date) {
     return {
         clientName, taskName, taskDescription, startDate, endDate, status, deadLine, timeIn, timeOut
@@ -378,7 +373,6 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
         fetchData();
     };
 
-
     if (userData.token || window.localStorage.getItem('jwtToken')) {
         return (
             <>
@@ -394,7 +388,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                        <TableHead>
+                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
                                 <TableCell>Client</TableCell>
                                 <TableCell>Task</TableCell>
