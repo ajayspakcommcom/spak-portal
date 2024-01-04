@@ -456,3 +456,8 @@ body {
   display: flex;
   justify-content: end;
 }
+
+.create-data-wrapper-heading button {
+  padding: 15px 0px;
+  min-width: 177px;
+}

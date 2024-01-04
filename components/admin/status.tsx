@@ -33,7 +33,7 @@ const Index: React.FC<componentProps> = ({ onClick, defaultSelected, isDisabled 
                         backgroundColor: status === 'Not Started' ? 'lightgray' :
                             status === 'Started Working' ? '#ffe599' :
                                 status === 'Stuck' ? '#e06666' :
-                                    status === 'Completed' ? '#38761d' :
+                                    status === 'Completed' ? '	#6cc070' :
                                         'white',
                         color: status === 'Not Started' ? '#000' :
                             status === 'Started Working' ? '#000' :

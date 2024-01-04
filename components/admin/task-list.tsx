@@ -399,7 +399,13 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
         fetchData();
     };
 
+    const resetFilter = () => {
+        fetchData();
+    };
+
     const filterResult = async () => {
+
+        setTasks([]);
 
         // console.log('filterClientName : ', filterClientName);
         // console.log('filterStartDate : ', filterStartDate);
@@ -423,8 +429,6 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
         };
 
         const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
-
-        setTasks([]);
 
         if (response.status === 200) {
             setTasks(response.data)
@@ -507,6 +511,9 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
                                     <Box flex={1} marginRight={2}>
                                         <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Search</Button>
+                                    </Box>
+                                    <Box flex={1} marginRight={2}>
+                                        <Button type="submit" variant="contained" onClick={resetFilter} size='large' color='inherit' fullWidth style={{ padding: '15px 0' }}>Reset</Button>
                                     </Box>
 
                                 </Box>

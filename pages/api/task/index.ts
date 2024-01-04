@@ -51,13 +51,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
               console.log(req.body);
 
-              const data = await collection.find({
-                clientName: req.body.clientName,
-                status: req.body.status,
-                startDate: { $gte: req.body.filterStartDate, $lte: req.body.filterEndDate }
-              }).toArray();
+              if (req.body.clientName === '') {
+                console.log('Empty');
 
-              res.status(200).json(data);
+                const data = await collection.find({
+                  status: { $in: [req.body.status, ''] },
+                  startDate: { $gte: req.body.filterStartDate, $lte: req.body.filterEndDate }
+                }).toArray();
+                res.status(200).json(data);
+              } else {
+                console.log('Fulled');
+                const data = await collection.find({
+                  clientName: req.body.clientName,
+                  status: req.body.status,
+                  startDate: { $gte: req.body.filterStartDate, $lte: req.body.filterEndDate }
+                }).toArray();
+                res.status(200).json(data);
+              }
+
+
             } else {
               const client = await clientPromise;
               const db = client.db("Spak");
