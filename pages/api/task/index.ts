@@ -43,11 +43,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       switch (req.body.type) {
         case 'LIST':
           try {
-            const client = await clientPromise;
-            const db = client.db("Spak");
-            const collection = db.collection<Task>("task");
-            const data = await collection.find({}).toArray();
-            res.status(200).json(data);
+
+            if (req.body.filtered) {
+              const client = await clientPromise;
+              const db = client.db("Spak");
+              const collection = db.collection<Task>("task");
+
+              console.log(req.body);
+
+              const data = await collection.find({
+                clientName: req.body.clientName,
+                status: req.body.status,
+                startDate: { $gte: req.body.filterStartDate }
+              }).toArray();
+
+              res.status(200).json(data);
+            } else {
+              const client = await clientPromise;
+              const db = client.db("Spak");
+              const collection = db.collection<Task>("task");
+              const data = await collection.find({}).toArray();
+              res.status(200).json(data);
+            }
+
+
           } catch (err) {
             if (err instanceof Error) {
               res.status(500).json({ error: err.message });

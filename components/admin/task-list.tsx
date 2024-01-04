@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent, TextField, FormControl } from '@mui/material';
+import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent, TextField, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { useDispatch } from 'react-redux';
 import { getTask } from '../../redux/task/task-admin-slice';
@@ -40,6 +40,24 @@ function createData(clientName: string, taskName: string, taskDescription: strin
 
 const rows = [
     createData('Bi Client', 'Bi Booklet', 'Bi booklet Description', new Date('05-11-2023'), new Date('11-11-2023'), 'Done', '5', new Date('11-12-2023'), new Date('11-12-2023'))
+];
+
+interface ClientName {
+    value: string;
+    label: string;
+}
+
+const clients: ClientName[] = [
+    { value: 'alupac', label: 'alupac' },
+    { value: 'aluwrap', label: 'aluwrap' },
+    { value: 'asb', label: 'asb' },
+    { value: 'avc', label: 'avc' },
+    { value: 'sahara star', label: 'sahara star' },
+    { value: 'bi', label: 'bi' },
+    { value: 'bsv', label: 'bsv' },
+    { value: 'cipla', label: 'cipla' },
+    { value: 'polycrack', label: 'polycrack' },
+    { value: 'esenpro', label: 'esenpro' },
 ];
 
 
@@ -102,6 +120,11 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
     const [dialogue, setDialogue] = useState(false);
     const [deleteId, setDeleteId] = useState('');
     const [isCompleted, setIsCompleted] = useState(false);
+
+    const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
+    const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
+    const [filterClientName, setFilterClientName] = useState('');
+    const [filterStatus, setFilterStatus] = useState('Not Started');
 
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -303,10 +326,6 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
             },
         };
 
-        // console.log('Selected Value : ', event.target.value);
-        // console.log('Task Id : ', taskId);
-        // console.log('User Id : ', userData.data._id);
-
         if (event.target.value.toLowerCase() === 'completed') {
             setIsSuccess(true);
             setCompletedTaskId(taskId)
@@ -373,14 +392,119 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
         fetchData();
     };
 
+    const filterResult = async () => {
+
+        console.log('filterClientName : ', filterClientName);
+        console.log('filterStartDate : ', filterStartDate);
+        console.log('filterEndDate : ', filterEndDate);
+        console.log('filterStatus : ', filterStatus);
+
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const objData = {
+            type: "LIST",
+            filtered: true,
+            clientName: filterClientName,
+            status: filterStatus,
+            filterStartDate: filterStartDate
+        };
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
+
+        setTasks([]);
+
+        if (response.status === 200) {
+            setTasks(response.data)
+        }
+
+    };
+
     if (userData.token || window.localStorage.getItem('jwtToken')) {
         return (
             <>
 
                 {isHeaderVisible &&
-                    <div className='create-data-wrapper'>
-                        <h2>Task</h2>
-                        <Button variant="contained" color="success" onClick={() => isFormEditModeHandler(false)}>Create</Button>
+                    <div>
+                        <div className='create-data-wrapper-heading'>
+                            <Button variant="contained" color="success" onClick={() => isFormEditModeHandler(false)}>Create</Button>
+                        </div>
+                        <div className='create-data-wrapper'>
+
+                            <FormControl fullWidth>
+                                <Box display="flex" justifyContent="space-between">
+
+                                    <Box flex={1} marginRight={2} marginLeft={1}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id="demo-simple-select-label">Client Name</InputLabel>
+                                            <Select
+                                                label="Client Name"
+                                                variant="outlined"
+                                                value={filterClientName}
+                                                onChange={(e) => setFilterClientName(e.target.value)}>
+                                                {
+                                                    clients.map((item) => (
+                                                        <MenuItem key={item.value} value={item.value}>
+                                                            {item.label}
+                                                        </MenuItem>
+                                                    ))
+                                                }
+
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+
+                                    <Box flex={1} marginRight={2} marginLeft={1}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                                            <Select
+                                                label="Status"
+                                                variant="outlined"
+                                                value={filterStatus}
+                                                onChange={(e) => setFilterStatus(e.target.value)}>
+                                                <MenuItem value={'Not Started'}><em>Not Started</em></MenuItem>
+                                                <MenuItem value={'Started Working'}>Started Working</MenuItem>
+                                                <MenuItem value={'Stuck'}>Stuck</MenuItem>
+                                                <MenuItem value={'Completed'}>Completed</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+
+                                    <Box flex={1} marginRight={2} marginLeft={1}>
+                                        <TextField
+                                            fullWidth
+                                            type='date'
+                                            label="Start Date"
+                                            variant="outlined"
+                                            value={filterStartDate instanceof Date ? filterStartDate.toISOString().split('T')[0] : ''}
+                                            onChange={(e) => setFilterStartDate(e.target.value ? new Date(e.target.value) : null)}
+                                        />
+                                    </Box>
+
+
+                                    <Box flex={1} marginRight={2}>
+                                        <TextField
+                                            fullWidth
+                                            type='date'
+                                            label="End Date"
+                                            variant="outlined"
+                                            value={filterEndDate instanceof Date ? filterEndDate.toISOString().split('T')[0] : ''}
+                                            onChange={(e) => setFilterEndDate(e.target.value ? new Date(e.target.value) : null)}
+                                        />
+                                    </Box>
+
+                                    <Box flex={1} marginRight={2}>
+                                        <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Filter</Button>
+                                    </Box>
+
+                                </Box>
+
+                            </FormControl>
+                        </div>
                     </div>
                 }
 

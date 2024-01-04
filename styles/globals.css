@@ -407,6 +407,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
+  margin: 0 -15px 0 -10px;
 }
 
 .pointer {
@@ -448,4 +449,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.create-data-wrapper-heading {
+  padding: 20px 0 0 0;
+  display: flex;
+  justify-content: end;
 }

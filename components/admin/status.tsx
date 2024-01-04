@@ -13,10 +13,10 @@ interface componentProps {
 
 const Index: React.FC<componentProps> = ({ onClick, defaultSelected, isDisabled = false }) => {
 
-    const [age, setAge] = React.useState(defaultSelected ? defaultSelected : 'Not Started');
+    const [status, setStatus] = React.useState(defaultSelected ? defaultSelected : 'Not Started');
 
     const handleChange = (event: SelectChangeEvent) => {
-        setAge(event.target.value);
+        setStatus(event.target.value);
         onClick(event, event.target.value);
     };
 
@@ -24,21 +24,21 @@ const Index: React.FC<componentProps> = ({ onClick, defaultSelected, isDisabled 
         <>
             <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                 <Select
-                    value={age}
+                    value={status}
                     onChange={handleChange}
                     displayEmpty
                     inputProps={{ 'aria-label': 'Without label' }}
                     className='default-status-color'
                     sx={{
-                        backgroundColor: age === 'Not Started' ? 'lightgray' :
-                            age === 'Started Working' ? '#ffe599' :
-                                age === 'Stuck' ? '#e06666' :
-                                    age === 'Completed' ? '#38761d' :
+                        backgroundColor: status === 'Not Started' ? 'lightgray' :
+                            status === 'Started Working' ? '#ffe599' :
+                                status === 'Stuck' ? '#e06666' :
+                                    status === 'Completed' ? '#38761d' :
                                         'white',
-                        color: age === 'Not Started' ? '#000' :
-                            age === 'Started Working' ? '#000' :
-                                age === 'Stuck' ? '#fff' :
-                                    age === 'Completed' ? '#fff' :
+                        color: status === 'Not Started' ? '#000' :
+                            status === 'Started Working' ? '#000' :
+                                status === 'Stuck' ? '#fff' :
+                                    status === 'Completed' ? '#fff' :
                                         '#000',
                     }}
                     disabled={isDisabled}
