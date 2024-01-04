@@ -250,7 +250,6 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
         isFormEditModeHandler(true);
         setIsCompleted(true);
         setUpdatedRowId(id);
-
         // try {
         //     if (userData && userData.token) {
 
@@ -270,7 +269,6 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
         // } catch (error) {
         //     console.error('Error fetching data:', error);
         // }
-
     };
 
     const deleteHandler = async () => {
@@ -366,6 +364,11 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
         const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);
 
+        if (response.status === 200) {
+            fetchData();
+        }
+
+
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -384,6 +387,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
     const onCompleteFailedHandler = () => {
         setIsSuccess(false);
+        fetchData();
     };
 
     const onCompleteSuccessHandler = () => {
@@ -394,10 +398,10 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
     const filterResult = async () => {
 
-        console.log('filterClientName : ', filterClientName);
-        console.log('filterStartDate : ', filterStartDate);
-        console.log('filterEndDate : ', filterEndDate);
-        console.log('filterStatus : ', filterStatus);
+        // console.log('filterClientName : ', filterClientName);
+        // console.log('filterStartDate : ', filterStartDate);
+        // console.log('filterEndDate : ', filterEndDate);
+        // console.log('filterStatus : ', filterStatus);
 
         const taskConfig = {
             headers: {
@@ -411,7 +415,8 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
             filtered: true,
             clientName: filterClientName,
             status: filterStatus,
-            filterStartDate: filterStartDate
+            filterStartDate: filterStartDate,
+            filterEndDate: filterEndDate
         };
 
         const response = await axios.post(`${publicRuntimeConfig.API_URL}task`, JSON.stringify(objData), taskConfig);

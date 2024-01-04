@@ -54,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               const data = await collection.find({
                 clientName: req.body.clientName,
                 status: req.body.status,
-                startDate: { $gte: req.body.filterStartDate }
+                startDate: { $gte: req.body.filterStartDate, $lte: req.body.filterEndDate }
               }).toArray();
 
               res.status(200).json(data);
