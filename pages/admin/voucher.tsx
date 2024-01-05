@@ -49,8 +49,6 @@ type InputSet = {
 };
 
 
-
-
 const Index: React.FC = () => {
 
     const [inputList, setInputList] = React.useState<InputSet[]>([]);
@@ -296,16 +294,22 @@ const Index: React.FC = () => {
                 };
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
-                console.log(response);
-                console.log(response.data);
 
-                if (response.status === 200) {
-                    formik.setFieldValue('voucherNo', response.data.voucherNo);
-                    formik.setFieldValue('person', response.data.person);
-                    formik.setFieldValue('amount', response.data.amount);
-                    formik.setFieldValue('date', response.data.date);
-                    formik.setFieldValue('summary', response.data.summary);
+                if (response.data.voucherData.length > 0) {
+                    response.data.voucherData.forEach((item: InputSet, indx: any) => {
+                        inputList.push({ detail: item.detail, amount: item.amount, date: item.date })
+                    });
                 }
+
+                setInputList([...inputList])
+
+                // if (response.status === 200) {
+                //     formik.setFieldValue('voucherNo', response.data.voucherNo);
+                //     formik.setFieldValue('person', response.data.person);
+                //     formik.setFieldValue('amount', response.data.amount);
+                //     formik.setFieldValue('date', response.data.date);
+                //     formik.setFieldValue('summary', response.data.summary);
+                // }
 
             } else {
                 console.error('No token available');
