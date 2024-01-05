@@ -12,8 +12,6 @@ import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
@@ -21,6 +19,9 @@ type FormValues = {
     _id?: string | undefined;
     voucherNo: string;
     person: string;
+    amount: number;
+    date: Date | undefined | string;
+    summary: string
 };
 
 interface personName {
@@ -28,17 +29,18 @@ interface personName {
     label: string;
 }
 
-
-type InputSet = {
-    detail: string;
-    date: string;
-    amount: number | '';
-};
+const persons: personName[] = [
+    { value: 'sunil', label: 'Sunil' },
+    { value: 'ajay', label: 'Ajay' },
+    { value: 'hariom', label: 'Hariom' },
+    { value: 'omkar', label: 'Omkar' },
+    { value: 'subham', label: 'Subham' },
+    { value: 'mrunal', label: 'Mrunal' },
+    { value: 'arunima', label: 'Arunima' },
+];
 
 
 const Index: React.FC = () => {
-
-    const [inputList, setInputList] = React.useState<InputSet[]>([]);
 
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
@@ -49,7 +51,6 @@ const Index: React.FC = () => {
     const [deleteId, setDeleteId] = useState<string>();
     const [updateId, setUpdateId] = useState<string>();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
-    const [totalAmount, setTotalAmount] = useState<number>(0);
 
 
     if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
@@ -57,39 +58,20 @@ const Index: React.FC = () => {
         return false;
     }
 
-    const handleAddInput = () => {
-        setInputList([...inputList, { detail: '', date: '', amount: '' }]);
-    };
-
-    const handleChange = (index: number, field: keyof InputSet, value: string) => {
-        const newList = [...inputList];
-        newList[index] = { ...newList[index], [field]: value };
-        setInputList(newList);
-
-        let totalAmt = 0;
-
-        newList.forEach((item) => {
-            totalAmt = totalAmt + +item.amount;
-        });
-
-        setTotalAmount(totalAmt);
-
-    };
-
-    const handleRemoveInput = (index: number) => {
-        const newList = [...inputList];
-        newList.splice(index, 1);
-        setInputList(newList);
-    };
-
     const formik = useFormik<FormValues>({
         initialValues: {
             voucherNo: '',
-            person: ''
+            person: '',
+            amount: 0,
+            date: '',
+            summary: ''
         },
         validationSchema: Yup.object({
-            voucherNo: Yup.string(),
-            person: Yup.string()
+            voucherNo: Yup.string().min(1).required('Voucher No is required'),
+            person: Yup.string().min(2).required('Person is required'),
+            amount: Yup.number().required('Amount is required'),
+            date: Yup.date().required('Date is Required'),
+            summary: Yup.string().min(2).required('Summary is required')
         }),
         onSubmit: (values) => {
 
@@ -109,13 +91,15 @@ const Index: React.FC = () => {
                             const objData = {
                                 voucherNo: obj.voucherNo,
                                 person: obj.person,
+                                amount: obj.amount,
+                                date: obj.date,
+                                summary: obj.summary,
                                 type: "UPDATE",
                                 id: updateId
                             };
 
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
                             console.log(response);
-
                             if (response.status === 200) {
                                 console.log('');
                             }
@@ -133,7 +117,7 @@ const Index: React.FC = () => {
 
             } else {
 
-                const createVoucher = async (obj: FormValues) => {
+                const createLeave = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
                             const config = {
@@ -146,15 +130,19 @@ const Index: React.FC = () => {
                             const objData = {
                                 voucherNo: obj.voucherNo,
                                 person: obj.person,
+                                amount: obj.amount,
+                                date: obj.date,
+                                summary: obj.summary,
                                 type: "CREATE"
                             };
 
-                            console.log(inputList);
+                            console.log(objData);
 
-                            // const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
-                            // if (response.status === 200) {
-                            //     setIsEditMode(false);
-                            // }
+                            const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
+                            console.log(response);
+                            if (response.status === 200) {
+                                setIsEditMode(false);
+                            }
 
                         } else {
                             console.error('No token available');
@@ -165,7 +153,7 @@ const Index: React.FC = () => {
                     }
                 };
 
-                createVoucher(values);
+                createLeave(values);
             }
 
             setToggleModal(false);
@@ -297,7 +285,7 @@ const Index: React.FC = () => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 600,
+        width: 400,
         bgcolor: 'background.paper',
         border: '2px solid #000',
         boxShadow: 24,
@@ -308,10 +296,6 @@ const Index: React.FC = () => {
         toggleModalHandler();
         setIsEditMode(false);
     };
-
-    React.useEffect(() => {
-        setInputList([...inputList, { detail: '', date: '', amount: '' }]);
-    }, []);
 
     return (
         <>
@@ -331,6 +315,7 @@ const Index: React.FC = () => {
                                 <TableCell>Person</TableCell>
                                 <TableCell>Amount</TableCell>
                                 <TableCell>Date</TableCell>
+                                <TableCell>Summary</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
@@ -340,6 +325,9 @@ const Index: React.FC = () => {
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
                                     <TableCell component="th" scope="row">{row.person}</TableCell>
+                                    <TableCell component="th" scope="row">{row.amount}</TableCell>
+                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                                    <TableCell>{row.summary}</TableCell>
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="center" gap={2}>
                                             <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
@@ -360,12 +348,81 @@ const Index: React.FC = () => {
                             <CloseIcon />
                         </IconButton>
 
-                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Voucher</Typography>
+                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Heading</Typography>
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
 
+                            <Box margin={1}>
+                                <FormControl fullWidth error={formik.touched.person && Boolean(formik.errors.person)}>
+                                    <InputLabel id="person-label">Person</InputLabel>
+                                    <Select
+                                        labelId="person-label"
+                                        id="person"
+                                        name="person"
+                                        value={formik.values.person}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        label="Person"
+                                    >
+                                        {persons.map((item) => (
+                                            <MenuItem key={item.value} value={item.value}>
+                                                {item.label}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                    {formik.touched.person && formik.errors.person && (
+                                        <FormHelperText>{formik.errors.person}</FormHelperText>
+                                    )}
+                                </FormControl>
+                            </Box>
+
+
+                            <Box margin={1}>
+                                <TextField
+                                    fullWidth
+                                    id="voucherNo"
+                                    name="voucherNo"
+                                    label="Voucher No"
+                                    value={formik.values.voucherNo}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.voucherNo && Boolean(formik.errors.voucherNo)}
+                                    helperText={formik.touched.voucherNo && formik.errors.voucherNo} />
+                            </Box>
 
                             {/* <Box margin={1}>
+                                <TextField
+                                    fullWidth
+                                    id="person"
+                                    name="person"
+                                    label="Person"
+                                    value={formik.values.person}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.person && Boolean(formik.errors.person)}
+                                    helperText={formik.touched.person && formik.errors.person} />
+                            </Box> */}
+
+                            <Box margin={1}>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    id="amount"
+                                    name="amount"
+                                    label="Amount"
+                                    multiline
+                                    rows={3}
+                                    value={formik.values.amount}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.amount && Boolean(formik.errors.amount)}
+                                    helperText={formik.touched.amount && formik.errors.amount}
+                                    sx={{ mb: 3 }}
+                                />
+                            </Box>
+
+
+                            <Box margin={1}>
                                 <TextField
                                     fullWidth
                                     id="date"
@@ -377,88 +434,31 @@ const Index: React.FC = () => {
                                     onBlur={formik.handleBlur}
                                     error={formik.touched.date && Boolean(formik.errors.date)}
                                     helperText={formik.touched.date && formik.errors.date} />
-                            </Box> */}
-
-
-                            {inputList.map((input, index) => (
-                                // <div key={index}>
-                                //     <input
-                                //         type="text"
-                                //         value={input.detail}
-                                //         onChange={(e) => handleChange(index, 'detail', e.target.value)}
-                                //     />
-                                //     <input
-                                //         type="date"
-                                //         value={input.date}
-                                //         onChange={(e) => handleChange(index, 'date', e.target.value)}
-                                //     />
-                                //     <input
-                                //         type="number"
-                                //         value={input.amount}
-                                //         onChange={(e) => handleChange(index, 'amount', e.target.value)}
-                                //     />
-                                // </div>
-
-                                <Box margin={1} key={index} display="flex" flexDirection="row" alignItems="center">
-
-                                    <Box mb={2} flex={1} mr={2}>
-                                        <TextField
-                                            fullWidth
-                                            id="description"
-                                            name="description"
-                                            label="Description"
-                                            type="text"
-                                            value={input.detail}
-                                            onChange={(e) => handleChange(index, 'detail', e.target.value)}
-                                        />
-                                    </Box>
-
-                                    <Box mb={2} flex={1} mr={2}>
-                                        <TextField
-                                            fullWidth
-                                            id="date"
-                                            name="date"
-                                            label="Date"
-                                            type="date"
-                                            value={input.date || new Date()}
-                                            onChange={(e) => handleChange(index, 'date', e.target.value)}
-                                        />
-                                    </Box>
-                                    <Box mb={2} flex={1}>
-                                        <TextField
-                                            fullWidth
-                                            id="amount"
-                                            name="amount"
-                                            label="Amout"
-                                            type="number"
-                                            value={input.amount}
-                                            onChange={(e) => handleChange(index, 'amount', e.target.value)}
-                                        />
-                                    </Box>
-
-                                    {/* <Box flex={1} display="flex" flexDirection="row" justifyContent="flex-end" alignItems="flex-end">
-                                        <Button variant="contained" onClick={() => handleRemoveInput(index)} size='large' style={{ marginRight: '8px' }}>
-                                            <RemoveIcon />
-                                        </Button>
-                                    </Box> */}
-
-                                </Box>
-                            ))}
-
-                            <Box display="flex" flexDirection="row" justifyContent="flex-end" alignItems="flex-end" mb={3}>
-                                <Button variant="contained" onClick={handleAddInput} size='large' style={{ marginRight: '8px' }}>
-                                    <AddIcon />
-                                </Button>
                             </Box>
 
-                            <hr />
-
-                            <p className='total-amount'>
-                                <b>Total Amount : </b> {totalAmount}
-                            </p>
 
                             <Box margin={1}>
-                                <Button color="primary" variant="contained" size='large' fullWidth type="submit">Submit</Button>
+                                <TextField
+                                    fullWidth
+                                    id="summary"
+                                    name="summary"
+                                    label="Summary Detail"
+                                    type="text"
+                                    value={formik.values.summary}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.summary && Boolean(formik.errors.summary)}
+                                    helperText={formik.touched.summary && formik.errors.summary}
+                                    multiline
+                                    rows={3}
+                                />
+                            </Box>
+
+
+
+
+                            <Box margin={1}>
+                                <Button color="primary" variant="contained" fullWidth type="submit">Submit</Button>
                             </Box>
                         </form>
                     </Box>
@@ -481,6 +481,7 @@ const Index: React.FC = () => {
                         <Button onClick={confirmToDelete} color="secondary" autoFocus>Delete</Button>
                     </DialogActions>
                 </Dialog>
+
 
             </Container>
 

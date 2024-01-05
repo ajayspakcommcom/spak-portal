@@ -461,3 +461,7 @@ body {
   padding: 15px 0px;
   min-width: 177px;
 }
+
+.total-amount {
+  text-align: right;
+}
