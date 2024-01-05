@@ -14,6 +14,12 @@ const cors = Cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
 
+enum ApprovalStatus {
+  Pending = "pending",
+  Approved = "approved",
+  Rejected = "rejected"
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse>) {
 
   await runMiddleware(req, res, cors);
@@ -33,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Voucher>("voucher");
-            const data = await collection.find({}).toArray();
+            const data = await collection.find({ refId: req.body.refId }).toArray();
             res.status(200).json(data);
           }
           catch (err) {

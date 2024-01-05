@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
 import CloseIcon from '@mui/icons-material/Close';
-import { formatDateToDDMMYYYY } from '@/utils/common';
+import { formatDateToDDMMYYYY, capitalizeFirstLetter } from '@/utils/common';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
@@ -17,15 +17,23 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VoucherModelDetail from '@/components/admin/voucher-detail-modal';
 
+enum ApprovalStatus {
+    Pending = "pending",
+    Approved = "approved",
+    Rejected = "rejected"
+}
 
 type FormValues = {
     _id?: string | undefined;
     voucherNo: number;
     personId: string;
-    isApproved: boolean;
+    approvalStatus: ApprovalStatus;
     voucherDate: Date | undefined | string;
-    voucherAmount: number
+    voucherAmount: number,
+    refId: string
 };
 
 interface personName {
@@ -39,6 +47,8 @@ type InputSet = {
     date: string;
     amount: number | '';
 };
+
+
 
 
 const Index: React.FC = () => {
@@ -87,18 +97,47 @@ const Index: React.FC = () => {
         setInputList(newList);
     };
 
+    const fetchData = async () => {
+
+        try {
+            if (userData && userData.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify({ "type": "LIST", "refId": userData.data._id }), config);
+
+                if (response.status === 200) {
+                    setVoucherList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
+
     const formik = useFormik<FormValues>({
         initialValues: {
             voucherNo: 0,
             personId: '',
-            isApproved: false,
+            approvalStatus: ApprovalStatus.Pending,
             voucherDate: new Date(),
-            voucherAmount: 0
+            voucherAmount: 0,
+            refId: ''
         },
         validationSchema: Yup.object({
             voucherNo: Yup.number(),
             personId: Yup.string(),
-            isApproved: Yup.boolean(),
+            approvalStatus: Yup.string(),
             voucherDate: Yup.date().required('Required'),
             voucherAmount: Yup.number()
         }),
@@ -144,8 +183,6 @@ const Index: React.FC = () => {
 
                 setInputList([]);
 
-
-
                 const createVoucher = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
@@ -160,10 +197,11 @@ const Index: React.FC = () => {
                                 type: "CREATE",
                                 voucherNo: obj.voucherNo,
                                 personId: userData.data._id,
-                                isApproved: false,
+                                approvalStatus: ApprovalStatus.Pending,
                                 voucherDate: obj.voucherDate,
                                 voucherAmount: totalAmount,
-                                voucherData: inputList
+                                voucherData: inputList,
+                                refId: userData.data._id
                             };
 
 
@@ -172,6 +210,7 @@ const Index: React.FC = () => {
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
                             if (response.status === 200) {
                                 setIsEditMode(false);
+                                fetchData();
                             }
 
                         } else {
@@ -193,35 +232,7 @@ const Index: React.FC = () => {
 
     useEffect(() => {
 
-        const fetchData = async () => {
-
-            try {
-                if (userData && userData.token) {
-
-                    const config = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
-
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify({ "type": "LIST" }), config);
-
-                    if (response.status === 200) {
-                        setVoucherList(response.data)
-                    }
-
-                } else {
-                    console.error('No token available');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-
-        };
-
         fetchData();
-
         return () => console.log('Unbind UseEffect');
 
     }, [toggleModal, toggleDialogue]);
@@ -335,9 +346,34 @@ const Index: React.FC = () => {
         setIsEditMode(false);
     };
 
+    const getDetailHandler = async (voucherId: string | undefined) => {
+
+        console.log(voucherId);
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
+            },
+        };
+
+        const objData = {
+            id: voucherId,
+            type: "DETAIL"
+        };
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
+
+        if (response.status === 200) {
+            console.log(response);
+        }
+
+    };
+
     // React.useEffect(() => {
     //     setInputList([...inputList, { detail: '', date: '', amount: '' }]);
     // }, []);
+
 
     return (
         <>
@@ -351,12 +387,12 @@ const Index: React.FC = () => {
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                        <TableHead>
+                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
                                 <TableCell>Voucher No</TableCell>
                                 <TableCell>Date</TableCell>
                                 <TableCell>Total Amount</TableCell>
-                                <TableCell>Approved</TableCell>
+                                <TableCell>Approval Status</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
@@ -368,12 +404,17 @@ const Index: React.FC = () => {
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
                                     <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
                                     <TableCell component="th" scope="row">
-                                        {row.isApproved ? <CheckCircleIcon color='success' /> : <HourglassEmptyIcon color='warning' />}
+                                        {row.approvalStatus.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                        {row.approvalStatus.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                        {row.approvalStatus.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
                                     </TableCell>
                                     <TableCell component="th" scope="row">
-                                        <Box display="flex" alignItems="center" gap={2}>
-                                            <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
-                                            <span className='pointer' onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
+                                        <Box display="flex" alignItems="flex-end" gap={2}>
+                                            <span className='pointer'>
+                                                <VoucherModelDetail rowData={row} />
+                                            </span>
+                                            {(row.approvalStatus.toLowerCase() === 'pending' || row.approvalStatus.toLowerCase() === 'rejected') && <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>}
+                                            <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
                                         </Box>
                                     </TableCell>
                                 </TableRow>
@@ -394,40 +435,8 @@ const Index: React.FC = () => {
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
 
-
-                            {/* <Box margin={1}>
-                                <TextField
-                                    fullWidth
-                                    id="date"
-                                    name="date"
-                                    label="Date"
-                                    type="date"
-                                    value={formik.values.date}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.date && Boolean(formik.errors.date)}
-                                    helperText={formik.touched.date && formik.errors.date} />
-                            </Box> */}
-
-
                             {inputList.map((input, index) => (
-                                // <div key={index}>
-                                //     <input
-                                //         type="text"
-                                //         value={input.detail}
-                                //         onChange={(e) => handleChange(index, 'detail', e.target.value)}
-                                //     />
-                                //     <input
-                                //         type="date"
-                                //         value={input.date}
-                                //         onChange={(e) => handleChange(index, 'date', e.target.value)}
-                                //     />
-                                //     <input
-                                //         type="number"
-                                //         value={input.amount}
-                                //         onChange={(e) => handleChange(index, 'amount', e.target.value)}
-                                //     />
-                                // </div>
+
 
                                 <Box margin={1} key={index} display="flex" flexDirection="row" alignItems="center">
 
@@ -465,12 +474,6 @@ const Index: React.FC = () => {
                                             onChange={(e) => handleChange(index, 'amount', e.target.value)}
                                         />
                                     </Box>
-
-                                    {/* <Box flex={1} display="flex" flexDirection="row" justifyContent="flex-end" alignItems="flex-end">
-                                        <Button variant="contained" onClick={() => handleRemoveInput(index)} size='large' style={{ marginRight: '8px' }}>
-                                            <RemoveIcon />
-                                        </Button>
-                                    </Box> */}
 
                                 </Box>
                             ))}

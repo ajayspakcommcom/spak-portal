@@ -465,3 +465,22 @@ body {
 .total-amount {
   text-align: right;
 }
+
+.pending {
+  color: #F29339;
+}
+
+.approved {
+  color: #2e7d32;
+}
+
+.rejected {
+  color: #d32f2f;
+}
+
+.voucher-detail-status {
+  padding-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

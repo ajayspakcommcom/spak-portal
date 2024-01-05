@@ -38,3 +38,21 @@ export function getDayText(day: number) {
     else
         return `${day} Days`;
 }
+
+export function capitalizeFirstLetter(str: string): string {
+    if (str.length === 0) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function getTotalVoucherAmount(data: any): number {
+
+    let totalAmt = 0;
+
+    data.forEach((item: any) => {
+        totalAmt = totalAmt + +item.amount;
+    });
+
+    return totalAmt;
+
+}
+
