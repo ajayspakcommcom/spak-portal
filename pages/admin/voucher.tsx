@@ -299,9 +299,16 @@ const Index: React.FC = () => {
                     response.data.voucherData.forEach((item: InputSet, indx: any) => {
                         inputList.push({ detail: item.detail, amount: item.amount, date: item.date })
                     });
-                }
 
-                setInputList([...inputList])
+                    let totalAmt = 0;
+
+                    inputList.forEach((item) => {
+                        totalAmt = totalAmt + +item.amount;
+                    });
+
+                    setTotalAmount(totalAmt);
+                    setInputList([...inputList])
+                }
 
                 // if (response.status === 200) {
                 //     formik.setFieldValue('voucherNo', response.data.voucherNo);
