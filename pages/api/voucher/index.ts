@@ -5,7 +5,7 @@ import { verifyToken } from '../libs/verifyToken';
 import runMiddleware from '@/libs/runMiddleware';
 import Cors from 'cors';
 
-type Voucher = { id: ObjectId; voucherNo: string; person: string; amount: number; date: Date; summary: string };
+type Voucher = { id: ObjectId; voucherNo: number; person: string; amount: number; date: Date; summary: string };
 
 type ApiResponse = | { message: string } | Voucher | Voucher[] | { data: any } | { error: string };
 
@@ -72,8 +72,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Voucher>("voucher");
+
+            const lastEntryData = await collection.find().sort({ _id: -1 }).limit(1).toArray();
+
+            console.log(lastEntryData);
+
+            if (lastEntryData.length > 0) {
+              const lastVoucerNo = lastEntryData[0].voucherNo;
+              console.log(lastVoucerNo);
+              req.body.voucherNo = lastVoucerNo + 1;
+            } else {
+              req.body.voucherNo = 1;
+            }
+
             const result = await collection.insertOne(req.body);
             res.status(200).json({ data: result });
+
           } catch (err) {
             if (err instanceof Error) {
               res.status(500).json({ error: err.message });

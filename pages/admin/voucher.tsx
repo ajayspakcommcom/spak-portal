@@ -15,12 +15,17 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 
 
 type FormValues = {
     _id?: string | undefined;
-    voucherNo: string;
-    person: string;
+    voucherNo: number;
+    personId: string;
+    isApproved: boolean;
+    voucherDate: Date | undefined | string;
+    voucherAmount: number
 };
 
 interface personName {
@@ -84,19 +89,23 @@ const Index: React.FC = () => {
 
     const formik = useFormik<FormValues>({
         initialValues: {
-            voucherNo: '',
-            person: ''
+            voucherNo: 0,
+            personId: '',
+            isApproved: false,
+            voucherDate: new Date(),
+            voucherAmount: 0
         },
         validationSchema: Yup.object({
-            voucherNo: Yup.string(),
-            person: Yup.string()
+            voucherNo: Yup.number(),
+            personId: Yup.string(),
+            isApproved: Yup.boolean(),
+            voucherDate: Yup.date().required('Required'),
+            voucherAmount: Yup.number()
         }),
         onSubmit: (values) => {
 
-            console.log(isEditMode);
-
             if (isEditMode) {
-                const editLeave = async (obj: FormValues) => {
+                const editVoucher = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
                             const config = {
@@ -108,7 +117,7 @@ const Index: React.FC = () => {
 
                             const objData = {
                                 voucherNo: obj.voucherNo,
-                                person: obj.person,
+                                person: obj.personId,
                                 type: "UPDATE",
                                 id: updateId
                             };
@@ -129,9 +138,13 @@ const Index: React.FC = () => {
                     }
                 };
 
-                editLeave(values);
+                editVoucher(values);
 
             } else {
+
+                setInputList([]);
+
+
 
                 const createVoucher = async (obj: FormValues) => {
                     try {
@@ -144,17 +157,22 @@ const Index: React.FC = () => {
                             };
 
                             const objData = {
+                                type: "CREATE",
                                 voucherNo: obj.voucherNo,
-                                person: obj.person,
-                                type: "CREATE"
+                                personId: userData.data._id,
+                                isApproved: false,
+                                voucherDate: obj.voucherDate,
+                                voucherAmount: totalAmount,
+                                voucherData: inputList
                             };
 
-                            console.log(inputList);
 
-                            // const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
-                            // if (response.status === 200) {
-                            //     setIsEditMode(false);
-                            // }
+                            console.log(objData);
+
+                            const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
+                            if (response.status === 200) {
+                                setIsEditMode(false);
+                            }
 
                         } else {
                             console.error('No token available');
@@ -211,6 +229,14 @@ const Index: React.FC = () => {
     const toggleModalHandler = () => {
         formik.resetForm();
         setToggleModal(!toggleModal);
+
+        setInputList([]);
+
+        if (toggleModal) {
+            setInputList([]);
+        } else {
+            setInputList([...inputList, { detail: '', date: '', amount: '' }]);
+        }
     };
 
     const editHandler = async (id: string | undefined) => {
@@ -309,9 +335,9 @@ const Index: React.FC = () => {
         setIsEditMode(false);
     };
 
-    React.useEffect(() => {
-        setInputList([...inputList, { detail: '', date: '', amount: '' }]);
-    }, []);
+    // React.useEffect(() => {
+    //     setInputList([...inputList, { detail: '', date: '', amount: '' }]);
+    // }, []);
 
     return (
         <>
@@ -328,9 +354,9 @@ const Index: React.FC = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Voucher No</TableCell>
-                                <TableCell>Person</TableCell>
-                                <TableCell>Amount</TableCell>
                                 <TableCell>Date</TableCell>
+                                <TableCell>Total Amount</TableCell>
+                                <TableCell>Approved</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
@@ -339,7 +365,11 @@ const Index: React.FC = () => {
                             {Array.isArray(voucherList) && voucherList.map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
-                                    <TableCell component="th" scope="row">{row.person}</TableCell>
+                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
+                                    <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
+                                    <TableCell component="th" scope="row">
+                                        {row.isApproved ? <CheckCircleIcon color='success' /> : <HourglassEmptyIcon color='warning' />}
+                                    </TableCell>
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="center" gap={2}>
                                             <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
