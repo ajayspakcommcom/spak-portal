@@ -12,7 +12,6 @@ interface componentProps {
 const Index: React.FC<componentProps> = ({ rowData }) => {
 
     const [rowDetailData, setRowDetailData] = useState(rowData);
-
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => {

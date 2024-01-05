@@ -44,7 +44,7 @@ interface personName {
 
 type InputSet = {
     detail: string;
-    date: string;
+    date: Date | undefined | string;
     amount: number | '';
 };
 
@@ -54,6 +54,7 @@ type InputSet = {
 const Index: React.FC = () => {
 
     const [inputList, setInputList] = React.useState<InputSet[]>([]);
+    const [validationErrors, setValidationErrors] = React.useState<string[]>([]);
 
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
@@ -73,7 +74,7 @@ const Index: React.FC = () => {
     }
 
     const handleAddInput = () => {
-        setInputList([...inputList, { detail: '', date: '', amount: '' }]);
+        setInputList([...inputList, { detail: '', date: new Date(), amount: '' }]);
     };
 
     const handleChange = (index: number, field: keyof InputSet, value: string) => {
@@ -88,7 +89,18 @@ const Index: React.FC = () => {
         });
 
         setTotalAmount(totalAmt);
+    };
 
+    const validateInputs = (): boolean => {
+        const errors: string[] = [];
+        inputList.forEach((input, index) => {
+            if (!input.detail) errors.push(`Detail is required for item ${index + 1}`);
+            if (!input.date) errors.push(`Date is required for item ${index + 1}`);
+            if (input.amount === '') errors.push(`Amount is required for item ${index + 1}`);
+        });
+
+        setValidationErrors(errors);
+        return errors.length === 0;
     };
 
     const handleRemoveInput = (index: number) => {
@@ -178,6 +190,7 @@ const Index: React.FC = () => {
                 };
 
                 editVoucher(values);
+                setToggleModal(false);
 
             } else {
 
@@ -186,6 +199,17 @@ const Index: React.FC = () => {
                 const createVoucher = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
+
+                            const isValid = validateInputs();
+
+                            setInputList([...inputList.slice(1, 1), { detail: '', date: '', amount: '' }]);
+
+                            if (!isValid) {
+                                //console.log('Validation failed:', validationErrors);
+                                alert('Please fill the detail');
+                                return;
+                            }
+
                             const config = {
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -211,6 +235,7 @@ const Index: React.FC = () => {
                             if (response.status === 200) {
                                 setIsEditMode(false);
                                 fetchData();
+                                setToggleModal(false);
                             }
 
                         } else {
@@ -225,7 +250,7 @@ const Index: React.FC = () => {
                 createVoucher(values);
             }
 
-            setToggleModal(false);
+            //setToggleModal(false);
         }
     });
 
@@ -435,6 +460,10 @@ const Index: React.FC = () => {
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
 
+                            {/* {validationErrors.map((error, index) => (
+                                <div key={index} style={{ color: 'red' }}>{error}</div>
+                            ))} */}
+
                             {inputList.map((input, index) => (
 
 
@@ -468,7 +497,7 @@ const Index: React.FC = () => {
                                             fullWidth
                                             id="amount"
                                             name="amount"
-                                            label="Amout"
+                                            label="Amount"
                                             type="number"
                                             value={input.amount}
                                             onChange={(e) => handleChange(index, 'amount', e.target.value)}
