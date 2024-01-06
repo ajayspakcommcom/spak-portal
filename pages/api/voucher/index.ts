@@ -108,7 +108,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Voucher>("voucher");
-            const result = await collection.replaceOne({ _id: new ObjectId(req.body.id) }, req.body);
+            // const result = await collection.replaceOne({ _id: new ObjectId(req.body.id) }, req.body);
+
+            const result = await collection.updateOne(
+              { _id: new ObjectId(req.body.id) },
+              { $set: { "voucherData": req.body.voucherData, voucherAmount: req.body.voucherAmount } }
+            );
+
             res.status(200).json({ data: result });
           } catch (err) {
             if (err instanceof Error) {

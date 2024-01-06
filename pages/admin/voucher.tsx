@@ -165,10 +165,10 @@ const Index: React.FC = () => {
                             };
 
                             const objData = {
-                                voucherNo: obj.voucherNo,
-                                person: obj.personId,
                                 type: "UPDATE",
-                                id: updateId
+                                id: updateId,
+                                voucherData: inputList,
+                                voucherAmount: totalAmount
                             };
 
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
@@ -176,6 +176,7 @@ const Index: React.FC = () => {
 
                             if (response.status === 200) {
                                 console.log('');
+                                setInputList([]);
                             }
 
                         } else {
@@ -226,9 +227,6 @@ const Index: React.FC = () => {
                                 refId: userData.data._id
                             };
 
-
-                            console.log(objData);
-
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
                             if (response.status === 200) {
                                 setIsEditMode(false);
@@ -274,9 +272,10 @@ const Index: React.FC = () => {
     };
 
     const editHandler = async (id: string | undefined) => {
+
         setIsEditMode(true);
         toggleModalHandler();
-        setUpdateId(id);
+
 
         try {
             if (userData && userData.token) {
@@ -295,28 +294,25 @@ const Index: React.FC = () => {
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), config);
 
-                if (response.data.voucherData.length > 0) {
-                    response.data.voucherData.forEach((item: InputSet, indx: any) => {
-                        inputList.push({ detail: item.detail, amount: item.amount, date: item.date })
-                    });
+                console.log(response);
+                setUpdateId(id);
 
-                    let totalAmt = 0;
+                if (response.status === 200) {
+                    if (response.data.voucherData.length > 0) {
+                        response.data.voucherData.forEach((item: InputSet, indx: any) => {
+                            inputList.push({ detail: item.detail, amount: item.amount, date: item.date })
+                        });
 
-                    inputList.forEach((item) => {
-                        totalAmt = totalAmt + +item.amount;
-                    });
+                        let totalAmt = 0;
 
-                    setTotalAmount(totalAmt);
-                    setInputList([...inputList])
+                        inputList.forEach((item) => {
+                            totalAmt = totalAmt + +item.amount;
+                        });
+
+                        setTotalAmount(totalAmt);
+                        setInputList([...inputList])
+                    }
                 }
-
-                // if (response.status === 200) {
-                //     formik.setFieldValue('voucherNo', response.data.voucherNo);
-                //     formik.setFieldValue('person', response.data.person);
-                //     formik.setFieldValue('amount', response.data.amount);
-                //     formik.setFieldValue('date', response.data.date);
-                //     formik.setFieldValue('summary', response.data.summary);
-                // }
 
             } else {
                 console.error('No token available');
