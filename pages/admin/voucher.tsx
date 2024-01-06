@@ -154,9 +154,20 @@ const Index: React.FC = () => {
         onSubmit: (values) => {
 
             if (isEditMode) {
+
+                setInputList([...inputList]);
+
                 const editVoucher = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
+
+                            const isValid = validateInputs();
+
+                            if (!isValid) {
+                                alert('Please fill the detail');
+                                return;
+                            }
+
                             const config = {
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -177,6 +188,7 @@ const Index: React.FC = () => {
                             if (response.status === 200) {
                                 console.log('');
                                 setInputList([]);
+                                setToggleModal(false);
                             }
 
                         } else {
@@ -189,7 +201,6 @@ const Index: React.FC = () => {
                 };
 
                 editVoucher(values);
-                setToggleModal(false);
 
             } else {
 
