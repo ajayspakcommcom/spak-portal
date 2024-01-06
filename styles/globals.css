@@ -494,3 +494,20 @@ body {
   justify-content: space-between;
   align-items: center;
 }
+
+.login-bg {
+  background-image: url('../public/assets/img/login-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-width: 100%;
+  min-height: 100vh;
+  position: fixed;
+  z-index: -1;
+}
+
+.primary-color {
+  color: #0054A6;
+  display: block;
+  padding: 10px 0 20px 0;
+}
