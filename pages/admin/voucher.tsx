@@ -19,6 +19,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VoucherModelDetail from '@/components/admin/voucher-detail-modal';
+import Image from 'next/image';
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -416,7 +417,6 @@ const Index: React.FC = () => {
     // React.useEffect(() => {
     //     setInputList([...inputList, { detail: '', date: '', amount: '' }]);
     // }, []);
-
 
     return (
         <>

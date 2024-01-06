@@ -4,12 +4,49 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import Status from '@/components/admin/status';
 import CloseIcon from '@mui/icons-material/Close';
 import { getDayText, formatDateToDDMMYYYY, getTotalVoucherAmount, capitalizeFirstLetter } from '@/utils/common';
+import Image from 'next/image';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import getConfig from 'next/config';
+const { publicRuntimeConfig } = getConfig();
+import axios from 'axios';
 
 interface componentProps {
     rowData: any,
 }
 
 const Index: React.FC<componentProps> = ({ rowData }) => {
+
+    const userData = useSelector((state: RootState) => state.authAdmin);
+
+    const fetchData = async () => {
+
+        try {
+            if (userData && userData.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify({ type: "DETAIL", id: rowData._id }), config);
+
+                if (response.status === 200) {
+                    setRowDetailData(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    fetchData();
+
 
     const [rowDetailData, setRowDetailData] = useState(rowData);
     const [open, setOpen] = useState(false);
@@ -32,7 +69,6 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
     };
 
     useEffect(() => {
-        setRowDetailData(rowData);
         return () => console.log('');
     }, []);
 
@@ -48,7 +84,10 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
 
                 <Card sx={modalStyle}>
                     <div className='custom-task-detail-wrapper'>
-                        <CardHeader title={rowDetailData.voucherNo} />
+                        <div className='voucher-detail-logo-no'>
+                            <Image className='pointer' src={require('../../public/assets/img/b-logo.png')} alt="Description of the image" layout="responsive" />
+                            <CardHeader title={rowDetailData.voucherNo} />
+                        </div>
                         <Button size="small" color='inherit' onClick={handleClose}>
                             <CloseIcon />
                         </Button>
