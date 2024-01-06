@@ -49,18 +49,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               const db = client.db("Spak");
               const collection = db.collection<Task>("task");
 
-              console.log(req.body);
-
               if (req.body.clientName === '') {
-                console.log('Empty');
-
                 const data = await collection.find({
                   status: { $in: [req.body.status, ''] },
                   startDate: { $gte: req.body.filterStartDate, $lte: req.body.filterEndDate }
                 }).toArray();
                 res.status(200).json(data);
               } else {
-                console.log('Fulled');
                 const data = await collection.find({
                   clientName: req.body.clientName,
                   status: req.body.status,

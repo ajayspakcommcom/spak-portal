@@ -46,13 +46,14 @@ export function capitalizeFirstLetter(str: string): string {
 
 export function getTotalVoucherAmount(data: any): number {
 
-    let totalAmt = 0;
+    if (data?.length > 0) {
+        let totalAmt = 0;
+        data.forEach((item: any) => {
+            totalAmt = totalAmt + +item.amount;
+        });
 
-    data.forEach((item: any) => {
-        totalAmt = totalAmt + +item.amount;
-    });
-
-    return totalAmt;
-
+        return totalAmt;
+    }
+    return 0
 }
 

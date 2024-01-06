@@ -457,6 +457,10 @@ body {
   justify-content: end;
 }
 
+.voucher-header button {
+  min-width: 218px !important;
+}
+
 .create-data-wrapper-heading button {
   padding: 15px 0px;
   min-width: 177px;

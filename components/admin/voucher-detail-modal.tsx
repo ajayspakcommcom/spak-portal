@@ -85,7 +85,7 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
                 <Card sx={modalStyle}>
                     <div className='custom-task-detail-wrapper'>
                         <div className='voucher-detail-logo-no'>
-                            <Image className='pointer' src={require('../../public/assets/img/b-logo.png')} alt="Description of the image" layout="responsive" />
+                            <Image className='pointer' src={require('../../public/assets/img/b-logo.jpg')} alt="Description of the image" width={'50'} height={'50'} />
                             <CardHeader title={rowDetailData.voucherNo} />
                         </div>
                         <Button size="small" color='inherit' onClick={handleClose}>
@@ -133,9 +133,9 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
                             <div className='voucher-detail-status'>
                                 <div>
                                     <b>Approval Status : </b>
-                                    {rowDetailData.approvalStatus.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(rowDetailData.approvalStatus)}</b>}
-                                    {rowDetailData.approvalStatus.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(rowDetailData.approvalStatus)}</b>}
-                                    {rowDetailData.approvalStatus.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(rowDetailData.approvalStatus)}</b>}
+                                    {rowDetailData.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(rowDetailData.approvalStatus)}</b>}
+                                    {rowDetailData.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(rowDetailData.approvalStatus)}</b>}
+                                    {rowDetailData.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(rowDetailData.approvalStatus)}</b>}
                                 </div>
                                 <div>
                                     <b>Total Amount : </b> {getTotalVoucherAmount(rowDetailData.voucherData)}

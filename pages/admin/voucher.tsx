@@ -67,6 +67,11 @@ const Index: React.FC = () => {
     const [totalAmount, setTotalAmount] = useState<number>(0);
 
 
+    const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
+    const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
+    const [filterStatus, setFilterStatus] = useState('');
+
+
     if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
         router.push('/admin/login');
         return false;
@@ -414,19 +419,111 @@ const Index: React.FC = () => {
 
     };
 
-    // React.useEffect(() => {
-    //     setInputList([...inputList, { detail: '', date: '', amount: '' }]);
-    // }, []);
+
+    const filterResult = async () => {
+
+        console.log('filterStatus', filterStatus);
+        console.log('filterStartDate', filterStartDate);
+        console.log('filterEndDate', filterEndDate);
+
+        setVoucherList([]);
+
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const objData = {
+            type: "LIST",
+            status: filterStatus,
+            filterStartDate: filterStartDate,
+            filterEndDate: filterEndDate,
+            refId: userData.data._id
+        };
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify(objData), taskConfig);
+        console.log(response.data);
+
+        if (response.status === 200) {
+            setVoucherList(response.data);
+        }
+
+    };
+
+    const resetFilter = () => {
+        fetchData();
+    };
 
     return (
         <>
             <Header />
             <Container component="main">
 
-                <div className='create-data-wrapper'>
-                    <h2>Voucher</h2>
-                    <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
+                {/* filter */}
+
+                <div>
+                    <div className='create-data-wrapper-heading voucher-header'>
+                        <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
+                    </div>
+                    <div className='create-data-wrapper'>
+
+                        <FormControl fullWidth>
+                            <Box display="flex" justifyContent="space-between">
+
+                                <Box flex={1} marginRight={2} marginLeft={1}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                                        <Select
+                                            label="Status"
+                                            variant="outlined"
+                                            value={filterStatus}
+                                            onChange={(e) => setFilterStatus(e.target.value)}>
+                                            <MenuItem value={ApprovalStatus.Pending}><b>{ApprovalStatus.Pending}</b></MenuItem>
+                                            <MenuItem value={ApprovalStatus.Approved}>{ApprovalStatus.Approved}</MenuItem>
+                                            <MenuItem value={ApprovalStatus.Rejected}>{ApprovalStatus.Rejected}</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+
+                                <Box flex={1} marginRight={2} marginLeft={1}>
+                                    <TextField
+                                        fullWidth
+                                        type='date'
+                                        label="Start Date"
+                                        variant="outlined"
+                                        value={filterStartDate instanceof Date ? filterStartDate.toISOString().split('T')[0] : ''}
+                                        onChange={(e) => setFilterStartDate(e.target.value ? new Date(e.target.value) : null)}
+                                    />
+                                </Box>
+
+
+                                <Box flex={1} marginRight={2}>
+                                    <TextField
+                                        fullWidth
+                                        type='date'
+                                        label="End Date"
+                                        variant="outlined"
+                                        value={filterEndDate instanceof Date ? filterEndDate.toISOString().split('T')[0] : ''}
+                                        onChange={(e) => setFilterEndDate(e.target.value ? new Date(e.target.value) : null)}
+                                    />
+                                </Box>
+
+                                <Box flex={1} marginRight={2}>
+                                    <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Search</Button>
+                                </Box>
+                                <Box flex={1} marginRight={2}>
+                                    <Button type="submit" variant="contained" onClick={resetFilter} size='large' color='inherit' fullWidth style={{ padding: '15px 0' }}>Reset</Button>
+                                </Box>
+
+                            </Box>
+
+                        </FormControl>
+                    </div>
                 </div>
+
+                {/* filter */}
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
@@ -447,16 +544,16 @@ const Index: React.FC = () => {
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
                                     <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
                                     <TableCell component="th" scope="row">
-                                        {row.approvalStatus.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
-                                        {row.approvalStatus.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
-                                        {row.approvalStatus.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                        {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                        {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                        {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
                                     </TableCell>
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="flex-end" gap={2}>
                                             <span className='pointer'>
                                                 <VoucherModelDetail rowData={row} />
                                             </span>
-                                            {(row.approvalStatus.toLowerCase() === 'pending' || row.approvalStatus.toLowerCase() === 'rejected') && <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>}
+                                            {(row.approvalStatus?.toLowerCase() === 'pending' || row.approvalStatus?.toLowerCase() === 'rejected') && <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>}
                                             <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
                                         </Box>
                                     </TableCell>
