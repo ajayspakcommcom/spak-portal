@@ -53,9 +53,6 @@ const Index: React.FC = () => {
         }),
         onSubmit: (values) => {
 
-            console.log(isEditMode);
-
-
             if (isEditMode) {
                 const editHoliday = async (obj: FormValues) => {
                     try {
@@ -279,11 +276,11 @@ const Index: React.FC = () => {
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                        <TableHead>
+                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
-                                <TableCell>Title</TableCell>
+                                <TableCell>Holiday</TableCell>
                                 <TableCell>Date</TableCell>
-                                <TableCell>Action</TableCell>
+                                {userData.data.designation !== 'employee' && <TableCell>Action</TableCell>}
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -291,12 +288,15 @@ const Index: React.FC = () => {
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{row.title}</TableCell>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
-                                    <TableCell component="th" scope="row">
-                                        <Box display="flex" alignItems="center" gap={2}>
-                                            <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
-                                            <span className='pointer' onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
-                                        </Box>
-                                    </TableCell>
+                                    {
+                                        userData.data.designation !== 'employee' &&
+                                        <TableCell component="th" scope="row">
+                                            <Box display="flex" alignItems="center" gap={2}>
+                                                <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
+                                                <span className='pointer' onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
+                                            </Box>
+                                        </TableCell>
+                                    }
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -317,9 +317,9 @@ const Index: React.FC = () => {
                             <Box margin={1}>
                                 <TextField
                                     fullWidth
-                                    id="title"
+                                    id="Holiday"
                                     name="title"
-                                    label="Title"
+                                    label="Holiday"
                                     value={formik.values.title}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}

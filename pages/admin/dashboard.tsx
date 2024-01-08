@@ -3,28 +3,66 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Box, Button, Card, CardActions, CardContent, Container, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, Container, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
-import { formatDateToDDMMYYYY } from '@/utils/common';
+import { capitalizeFirstLetter, formatDateToDDMMYYYY, getDayText, truncateString } from '@/utils/common';
 import Image from 'next/image';
-import TaskList from '@/components/admin/task-list';
+import Status from '@/components/admin/status';
 
-type Voucher = { _id?: string | undefined; voucherNo: string; person: string; amount: number; date: Date | undefined | string; summary: string };
+// type Voucher = { _id?: string | undefined; voucherNo: string; person: string; amount: number; date: Date | undefined | string; summary: string };
+
+enum ApprovalStatus {
+    Pending = "pending",
+    Approved = "approved",
+    Rejected = "rejected"
+}
+
+type Voucher = {
+    _id?: string | undefined;
+    voucherNo: number;
+    personId: string;
+    approvalStatus: ApprovalStatus;
+    voucherDate: Date | undefined | string;
+    voucherAmount: number,
+    refId: string
+};
+
 
 type Holiday = { _id?: string | undefined; title: string; date: Date | undefined | string; };
 
 type Leave = { _id?: string | undefined; title: string; reason: string; date: Date | undefined | string; };
 
-type User = { _id?: string | undefined; firstName: string; lastName: string; username: string; password: string; imgUrl: string; date: Date | undefined | string; designation: string; };
 
-type Task = { _id?: string | undefined; clientName: string; taskName: string; taskDescription: string; startDate: Date; endDate: Date; status: string; deadLine: string; imageDataUrl: string; token: string; };
+type Task = {
+    _id: string;
+    clientName: string;
+    taskName: string;
+    taskDescription: string;
+    startDate: Date;
+    endDate: Date;
+    status: string;
+    deadLine: string;
+    imageDataUrl: string;
+    token: string;
+    createdBy: string;
+    updatedBy: string;
+};
+
+
+
 
 const imageStyle = {
     borderRadius: '50%',
     border: '1px solid #fff',
 }
+
+type userList = {
+    _id: string;
+    username: string;
+    name: string;
+};
 
 export default function Index() {
 
@@ -34,8 +72,10 @@ export default function Index() {
     const [voucherList, setVoucherList] = React.useState<Voucher[]>([]);
     const [holdayList, setHolidayList] = React.useState<Holiday[]>([]);
     const [leaveList, setLeaveList] = React.useState<Leave[]>([]);
-    const [userList, setUserList] = React.useState<User[]>([]);
+    const [userList, setUserList] = React.useState<userList[]>([]);
     const [taskList, setTaskList] = React.useState<Task[]>([]);
+
+
 
     if (!data.token || !(window.localStorage.getItem('jwtToken'))) {
         router.push('/admin/login');
@@ -46,9 +86,33 @@ export default function Index() {
         router.push(`/admin/${url.toLowerCase()}`);
     };
 
+    const getUsersWithIdUserName = async () => {
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const objData = {
+            "type": "LIST",
+            "userList": "Task"
+        };
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}user`, JSON.stringify(objData), taskConfig);
+        setUserList(response.data);
+
+    };
+
+    const getName = (id: string): string => {
+        return userList.find(item => item._id === id)?.name || '';
+    };
+
 
 
     React.useEffect(() => {
+
+        getUsersWithIdUserName();
 
         const fetchVoucherData = async () => {
 
@@ -62,7 +126,7 @@ export default function Index() {
                         },
                     };
 
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ "type": "VOUCHER_LIST" }), config);
+                    const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ type: "VOUCHER_LIST", refId: data.data._id }), config);
 
                     if (response.status === 200) {
                         setVoucherList(response.data)
@@ -131,33 +195,6 @@ export default function Index() {
 
         };
 
-        const fetchUserData = async () => {
-
-            try {
-                if (data && data.token) {
-
-                    const config = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
-
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ "type": "USER_LIST" }), config);
-
-                    if (response.status === 200) {
-                        setUserList(response.data)
-                    }
-
-                } else {
-                    console.error('No token available');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-
-        };
-
         const fetchTaskData = async () => {
 
             try {
@@ -188,201 +225,179 @@ export default function Index() {
         fetchVoucherData();
         fetchHoldayData();
         fetchLeaveData();
-        fetchUserData();
         fetchTaskData();
 
     }, []);
+
+
 
     if (data.token || window.localStorage.getItem('jwtToken')) {
         return (
             <>
                 <Header />
+
                 <Grid container spacing={2} className='dashboard-container'>
+
                     <Grid item xs={12} md={12}>
-                        <Card>
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                    Task
-                                </Typography>
-                                <TaskList isHeaderVisible={false} />
-                            </CardContent>
-                        </Card>
+                        <Typography variant="h5" component="h2" gutterBottom>
+                            {data.data.firstName} {data.data.lastName[0].toUpperCase()}. Dashboard
+                        </Typography>
+                    </Grid>
+
+                    <Grid item xs={12} md={12}>
+
+                        <Typography variant="h6" component="h1" gutterBottom>
+                            Task
+                        </Typography>
+
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                                <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                    <TableRow>
+                                        <TableCell>Client</TableCell>
+                                        <TableCell>Task</TableCell>
+                                        <TableCell>Created By</TableCell>
+                                        <TableCell>Assigned To</TableCell>
+                                        <TableCell>Description</TableCell>
+                                        <TableCell>Start Date</TableCell>
+                                        <TableCell>End Date</TableCell>
+                                        <TableCell>Status</TableCell>
+                                        <TableCell>Deadline</TableCell>
+                                        <TableCell>Photo</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {Array.isArray(taskList) && taskList.map((row, index) => (
+                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                            <TableCell component="th" scope="row">{row.clientName}</TableCell>
+                                            <TableCell component="th" scope="row">{row.taskName}</TableCell>
+                                            <TableCell>{getName(row.createdBy)}</TableCell>
+                                            <TableCell>{getName(row.updatedBy)}</TableCell>
+                                            <TableCell>{truncateString(row.taskDescription)}</TableCell>
+                                            <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
+                                            <TableCell>{formatDateToDDMMYYYY(row.endDate)}</TableCell>
+                                            <TableCell>
+                                                <Status onClick={(event) => console.log(event)} defaultSelected={row.status} isDisabled={true} />
+                                            </TableCell>
+                                            <TableCell>{getDayText(+row.deadLine)}</TableCell>
+                                            <TableCell>
+                                                {row.imageDataUrl
+                                                    && <a href={row.imageDataUrl} target="_blank">
+                                                        <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
+                                                    </a>
+                                                }
+                                            </TableCell>
+
+
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table >
+                        </TableContainer>
+
+                        <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                            <Button variant="contained" onClick={() => goto('task')}>More...</Button>
+                        </Typography>
+
                     </Grid>
                     <Grid item xs={6} md={6}>
-                        <Card>
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                    Holiday
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
 
-                                    <TableContainer>
-                                        <Table aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Title</TableCell>
-                                                    <TableCell>Date</TableCell>
-                                                </TableRow>
-                                            </TableHead>
+                        <Typography variant="h6" component="h1" gutterBottom>Holiday</Typography>
 
-                                            <TableBody>
-                                                {Array.isArray(holdayList) && holdayList.map((row, index) => (
-                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                        <TableCell component="th" scope="row">{row.title}</TableCell>
-                                                        <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
+                        <TableContainer component={Paper}>
+                            <Table aria-label="simple table">
+                                <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                    <TableRow>
+                                        <TableCell>Title</TableCell>
+                                        <TableCell>Date</TableCell>
+                                    </TableRow>
+                                </TableHead>
 
-                                        </Table>
-                                    </TableContainer>
+                                <TableBody>
+                                    {Array.isArray(holdayList) && holdayList.map((row, index) => (
+                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                            <TableCell component="th" scope="row">{row.title}</TableCell>
+                                            <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
 
-                                </Typography>
-                            </CardContent>
-                            <CardActions className='dashboard-btn-wrapper'>
-                                <Button variant="contained" onClick={() => goto('holiday')}>More...</Button>
-                            </CardActions>
-                        </Card>
+                        <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                            <Button variant="contained" onClick={() => goto('holiday')}>More...</Button>
+                        </Typography>
+
                     </Grid>
+
                     <Grid item xs={6} md={6}>
-                        <Card>
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                    Leave
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
 
-                                    <TableContainer>
-                                        <Table aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Title</TableCell>
-                                                    <TableCell>Reason</TableCell>
-                                                    <TableCell>Date</TableCell>
-                                                </TableRow>
-                                            </TableHead>
+                        <Typography variant="h6" component="h1" gutterBottom>Voucher</Typography>
 
-                                            <TableBody>
-                                                {Array.isArray(leaveList) && leaveList.map((row, index) => (
-                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                        <TableCell component="th" scope="row">{row.title}</TableCell>
-                                                        <TableCell component="th" scope="row">{row.reason}</TableCell>
-                                                        <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                                <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                    <TableRow>
+                                        <TableCell>Voucher No</TableCell>
+                                        <TableCell>Date</TableCell>
+                                        <TableCell>Total Amount</TableCell>
+                                        <TableCell>Approval Status</TableCell>
+                                    </TableRow>
+                                </TableHead>
 
-                                        </Table>
-                                    </TableContainer>
+                                <TableBody>
+                                    {Array.isArray(voucherList) && voucherList.map((row, index) => (
+                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                            <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
+                                            <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
+                                            <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                                {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                                {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
 
-                                </Typography>
-                            </CardContent>
-                            <CardActions className='dashboard-btn-wrapper'>
-                                <Button variant="contained" onClick={() => goto('leave')}>More...</Button>
-                            </CardActions>
-                        </Card>
+                        <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                            <Button variant="contained" onClick={() => goto('voucher')}>More...</Button>
+                        </Typography>
+
                     </Grid>
-                    <Grid item xs={6} md={6}>
-                        <Card>
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                    User
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
 
-                                    <TableContainer>
-                                        <Table aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>First Name</TableCell>
-                                                    <TableCell>Last Name</TableCell>
-                                                    <TableCell>Email</TableCell>
-                                                    <TableCell>Photo</TableCell>
-                                                </TableRow>
-                                            </TableHead>
+                    <Grid item xs={6} md={6} display={'none'}>
 
-                                            <TableBody>
-                                                <TableRow>
-                                                    <TableCell component="th" scope="row">{'First name'}</TableCell>
-                                                    <TableCell component="th" scope="row">{'Last name'}</TableCell>
-                                                    <TableCell component="th" scope="row">{'ajay@spakcomm.com'}</TableCell>
-                                                    <TableCell component="th" scope="row">{'Photo'}</TableCell>
-                                                </TableRow>
-                                            </TableBody>
+                        <Typography variant="h6" component="h1" gutterBottom>Leave</Typography>
 
-                                            <TableBody>
-                                                {Array.isArray(userList) && userList.map((row, index) => (
-                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                        <TableCell component="th" scope="row">{row.firstName}</TableCell>
-                                                        <TableCell component="th" scope="row">{row.lastName}</TableCell>
-                                                        <TableCell component="th" scope="row">{row.username}</TableCell>
-                                                        <TableCell component="th" scope="row">
-                                                            {row.imgUrl && <Image src={row.imgUrl} alt="Description of the image" width={30} height={30} style={imageStyle} />}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
+                        <TableContainer component={Paper}>
+                            <Table aria-label="simple table">
+                                <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                    <TableRow>
+                                        <TableCell>Title</TableCell>
+                                        <TableCell>Reason</TableCell>
+                                        <TableCell>Date</TableCell>
+                                    </TableRow>
+                                </TableHead>
 
-                                        </Table>
-                                    </TableContainer>
+                                <TableBody>
+                                    {Array.isArray(leaveList) && leaveList.map((row, index) => (
+                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                            <TableCell component="th" scope="row">{row.title}</TableCell>
+                                            <TableCell component="th" scope="row">{row.reason}</TableCell>
+                                            <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
 
-                                </Typography>
-                            </CardContent>
-                            <CardActions className='dashboard-btn-wrapper'>
-                                <Button variant="contained" onClick={() => goto('user')}>More...</Button>
-                            </CardActions>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={6} md={6}>
-                        <Card>
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                    Task
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                        <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                            <Button variant="contained" onClick={() => goto('leave')}>More...</Button>
+                        </Typography>
 
-                                    <TableContainer>
-                                        <Table aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Client Name</TableCell>
-                                                    <TableCell>Task Name</TableCell>
-                                                    <TableCell>Description</TableCell>
-                                                    <TableCell>Photo</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-
-                                            <TableBody>
-                                                <TableRow>
-                                                    <TableCell component="th" scope="row">{'Client Name'}</TableCell>
-                                                    <TableCell component="th" scope="row">{'Task Name'}</TableCell>
-                                                    <TableCell component="th" scope="row">{'Description'}</TableCell>
-                                                    <TableCell component="th" scope="row">{'Photo'}</TableCell>
-                                                </TableRow>
-                                            </TableBody>
-
-                                            <TableBody>
-                                                {Array.isArray(taskList) && taskList.map((row, index) => (
-                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                        <TableCell component="th" scope="row">{row.clientName}</TableCell>
-                                                        <TableCell component="th" scope="row">{row.taskName}</TableCell>
-                                                        <TableCell component="th" scope="row">{row.taskDescription}</TableCell>
-                                                        <TableCell component="th" scope="row">
-                                                            {row.imageDataUrl && <Image src={row.imageDataUrl} alt="Description of the image" width={30} height={30} style={imageStyle} />}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-
-                                        </Table>
-                                    </TableContainer>
-
-                                </Typography>
-                            </CardContent>
-                            <CardActions className='dashboard-btn-wrapper'>
-                                <Button variant="contained" onClick={() => goto('task')}>More...</Button>
-                            </CardActions>
-                        </Card>
                     </Grid>
                 </Grid>
             </>
