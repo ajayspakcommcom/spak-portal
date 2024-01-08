@@ -236,170 +236,174 @@ export default function Index() {
             <>
                 <Header />
 
-                <Grid container spacing={2} className='dashboard-container'>
+                <Container component="main">
+                    <Grid container spacing={2} className='dashboard-container'>
 
-                    <Grid item xs={12} md={12}>
-                        <Typography variant="h5" component="h2" gutterBottom>
-                            {data.data.firstName} {data.data.lastName[0].toUpperCase()}. Dashboard
-                        </Typography>
-                    </Grid>
+                        <Grid item xs={12} md={12}>
+                            <Typography variant="h5" component="h2" gutterBottom>
+                                {data.data.firstName} {data.data.lastName[0].toUpperCase()}. Dashboard
+                            </Typography>
+                        </Grid>
 
-                    <Grid item xs={12} md={12}>
+                        <Grid item xs={12} md={12}>
 
-                        <Typography variant="h6" component="h1" gutterBottom>
-                            Task
-                        </Typography>
+                            <Typography variant="h6" component="h1" gutterBottom>
+                                Task
+                            </Typography>
 
-                        <TableContainer component={Paper}>
-                            <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                                <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                                    <TableRow>
-                                        <TableCell>Client</TableCell>
-                                        <TableCell>Task</TableCell>
-                                        <TableCell>Created By</TableCell>
-                                        <TableCell>Assigned To</TableCell>
-                                        <TableCell>Description</TableCell>
-                                        <TableCell>Start Date</TableCell>
-                                        <TableCell>End Date</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Deadline</TableCell>
-                                        <TableCell>Photo</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {Array.isArray(taskList) && taskList.map((row, index) => (
-                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                            <TableCell component="th" scope="row">{row.clientName}</TableCell>
-                                            <TableCell component="th" scope="row">{row.taskName}</TableCell>
-                                            <TableCell>{getName(row.createdBy)}</TableCell>
-                                            <TableCell>{getName(row.updatedBy)}</TableCell>
-                                            <TableCell>{truncateString(row.taskDescription)}</TableCell>
-                                            <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
-                                            <TableCell>{formatDateToDDMMYYYY(row.endDate)}</TableCell>
-                                            <TableCell>
-                                                <Status onClick={(event) => console.log(event)} defaultSelected={row.status} isDisabled={true} />
-                                            </TableCell>
-                                            <TableCell>{getDayText(+row.deadLine)}</TableCell>
-                                            <TableCell>
-                                                {row.imageDataUrl
-                                                    && <a href={row.imageDataUrl} target="_blank">
-                                                        <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
-                                                    </a>
-                                                }
-                                            </TableCell>
-
-
+                            <TableContainer component={Paper}>
+                                <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                                    <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                        <TableRow>
+                                            <TableCell>Client</TableCell>
+                                            <TableCell>Task</TableCell>
+                                            <TableCell>Created By</TableCell>
+                                            <TableCell>Assigned To</TableCell>
+                                            <TableCell>Description</TableCell>
+                                            <TableCell>Start Date</TableCell>
+                                            <TableCell>End Date</TableCell>
+                                            <TableCell>Status</TableCell>
+                                            <TableCell>Deadline</TableCell>
+                                            <TableCell>Photo</TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table >
-                        </TableContainer>
+                                    </TableHead>
+                                    <TableBody>
+                                        {Array.isArray(taskList) && taskList.map((row, index) => (
+                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                <TableCell component="th" scope="row">{row.clientName}</TableCell>
+                                                <TableCell component="th" scope="row">{row.taskName}</TableCell>
+                                                <TableCell>{getName(row.createdBy)}</TableCell>
+                                                <TableCell>{getName(row.updatedBy)}</TableCell>
+                                                <TableCell>{truncateString(row.taskDescription)}</TableCell>
+                                                <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
+                                                <TableCell>{formatDateToDDMMYYYY(row.endDate)}</TableCell>
+                                                <TableCell>
+                                                    <Status onClick={(event) => console.log(event)} defaultSelected={row.status} isDisabled={true} />
+                                                </TableCell>
+                                                <TableCell>{getDayText(+row.deadLine)}</TableCell>
+                                                <TableCell>
+                                                    {row.imageDataUrl
+                                                        && <a href={row.imageDataUrl} target="_blank">
+                                                            <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
+                                                        </a>
+                                                    }
+                                                </TableCell>
 
-                        <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                            <Button variant="contained" onClick={() => goto('task')}>More...</Button>
-                        </Typography>
 
-                    </Grid>
-                    <Grid item xs={6} md={6}>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table >
+                            </TableContainer>
 
-                        <Typography variant="h6" component="h1" gutterBottom>Holiday</Typography>
+                            <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                <Button variant="contained" onClick={() => goto('task')}>More...</Button>
+                            </Typography>
 
-                        <TableContainer component={Paper}>
-                            <Table aria-label="simple table">
-                                <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                                    <TableRow>
-                                        <TableCell>Title</TableCell>
-                                        <TableCell>Date</TableCell>
-                                    </TableRow>
-                                </TableHead>
+                        </Grid>
+                        <Grid item xs={6} md={6}>
 
-                                <TableBody>
-                                    {Array.isArray(holdayList) && holdayList.map((row, index) => (
-                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                            <TableCell component="th" scope="row">{row.title}</TableCell>
-                                            <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                            <Typography variant="h6" component="h1" gutterBottom>Holiday</Typography>
+
+                            <TableContainer component={Paper}>
+                                <Table aria-label="simple table">
+                                    <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                        <TableRow>
+                                            <TableCell>Title</TableCell>
+                                            <TableCell>Date</TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                    </TableHead>
 
-                        <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                            <Button variant="contained" onClick={() => goto('holiday')}>More...</Button>
-                        </Typography>
+                                    <TableBody>
+                                        {Array.isArray(holdayList) && holdayList.map((row, index) => (
+                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                <TableCell component="th" scope="row">{row.title}</TableCell>
+                                                <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
 
-                    </Grid>
+                            <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                <Button variant="contained" onClick={() => goto('holiday')}>More...</Button>
+                            </Typography>
 
-                    <Grid item xs={6} md={6}>
+                        </Grid>
 
-                        <Typography variant="h6" component="h1" gutterBottom>Voucher</Typography>
+                        <Grid item xs={6} md={6}>
 
-                        <TableContainer component={Paper}>
-                            <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                                <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                                    <TableRow>
-                                        <TableCell>Voucher No</TableCell>
-                                        <TableCell>Date</TableCell>
-                                        <TableCell>Total Amount</TableCell>
-                                        <TableCell>Approval Status</TableCell>
-                                    </TableRow>
-                                </TableHead>
+                            <Typography variant="h6" component="h1" gutterBottom>Voucher</Typography>
 
-                                <TableBody>
-                                    {Array.isArray(voucherList) && voucherList.map((row, index) => (
-                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                            <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
-                                            <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
-                                            <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
-                                            <TableCell component="th" scope="row">
-                                                {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
-                                                {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
-                                                {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
-                                            </TableCell>
+                            <TableContainer component={Paper}>
+                                <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                                    <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                        <TableRow>
+                                            <TableCell>Voucher No</TableCell>
+                                            <TableCell>Date</TableCell>
+                                            <TableCell>Total Amount</TableCell>
+                                            <TableCell>Approval Status</TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                    </TableHead>
 
-                        <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                            <Button variant="contained" onClick={() => goto('voucher')}>More...</Button>
-                        </Typography>
+                                    <TableBody>
+                                        {Array.isArray(voucherList) && voucherList.map((row, index) => (
+                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
+                                                <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
+                                                <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
+                                                <TableCell component="th" scope="row">
+                                                    {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                                    {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                                    {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
 
-                    </Grid>
+                            <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                <Button variant="contained" onClick={() => goto('voucher')}>More...</Button>
+                            </Typography>
 
-                    <Grid item xs={6} md={6} display={'none'}>
+                        </Grid>
 
-                        <Typography variant="h6" component="h1" gutterBottom>Leave</Typography>
+                        <Grid item xs={6} md={6} display={'none'}>
 
-                        <TableContainer component={Paper}>
-                            <Table aria-label="simple table">
-                                <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                                    <TableRow>
-                                        <TableCell>Title</TableCell>
-                                        <TableCell>Reason</TableCell>
-                                        <TableCell>Date</TableCell>
-                                    </TableRow>
-                                </TableHead>
+                            <Typography variant="h6" component="h1" gutterBottom>Leave</Typography>
 
-                                <TableBody>
-                                    {Array.isArray(leaveList) && leaveList.map((row, index) => (
-                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                            <TableCell component="th" scope="row">{row.title}</TableCell>
-                                            <TableCell component="th" scope="row">{row.reason}</TableCell>
-                                            <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                            <TableContainer component={Paper}>
+                                <Table aria-label="simple table">
+                                    <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                        <TableRow>
+                                            <TableCell>Title</TableCell>
+                                            <TableCell>Reason</TableCell>
+                                            <TableCell>Date</TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                    </TableHead>
 
-                        <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                            <Button variant="contained" onClick={() => goto('leave')}>More...</Button>
-                        </Typography>
+                                    <TableBody>
+                                        {Array.isArray(leaveList) && leaveList.map((row, index) => (
+                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                <TableCell component="th" scope="row">{row.title}</TableCell>
+                                                <TableCell component="th" scope="row">{row.reason}</TableCell>
+                                                <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
 
+                            <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                <Button variant="contained" onClick={() => goto('leave')}>More...</Button>
+                            </Typography>
+
+                        </Grid>
                     </Grid>
-                </Grid>
+                </Container>
+
+
             </>
         )
     }
