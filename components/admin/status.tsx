@@ -22,13 +22,14 @@ const Index: React.FC<componentProps> = ({ onClick, defaultSelected, isDisabled 
 
     return (
         <>
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <FormControl sx={{ m: 1, minWidth: 160 }} size="small">
                 <Select
                     value={status}
                     onChange={handleChange}
                     displayEmpty
                     inputProps={{ 'aria-label': 'Without label' }}
                     className='default-status-color'
+                    style={{ width: '160px', paddingTop: '0', paddingBottom: 0 }}
                     sx={{
                         backgroundColor: status === 'Not Started' ? 'lightgray' :
                             status === 'Started Working' ? '#ffe599' :
@@ -43,10 +44,10 @@ const Index: React.FC<componentProps> = ({ onClick, defaultSelected, isDisabled 
                     }}
                     disabled={isDisabled}
                 >
-                    <MenuItem value={'Not Started'} selected><em>Not Started</em></MenuItem>
-                    <MenuItem value={'Started Working'}>Started Working</MenuItem>
-                    <MenuItem value={'Stuck'}>Stuck</MenuItem>
-                    <MenuItem value={'Completed'}>Completed</MenuItem>
+                    <MenuItem value={'Not Started'} selected style={{ backgroundColor: 'lightgray' }}><em>Not Started</em></MenuItem>
+                    <MenuItem value={'Started Working'} style={{ backgroundColor: '#ffe599' }}>Started Working</MenuItem>
+                    <MenuItem value={'Stuck'} style={{ backgroundColor: '#e06666' }}>Stuck</MenuItem>
+                    <MenuItem value={'Completed'} style={{ backgroundColor: '#6cc070' }}>Completed</MenuItem>
                 </Select>
             </FormControl>
         </>

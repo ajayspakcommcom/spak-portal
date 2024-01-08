@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent, TextField, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent, TextField, FormControl, Select, MenuItem, InputLabel, Tooltip, Typography } from '@mui/material';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { useDispatch } from 'react-redux';
 import { getTask } from '../../redux/task/task-admin-slice';
@@ -531,11 +531,11 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                             <TableRow>
                                 <TableCell>Client</TableCell>
                                 <TableCell>Task</TableCell>
-                                <TableCell>Created By</TableCell>
-                                <TableCell>Assigned To</TableCell>
                                 <TableCell>Description</TableCell>
                                 <TableCell>Start Date</TableCell>
                                 <TableCell>End Date</TableCell>
+                                <TableCell>Created By</TableCell>
+                                <TableCell>Assigned To</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Deadline</TableCell>
                                 <TableCell>Photo</TableCell>
@@ -547,11 +547,15 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{row.clientName}</TableCell>
                                     <TableCell component="th" scope="row">{row.taskName}</TableCell>
-                                    <TableCell>{getName(row.createdBy)}</TableCell>
-                                    <TableCell>{getName(row.updatedBy)}</TableCell>
-                                    <TableCell>{truncateString(row.taskDescription)}</TableCell>
+                                    <TableCell>
+                                        <Tooltip title={row.taskDescription} placement="bottom" arrow>
+                                            <span>{truncateString(row.taskDescription)}</span>
+                                        </Tooltip>
+                                    </TableCell>
                                     <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
                                     <TableCell>{formatDateToDDMMYYYY(row.endDate)}</TableCell>
+                                    <TableCell>{getName(row.createdBy)}</TableCell>
+                                    <TableCell>{getName(row.updatedBy)}</TableCell>
                                     <TableCell><Status onClick={(event) => selectedStatus(event, row._id)} defaultSelected={row.status} isDisabled={false} /></TableCell>
                                     <TableCell>{getDayText(+row.deadLine)}</TableCell>
                                     <TableCell>

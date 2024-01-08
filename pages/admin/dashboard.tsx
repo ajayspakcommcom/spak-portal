@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Box, Button, Card, CardActions, CardContent, Container, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, Container, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Tooltip } from '@mui/material';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
@@ -241,7 +241,8 @@ export default function Index() {
 
                         <Grid item xs={12} md={12}>
                             <Typography variant="h5" component="h2" gutterBottom>
-                                {data.data.firstName} {data.data.lastName[0].toUpperCase()}. Dashboard
+                                {/* {data.data.firstName} {data.data.lastName[0].toUpperCase()}. Dashboard */}
+                                My Dashboard
                             </Typography>
                         </Grid>
 
@@ -257,11 +258,11 @@ export default function Index() {
                                         <TableRow>
                                             <TableCell>Client</TableCell>
                                             <TableCell>Task</TableCell>
-                                            <TableCell>Created By</TableCell>
-                                            <TableCell>Assigned To</TableCell>
                                             <TableCell>Description</TableCell>
                                             <TableCell>Start Date</TableCell>
                                             <TableCell>End Date</TableCell>
+                                            <TableCell>Created By</TableCell>
+                                            <TableCell>Assigned To</TableCell>
                                             <TableCell>Status</TableCell>
                                             <TableCell>Deadline</TableCell>
                                             <TableCell>Photo</TableCell>
@@ -272,24 +273,27 @@ export default function Index() {
                                             <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                                 <TableCell component="th" scope="row">{row.clientName}</TableCell>
                                                 <TableCell component="th" scope="row">{row.taskName}</TableCell>
-                                                <TableCell>{getName(row.createdBy)}</TableCell>
-                                                <TableCell>{getName(row.updatedBy)}</TableCell>
-                                                <TableCell>{truncateString(row.taskDescription)}</TableCell>
+                                                <TableCell>
+                                                    <Tooltip title={row.taskDescription} placement="bottom" arrow>
+                                                        <span>{truncateString(row.taskDescription)}</span>
+                                                    </Tooltip>
+                                                </TableCell>
                                                 <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
                                                 <TableCell>{formatDateToDDMMYYYY(row.endDate)}</TableCell>
+                                                <TableCell>{getName(row.createdBy)}</TableCell>
+                                                <TableCell>{getName(row.updatedBy)}</TableCell>
                                                 <TableCell>
                                                     <Status onClick={(event) => console.log(event)} defaultSelected={row.status} isDisabled={true} />
                                                 </TableCell>
                                                 <TableCell>{getDayText(+row.deadLine)}</TableCell>
                                                 <TableCell>
-                                                    {row.imageDataUrl
+                                                    {
+                                                        row.imageDataUrl
                                                         && <a href={row.imageDataUrl} target="_blank">
                                                             <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
                                                         </a>
                                                     }
                                                 </TableCell>
-
-
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -333,7 +337,7 @@ export default function Index() {
 
                         <Grid item xs={6} md={6}>
 
-                            <Typography variant="h6" component="h1" gutterBottom>Voucher</Typography>
+                            <Typography variant="h6" component="h1" gutterBottom>My Voucher</Typography>
 
                             <TableContainer component={Paper}>
                                 <Table sx={{ minWidth: 800 }} aria-label="simple table">
