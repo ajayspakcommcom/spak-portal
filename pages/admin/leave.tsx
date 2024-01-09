@@ -355,7 +355,7 @@ const Index: React.FC = () => {
                     <div className='create-data-wrapper-heading leave-header'>
                         <div>
                             <div>
-                                <p>My Leave</p> :
+                                <p>Total Leaves</p> :
                                 <b>15</b>
                             </div>
                             <div>
@@ -363,7 +363,7 @@ const Index: React.FC = () => {
                                 <b>{myUtilisedLeave}</b>
                             </div>
                             <div className={myTotalLeave > 0 ? 'green-bg' : 'red-bg'}>
-                                <p>Total Leaves</p> :
+                                <p>{myTotalLeave > 0 ? 'Pending Leaves' : 'Excess Leaves'}</p> :
                                 <b>{Math.abs(myTotalLeave)}</b>
                             </div>
                         </div>
