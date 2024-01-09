@@ -35,7 +35,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
               console.log('3');
 
-
               const client = await clientPromise;
               const db = client.db("Spak");
               const collection = db.collection<Leave>("leave");
@@ -79,7 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               const client = await clientPromise;
               const db = client.db("Spak");
               const collection = db.collection<Leave>("leave");
-              const data = await collection.find({}).toArray();
+              const data = await collection.find({ refId: req.body.refId }).toArray();
               res.status(200).json(data);
 
             }

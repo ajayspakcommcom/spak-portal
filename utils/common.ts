@@ -94,3 +94,16 @@ export function getTotalVoucherAmount(data: any): number {
     return 0
 }
 
+export function getTotalDays(startDate: string, endDate: string): number {
+
+    const start: Date = new Date(startDate);
+    const end: Date = new Date(endDate);
+
+    const diffTime: number = Math.abs(end.getTime() - start.getTime());
+    const diffDays: number = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    return diffDays;
+}
+
+
+

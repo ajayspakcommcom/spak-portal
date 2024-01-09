@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
 import CloseIcon from '@mui/icons-material/Close';
-import { formatDateToDDMMYYYY, formatDateToYYYYMMDD, getNextDate, disablePreviousDates, capitalizeFirstLetter } from '@/utils/common';
+import { formatDateToDDMMYYYY, formatDateToYYYYMMDD, getNextDate, disablePreviousDates, capitalizeFirstLetter, getTotalDays } from '@/utils/common';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { ThunkDispatch } from '@reduxjs/toolkit';
@@ -42,6 +42,9 @@ const Index: React.FC = () => {
     const [updateId, setUpdateId] = useState<string>();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
 
+    const [myUtilisedLeave, setMyUtilisedLeave] = useState<number>(0);
+    const [myTotalLeave, setMyTotalLeave] = useState<number>(0);
+
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterStatus, setFilterStatus] = useState('');
@@ -59,6 +62,44 @@ const Index: React.FC = () => {
     };
 
     onLoad();
+
+    const fetchData = async () => {
+
+        try {
+            if (userData && userData.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify({ "type": "LIST", refId: userData.data._id }), config);
+
+                if (response.status === 200) {
+
+                    let totalUtilisedLeave = 0;
+
+                    for (const item of response.data) {
+                        if (item.isApproved.toLowerCase() === ApprovalStatus.Approved) {
+                            totalUtilisedLeave += getTotalDays(item.startDate, item.endDate);
+                        }
+                    }
+
+                    setMyUtilisedLeave(totalUtilisedLeave);
+                    setMyTotalLeave(15 - totalUtilisedLeave);
+                    setLeaveList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
 
     const formik = useFormik<FormValues>({
         initialValues: {
@@ -158,34 +199,6 @@ const Index: React.FC = () => {
             setToggleModal(false);
         }
     });
-
-    const fetchData = async () => {
-
-        try {
-            if (userData && userData.token) {
-
-                const config = {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
-                    },
-                };
-
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify({ "type": "LIST" }), config);
-
-                if (response.status === 200) {
-                    setLeaveList(response.data)
-                }
-
-            } else {
-                console.error('No token available');
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-
-    };
-
 
     useEffect(() => {
 
@@ -432,7 +445,22 @@ const Index: React.FC = () => {
                             ))}
                         </TableBody>
                     </Table>
+
                 </TableContainer>
+
+
+                <Typography id="modal-modal-title" variant="h6" component="h1" sx={{ mt: 3 }} align='right'>
+                    <span>
+                        My Leaves : 15 Utilised Leaves : {myUtilisedLeave}  Pending Leaves :
+                        {myTotalLeave > 0 ? <span className='approved'>
+                            <b>{myTotalLeave}</b>
+                        </span> : <span className='rejected'>
+                            <b>{Math.abs(myTotalLeave)}</b>
+                        </span>}
+                        &nbsp;
+                        Days
+                    </span>
+                </Typography>
 
                 <Modal open={toggleModal} onClose={toggleModalHandler} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
 
