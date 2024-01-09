@@ -352,7 +352,21 @@ const Index: React.FC = () => {
             <Container component="main">
 
                 <div>
-                    <div className='create-data-wrapper-heading voucher-header'>
+                    <div className='create-data-wrapper-heading leave-header'>
+                        <div>
+                            <div>
+                                <p>My Leave</p> :
+                                <b>15</b>
+                            </div>
+                            <div>
+                                <p>Utilised Leaves</p> :
+                                <b>{myUtilisedLeave}</b>
+                            </div>
+                            <div className={myTotalLeave > 0 ? 'green-bg' : 'red-bg'}>
+                                <p>Total Leaves</p> :
+                                <b>{Math.abs(myTotalLeave)}</b>
+                            </div>
+                        </div>
                         <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                     </div>
                     <div className='create-data-wrapper'>
@@ -449,7 +463,7 @@ const Index: React.FC = () => {
                 </TableContainer>
 
 
-                <Typography id="modal-modal-title" variant="h6" component="h1" sx={{ mt: 3 }} align='right'>
+                {/* <Typography id="modal-modal-title" variant="h6" component="h1" sx={{ mt: 3 }} align='right'>
                     <span>
                         My Leaves : 15 Utilised Leaves : {myUtilisedLeave}  Pending Leaves :
                         {myTotalLeave > 0 ? <span className='approved'>
@@ -460,7 +474,7 @@ const Index: React.FC = () => {
                         &nbsp;
                         Days
                     </span>
-                </Typography>
+                </Typography> */}
 
                 <Modal open={toggleModal} onClose={toggleModalHandler} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
 

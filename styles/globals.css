@@ -457,7 +457,8 @@ body {
   justify-content: end;
 }
 
-.voucher-header button {
+.voucher-header button,
+.leave-header button {
   min-width: 218px !important;
 }
 
@@ -510,4 +511,44 @@ body {
   color: #0054A6;
   display: block;
   padding: 10px 0 20px 0;
+}
+
+.leave-header {
+  justify-content: space-between;
+}
+
+.leave-header>div {
+  width: calc(100% - 218px);
+  display: flex;
+}
+
+.leave-header>div>div {
+  width: 32%;
+  border-radius: 4px;
+  margin-right: 15px;
+  color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: lightgrey;
+  font-size: 14px;
+}
+
+.leave-header>div>div>p {
+  margin-right: 5px;
+}
+
+.leave-header>div>div>b {
+  margin-left: 5px;
+}
+
+.red-bg {
+  background-color: #d32f2f !important;
+  color: #fff !important;
+}
+
+.green-bg {
+  background-color: #2e7d32 !important;
+  color: #fff !important;
 }
