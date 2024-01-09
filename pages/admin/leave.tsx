@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
 import CloseIcon from '@mui/icons-material/Close';
-import { formatDateToDDMMYYYY } from '@/utils/common';
+import { formatDateToDDMMYYYY, formatDateToYYYYMMDD, getNextDate, disablePreviousDates, capitalizeFirstLetter } from '@/utils/common';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { ThunkDispatch } from '@reduxjs/toolkit';
@@ -17,14 +17,21 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 type FormValues = {
     _id?: string | undefined;
-    title: string;
+    startDate: Date | undefined | string;
+    endDate: Date | undefined | string;
     reason: string;
-    date: Date | undefined | string;
+    isApproved: ApprovalStatus;
+    refId: string;
 };
+
+enum ApprovalStatus {
+    Pending = "pending",
+    Approved = "approved",
+    Rejected = "rejected"
+}
 
 const Index: React.FC = () => {
 
-    //const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
@@ -35,27 +42,38 @@ const Index: React.FC = () => {
     const [updateId, setUpdateId] = useState<string>();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
 
+    const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
+    const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
+    const [filterStatus, setFilterStatus] = useState('');
+
+
 
     if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
         router.push('/admin/login');
         return false;
     }
 
+    const onLoad = () => {
+        disablePreviousDates('startDate');
+        disablePreviousDates('endDate');
+    };
+
+    onLoad();
+
     const formik = useFormik<FormValues>({
         initialValues: {
-            title: '',
+            startDate: formatDateToYYYYMMDD(new Date()),
+            endDate: formatDateToYYYYMMDD(getNextDate(new Date())),
             reason: '',
-            date: '',
+            isApproved: ApprovalStatus.Pending,
+            refId: ''
         },
         validationSchema: Yup.object({
-            title: Yup.string().min(2).required('Title is required'),
-            reason: Yup.string().min(2).required('Reason is required'),
-            date: Yup.date().required('Date is Required')
+            startDate: Yup.date().required('Start date is required'),
+            endDate: Yup.date().required('End date is required'),
+            reason: Yup.string().min(2).required('Reason is required')
         }),
         onSubmit: (values) => {
-
-            console.log(isEditMode);
-
 
             if (isEditMode) {
                 const editLeave = async (obj: FormValues) => {
@@ -69,18 +87,19 @@ const Index: React.FC = () => {
                             };
 
                             const objData = {
-                                title: obj.title,
+                                startDate: obj.startDate,
+                                endDate: obj.endDate,
                                 reason: obj.reason,
-                                date: obj.date,
+                                isApproved: obj.isApproved,
+                                refId: userData.data._id,
                                 type: "UPDATE",
                                 id: updateId
                             };
 
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), config);
-                            console.log(response);
 
                             if (response.status === 200) {
-                                console.log('');
+                                setIsEditMode(false);
                             }
 
                         } else {
@@ -107,11 +126,15 @@ const Index: React.FC = () => {
                             };
 
                             const objData = {
-                                title: obj.title,
+                                startDate: obj.startDate,
+                                endDate: obj.endDate,
                                 reason: obj.reason,
-                                date: obj.date,
+                                isApproved: obj.isApproved,
+                                refId: userData.data._id,
                                 type: "CREATE"
                             };
+
+                            console.log(objData);
 
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), config);
                             console.log(response);
@@ -136,37 +159,39 @@ const Index: React.FC = () => {
         }
     });
 
+    const fetchData = async () => {
+
+        try {
+            if (userData && userData.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify({ "type": "LIST" }), config);
+
+                if (response.status === 200) {
+                    setLeaveList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
+
 
     useEffect(() => {
 
-        const fetchData = async () => {
-
-            try {
-                if (userData && userData.token) {
-
-                    const config = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
-
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify({ "type": "LIST" }), config);
-
-                    if (response.status === 200) {
-                        setLeaveList(response.data)
-                    }
-
-                } else {
-                    console.error('No token available');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-
-        };
-
         fetchData();
+        disablePreviousDates('startDate');
+        disablePreviousDates('endDate');
 
         return () => console.log('Unbind UseEffect');
 
@@ -198,13 +223,12 @@ const Index: React.FC = () => {
                 };
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), config);
-                console.log(response);
                 console.log(response.data);
 
                 if (response.status === 200) {
-                    formik.setFieldValue('title', response.data.title);
+                    formik.setFieldValue('startDate', response.data.startDate);
+                    formik.setFieldValue('endDate', response.data.endDate);
                     formik.setFieldValue('reason', response.data.reason);
-                    formik.setFieldValue('date', response.data.date);
                 }
 
             } else {
@@ -271,32 +295,133 @@ const Index: React.FC = () => {
         setIsEditMode(false);
     };
 
+    const filterResult = async () => {
+
+        console.log('filterStatus', filterStatus);
+        console.log('filterStartDate', filterStartDate);
+        console.log('filterEndDate', filterEndDate);
+
+        setLeaveList([]);
+
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const objData = {
+            type: "LIST",
+            status: filterStatus,
+            filterStartDate: filterStartDate,
+            filterEndDate: filterEndDate,
+            refId: userData.data._id
+        };
+
+        console.log(objData);
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), taskConfig);
+        console.log(response.data);
+
+        if (response.status === 200) {
+            setLeaveList(response.data);
+        }
+
+    };
+
+    const resetFilter = () => {
+        fetchData();
+    };
+
     return (
         <>
             <Header />
             <Container component="main">
 
-                <div className='create-data-wrapper'>
-                    <h2>Leave</h2>
-                    <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
+                <div>
+                    <div className='create-data-wrapper-heading voucher-header'>
+                        <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
+                    </div>
+                    <div className='create-data-wrapper'>
+
+                        <FormControl fullWidth>
+                            <Box display="flex" justifyContent="space-between">
+
+                                <Box flex={1} marginRight={2} marginLeft={1}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                                        <Select
+                                            label="Status"
+                                            variant="outlined"
+                                            value={filterStatus}
+                                            onChange={(e) => setFilterStatus(e.target.value)}>
+                                            <MenuItem value={ApprovalStatus.Pending}><b>{ApprovalStatus.Pending}</b></MenuItem>
+                                            <MenuItem value={ApprovalStatus.Approved}>{ApprovalStatus.Approved}</MenuItem>
+                                            <MenuItem value={ApprovalStatus.Rejected}>{ApprovalStatus.Rejected}</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+
+                                <Box flex={1} marginRight={2} marginLeft={1}>
+                                    <TextField
+                                        fullWidth
+                                        type='date'
+                                        label="Start Date"
+                                        variant="outlined"
+                                        value={filterStartDate instanceof Date ? filterStartDate.toISOString().split('T')[0] : ''}
+                                        onChange={(e) => setFilterStartDate(e.target.value ? new Date(e.target.value) : null)}
+                                    />
+                                </Box>
+
+
+                                <Box flex={1} marginRight={2}>
+                                    <TextField
+                                        fullWidth
+                                        type='date'
+                                        label="End Date"
+                                        variant="outlined"
+                                        value={filterEndDate instanceof Date ? filterEndDate.toISOString().split('T')[0] : ''}
+                                        onChange={(e) => setFilterEndDate(e.target.value ? new Date(e.target.value) : null)}
+                                    />
+                                </Box>
+
+                                <Box flex={1} marginRight={2}>
+                                    <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Search</Button>
+                                </Box>
+                                <Box flex={1} marginRight={2}>
+                                    <Button type="submit" variant="contained" onClick={resetFilter} size='large' color='inherit' fullWidth style={{ padding: '15px 0' }}>Reset</Button>
+                                </Box>
+
+                            </Box>
+
+                        </FormControl>
+                    </div>
                 </div>
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                        <TableHead>
+                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
-                                <TableCell>Title</TableCell>
                                 <TableCell>Reason</TableCell>
-                                <TableCell>Date</TableCell>
+                                <TableCell>Start Date</TableCell>
+                                <TableCell>End Date</TableCell>
+                                <TableCell>Approval Status</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {Array.isArray(leaveList) && leaveList.map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row">{row.title}</TableCell>
                                     <TableCell component="th" scope="row">{row.reason}</TableCell>
-                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.startDate as string)}</TableCell>
+                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.endDate as string)}</TableCell>
+
+                                    <TableCell component="th" scope="row">
+                                        {row.isApproved?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                        {row.isApproved?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                        {row.isApproved?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                    </TableCell>
+
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="center" gap={2}>
                                             <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
@@ -317,23 +442,39 @@ const Index: React.FC = () => {
                             <CloseIcon />
                         </IconButton>
 
-                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Heading</Typography>
+                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Create</Typography>
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
-                            <Box margin={1}>
+
+                            <Box mb={3}>
                                 <TextField
                                     fullWidth
-                                    id="title"
-                                    name="title"
-                                    label="Title"
-                                    value={formik.values.title}
+                                    type='date'
+                                    id="startDate"
+                                    name="startDate"
+                                    label="Start Date"
+                                    value={formik.values.startDate}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    error={formik.touched.title && Boolean(formik.errors.title)}
-                                    helperText={formik.touched.title && formik.errors.title} />
+                                    error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+                                    helperText={formik.touched.startDate && formik.errors.startDate} />
                             </Box>
 
-                            <Box margin={1}>
+                            <Box mb={3}>
+                                <TextField
+                                    fullWidth
+                                    id="endDate"
+                                    name="endDate"
+                                    label="End Date"
+                                    type="date"
+                                    value={formik.values.endDate}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                                    helperText={formik.touched.endDate && formik.errors.endDate} />
+                            </Box>
+
+                            <Box>
                                 <TextField
                                     fullWidth
                                     variant="outlined"
@@ -351,23 +492,8 @@ const Index: React.FC = () => {
                                 />
                             </Box>
 
-
-                            <Box margin={1}>
-                                <TextField
-                                    fullWidth
-                                    id="date"
-                                    name="date"
-                                    label="Date"
-                                    type="date"
-                                    value={formik.values.date}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.date && Boolean(formik.errors.date)}
-                                    helperText={formik.touched.date && formik.errors.date} />
-                            </Box>
-
-                            <Box margin={1}>
-                                <Button color="primary" variant="contained" fullWidth type="submit">Submit</Button>
+                            <Box>
+                                <Button color="primary" variant="contained" fullWidth type="submit">Submit for approval</Button>
                             </Box>
                         </form>
                     </Box>

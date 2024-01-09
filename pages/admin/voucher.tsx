@@ -221,7 +221,6 @@ const Index: React.FC = () => {
                             setInputList([...inputList.slice(1, 1), { detail: '', date: '', amount: '' }]);
 
                             if (!isValid) {
-                                //console.log('Validation failed:', validationErrors);
                                 alert('Please fill the detail');
                                 return;
                             }

@@ -37,13 +37,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         case 'LIST':
           try {
 
-            console.log(req.body);
-
 
             if (req.body.status && req.body.filterStartDate && req.body.filterEndDate) {
-
-              console.log('3');
-
               const client = await clientPromise;
               const db = client.db("Spak");
               const collection = db.collection<Voucher>("voucher");
@@ -56,8 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             } else if (req.body.filterStartDate && req.body.filterEndDate) {
 
-              console.log('2');
-
               const client = await clientPromise;
               const db = client.db("Spak");
               const collection = db.collection<Voucher>("voucher");
@@ -68,7 +61,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               res.status(200).json(data);
 
             } else if (req.body.status) {
-              console.log('1');
 
               const client = await clientPromise;
               const db = client.db("Spak");
@@ -80,8 +72,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               res.status(200).json(data);
 
             } else {
-
-              console.log('all');
 
               const client = await clientPromise;
               const db = client.db("Spak");

@@ -11,6 +11,18 @@ export function formatDateToDDMMYYYY(date: Date | string): string {
     return `${day}/${month}/${year}`;
 }
 
+export function formatDateToYYYYMMDD(date: Date | string): string {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+
+    let day = date.getDate().toString().padStart(2, '0');
+    let month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() returns 0-11
+    let year = date.getFullYear();
+
+    return `${year}-${month}-${day}`;
+}
+
 export function formatDateToDDMMYYYYWithTime(date: Date | string): string {
     if (!(date instanceof Date)) {
         date = new Date(date);
@@ -21,8 +33,33 @@ export function formatDateToDDMMYYYYWithTime(date: Date | string): string {
     let year = date.getFullYear();
     let hours = date.getHours().toString().padStart(2, '0');
     let minutes = date.getMinutes().toString().padStart(2, '0');
-
     return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
+export function getNextDate(currentDate: Date) {
+    let nextDate = new Date(currentDate);
+
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    let dd = String(nextDate.getDate()).padStart(2, '0');
+    let mm = String(nextDate.getMonth() + 1).padStart(2, '0');
+    let yyyy = nextDate.getFullYear();
+
+    return yyyy + '-' + mm + '-' + dd;
+}
+
+export function disablePreviousDates(elemId: string): void {
+    let today: Date = new Date();
+    let dd: string = String(today.getDate()).padStart(2, '0');
+    let mm: string = String(today.getMonth() + 1).padStart(2, '0');
+    let yyyy: string = today.getFullYear().toString();
+
+    let currentDate: string = yyyy + '-' + mm + '-' + dd;
+    const datePicker: HTMLInputElement | null = document.getElementById(`${elemId}`) as HTMLInputElement;
+
+    if (datePicker) {
+        datePicker.setAttribute('min', currentDate);
+    }
 }
 
 export function truncateString(str: string) {
