@@ -30,6 +30,7 @@ enum ApprovalStatus {
 type FormValues = {
     _id?: string | undefined;
     createdDate: Date | undefined | string;
+    reportData: [];
     refId: string
 };
 
@@ -97,8 +98,6 @@ const Index: React.FC = () => {
     };
 
     const handleChange = (index: number, field: keyof InputSet, value: string) => {
-        debugger;
-        console.log('Changes Event');
 
         const newList = [...inputList];
         newList[index] = { ...newList[index], [field]: value };
@@ -163,6 +162,7 @@ const Index: React.FC = () => {
     const formik = useFormik<FormValues>({
         initialValues: {
             createdDate: new Date(),
+            reportData: [],
             refId: ''
         },
         validationSchema: Yup.object({
@@ -471,28 +471,13 @@ const Index: React.FC = () => {
                 {/* filter */}
 
                 <div>
-                    <div className='create-data-wrapper-heading voucher-header'>
+                    <div className='create-data-wrapper-heading report-header'>
                         <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                     </div>
                     <div className='create-data-wrapper'>
 
                         <FormControl fullWidth>
                             <Box display="flex" justifyContent="space-between">
-
-                                <Box flex={1} marginRight={2} marginLeft={1}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="demo-simple-select-label">Status</InputLabel>
-                                        <Select
-                                            label="Status"
-                                            variant="outlined"
-                                            value={filterStatus}
-                                            onChange={(e) => setFilterStatus(e.target.value)}>
-                                            <MenuItem value={ApprovalStatus.Pending}><b>{ApprovalStatus.Pending}</b></MenuItem>
-                                            <MenuItem value={ApprovalStatus.Approved}>{ApprovalStatus.Approved}</MenuItem>
-                                            <MenuItem value={ApprovalStatus.Rejected}>{ApprovalStatus.Rejected}</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Box>
 
                                 <Box flex={1} marginRight={2} marginLeft={1}>
                                     <TextField
@@ -537,6 +522,7 @@ const Index: React.FC = () => {
                         <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
                                 <TableCell>Date</TableCell>
+                                <TableCell>Total Task </TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
@@ -545,6 +531,7 @@ const Index: React.FC = () => {
                             {Array.isArray(reportList) && reportList.map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.createdDate as string)}</TableCell>
+                                    <TableCell component="th" scope="row">{row.reportData.length}</TableCell>
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="flex-end" gap={2}>
                                             <span className='pointer'>
@@ -578,42 +565,44 @@ const Index: React.FC = () => {
 
                             {inputList.map((input, index) => (
 
+                                <>
+                                    <Box key={index} display="flex" flexDirection="row" alignItems="center">
 
-                                <Box margin={1} key={index} display="flex" flexDirection="row" alignItems="center">
+                                        <Box flex={1} mb={2} mr={2}>
+                                            <FormControl fullWidth>
+                                                <InputLabel id="demo-simple-select-label">Client Name</InputLabel>
+                                                <Select
+                                                    label="Client Name"
+                                                    variant="outlined"
+                                                    id="clientName"
+                                                    name="clientName"
+                                                    value={input.clientName}
+                                                    onChange={(e) => handleChange(index, 'clientName', e.target.value)}
+                                                >
+                                                    {
+                                                        clients.map((item) => (
+                                                            <MenuItem key={item.value} value={item.value}>
+                                                                {item.label}
+                                                            </MenuItem>
+                                                        ))
+                                                    }
 
-                                    <Box flex={1} marginRight={2} marginLeft={1} mb={2}>
-                                        <FormControl fullWidth>
-                                            <InputLabel id="demo-simple-select-label">Client Name</InputLabel>
-                                            <Select
-                                                label="Client Name"
-                                                variant="outlined"
-                                                id="clientName"
-                                                name="clientName"
-                                                value={input.clientName}
-                                                onChange={(e) => handleChange(index, 'clientName', e.target.value)}
-                                            >
-                                                {
-                                                    clients.map((item) => (
-                                                        <MenuItem key={item.value} value={item.value}>
-                                                            {item.label}
-                                                        </MenuItem>
-                                                    ))
-                                                }
+                                                </Select>
+                                            </FormControl>
+                                        </Box>
 
-                                            </Select>
-                                        </FormControl>
-                                    </Box>
+                                        <Box mb={2} flex={1}>
+                                            <TextField
+                                                fullWidth
+                                                id="date"
+                                                name="date"
+                                                label="Date"
+                                                type="date"
+                                                value={input.date || new Date()}
+                                                onChange={(e) => handleChange(index, 'date', e.target.value)}
+                                            />
+                                        </Box>
 
-                                    <Box mb={2} flex={1} mr={2}>
-                                        <TextField
-                                            fullWidth
-                                            id="date"
-                                            name="date"
-                                            label="Date"
-                                            type="date"
-                                            value={input.date || new Date()}
-                                            onChange={(e) => handleChange(index, 'date', e.target.value)}
-                                        />
                                     </Box>
 
                                     <Box mb={2} flex={1}>
@@ -625,10 +614,14 @@ const Index: React.FC = () => {
                                             type="text"
                                             value={input.detail}
                                             onChange={(e) => handleChange(index, 'detail', e.target.value)}
+                                            multiline
+                                            rows={3}
                                         />
                                     </Box>
+                                </>
 
-                                </Box>
+
+
                             ))}
 
                             <Box display="flex" flexDirection="row" justifyContent="flex-end" alignItems="flex-end" mb={3}>

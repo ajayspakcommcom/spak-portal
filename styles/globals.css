@@ -462,6 +462,10 @@ body {
   min-width: 218px !important;
 }
 
+.report-header button {
+  min-width: 278px !important;
+}
+
 .create-data-wrapper-heading button {
   padding: 15px 0px;
   min-width: 177px;
