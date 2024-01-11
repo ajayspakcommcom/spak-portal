@@ -30,9 +30,19 @@ type Voucher = {
 };
 
 
-type Holiday = { _id?: string | undefined; title: string; date: Date | undefined | string; };
+type Holiday = {
+    _id?: string | undefined;
+    title: string;
+    date: Date | undefined | string;
+};
 
-type Leave = { _id?: string | undefined; title: string; reason: string; date: Date | undefined | string; };
+type Leave = {
+    _id?: string | undefined;
+    startDate: Date;
+    endDate: Date;
+    reason?: string;
+    isApproved: boolean;
+};
 
 
 type Task = {
@@ -50,7 +60,16 @@ type Task = {
     updatedBy: string;
 };
 
-
+type Report = {
+    _id: string;
+    createdDate: Date;
+    refId: string;
+    reportData: {
+        date: Date,
+        detail: string,
+        clientName: string
+    }
+};
 
 
 const imageStyle = {
@@ -73,6 +92,7 @@ export default function Index() {
     const [holdayList, setHolidayList] = React.useState<Holiday[]>([]);
     const [leaveList, setLeaveList] = React.useState<Leave[]>([]);
     const [userList, setUserList] = React.useState<userList[]>([]);
+    const [userReport, setReportList] = React.useState<Report[]>([]);
     const [taskList, setTaskList] = React.useState<Task[]>([]);
 
 
@@ -109,123 +129,151 @@ export default function Index() {
     };
 
 
+    const fetchVoucherData = async () => {
+
+        try {
+            if (data && data.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ type: "VOUCHER_LIST", refId: data.data._id }), config);
+
+                if (response.status === 200) {
+                    setVoucherList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
+
+    const fetchHoldayData = async () => {
+
+        try {
+            if (data && data.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ "type": "HOLIDAY_LIST" }), config);
+
+                if (response.status === 200) {
+                    setHolidayList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
+
+    const fetchLeaveData = async () => {
+
+        try {
+            if (data && data.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ type: "LEAVE_LIST", refId: data.data._id }), config);
+
+                if (response.status === 200) {
+                    setLeaveList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
+
+    const fetchTaskData = async () => {
+
+        try {
+            if (data && data.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ "type": "TASK_LIST" }), config);
+
+                if (response.status === 200) {
+                    setTaskList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
+
+    const fetchReportData = async () => {
+
+        try {
+            if (data && data.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ type: "REPORT_LIST", refId: data.data._id }), config);
+
+                if (response.status === 200) {
+                    setReportList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
+
 
     React.useEffect(() => {
 
         getUsersWithIdUserName();
 
-        const fetchVoucherData = async () => {
-
-            try {
-                if (data && data.token) {
-
-                    const config = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
-
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ type: "VOUCHER_LIST", refId: data.data._id }), config);
-
-                    if (response.status === 200) {
-                        setVoucherList(response.data)
-                    }
-
-                } else {
-                    console.error('No token available');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-
-        };
-
-        const fetchHoldayData = async () => {
-
-            try {
-                if (data && data.token) {
-
-                    const config = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
-
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ "type": "HOLIDAY_LIST" }), config);
-
-                    if (response.status === 200) {
-                        setHolidayList(response.data)
-                    }
-
-                } else {
-                    console.error('No token available');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-
-        };
-
-        const fetchLeaveData = async () => {
-
-            try {
-                if (data && data.token) {
-
-                    const config = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
-
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ "type": "LEAVE_LIST" }), config);
-
-                    if (response.status === 200) {
-                        setLeaveList(response.data)
-                    }
-
-                } else {
-                    console.error('No token available');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-
-        };
-
-        const fetchTaskData = async () => {
-
-            try {
-                if (data && data.token) {
-
-                    const config = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${data.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
-
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}dashboard`, JSON.stringify({ "type": "TASK_LIST" }), config);
-
-                    if (response.status === 200) {
-                        setTaskList(response.data)
-                    }
-
-                } else {
-                    console.error('No token available');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-
-        };
-
         fetchVoucherData();
         fetchHoldayData();
         fetchLeaveData();
         fetchTaskData();
+        fetchReportData();
 
     }, []);
 
@@ -241,169 +289,205 @@ export default function Index() {
 
                         <Grid item xs={12} md={12}>
                             <Typography variant="h5" component="h2" gutterBottom>
-                                {/* {data.data.firstName} {data.data.lastName[0].toUpperCase()}. Dashboard */}
                                 My Dashboard
                             </Typography>
                         </Grid>
 
-                        <Grid item xs={12} md={12}>
+                        {
+                            taskList.length > 0 &&
+                            <Grid item xs={12} md={12}>
 
-                            <Typography variant="h6" component="h1" gutterBottom>
-                                Task
-                            </Typography>
+                                <Typography variant="h6" component="h1" gutterBottom>
+                                    Tasks
+                                </Typography>
 
-                            <TableContainer component={Paper}>
-                                <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                                    <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                                        <TableRow>
-                                            <TableCell>Client</TableCell>
-                                            <TableCell>Task</TableCell>
-                                            <TableCell>Description</TableCell>
-                                            <TableCell>Start Date</TableCell>
-                                            <TableCell>End Date</TableCell>
-                                            <TableCell>Created By</TableCell>
-                                            <TableCell>Assigned To</TableCell>
-                                            <TableCell>Status</TableCell>
-                                            <TableCell>Deadline</TableCell>
-                                            <TableCell>Photo</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {Array.isArray(taskList) && taskList.map((row, index) => (
-                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                <TableCell component="th" scope="row">{row.clientName}</TableCell>
-                                                <TableCell component="th" scope="row">{row.taskName}</TableCell>
-                                                <TableCell>
-                                                    <Tooltip title={row.taskDescription} placement="bottom" arrow>
-                                                        <span>{truncateString(row.taskDescription)}</span>
-                                                    </Tooltip>
-                                                </TableCell>
-                                                <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
-                                                <TableCell>{formatDateToDDMMYYYY(row.endDate)}</TableCell>
-                                                <TableCell>{getName(row.createdBy)}</TableCell>
-                                                <TableCell>{getName(row.updatedBy)}</TableCell>
-                                                <TableCell>
-                                                    <Status onClick={(event) => console.log(event)} defaultSelected={row.status} isDisabled={true} />
-                                                </TableCell>
-                                                <TableCell>{getDayText(+row.deadLine)}</TableCell>
-                                                <TableCell>
-                                                    {
-                                                        row.imageDataUrl
-                                                        && <a href={row.imageDataUrl} target="_blank">
-                                                            <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
-                                                        </a>
-                                                    }
-                                                </TableCell>
+                                <TableContainer component={Paper}>
+                                    <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                            <TableRow>
+                                                <TableCell>Client</TableCell>
+                                                <TableCell>Task</TableCell>
+                                                <TableCell>Description</TableCell>
+                                                <TableCell>Start Date</TableCell>
+                                                <TableCell>End Date</TableCell>
+                                                <TableCell>Created By</TableCell>
+                                                <TableCell>Assigned To</TableCell>
+                                                <TableCell>Status</TableCell>
+                                                <TableCell>Deadline</TableCell>
+                                                <TableCell>Photo</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table >
-                            </TableContainer>
+                                        </TableHead>
+                                        <TableBody>
+                                            {Array.isArray(taskList) && taskList.map((row, index) => (
+                                                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                    <TableCell component="th" scope="row">{row.clientName}</TableCell>
+                                                    <TableCell component="th" scope="row">{row.taskName}</TableCell>
+                                                    <TableCell>
+                                                        <Tooltip title={row.taskDescription} placement="bottom" arrow>
+                                                            <span>{truncateString(row.taskDescription)}</span>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                    <TableCell>{formatDateToDDMMYYYY(row.startDate)}</TableCell>
+                                                    <TableCell>{formatDateToDDMMYYYY(row.endDate)}</TableCell>
+                                                    <TableCell>{getName(row.createdBy)}</TableCell>
+                                                    <TableCell>{getName(row.updatedBy)}</TableCell>
+                                                    <TableCell>
+                                                        <Status onClick={(event) => console.log(event)} defaultSelected={row.status} isDisabled={true} />
+                                                    </TableCell>
+                                                    <TableCell>{getDayText(+row.deadLine)}</TableCell>
+                                                    <TableCell>
+                                                        {
+                                                            row.imageDataUrl
+                                                            && <a href={row.imageDataUrl} target="_blank">
+                                                                <img src={row.imageDataUrl} alt="Description of the image" width={50} height={50} />
+                                                            </a>
+                                                        }
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table >
+                                </TableContainer>
 
-                            <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                                <Button variant="contained" onClick={() => goto('task')}>More...</Button>
-                            </Typography>
+                                <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                    <Button variant="contained" onClick={() => goto('task')}>More...</Button>
+                                </Typography>
 
-                        </Grid>
-                        <Grid item xs={6} md={6}>
+                            </Grid>
+                        }
 
-                            <Typography variant="h6" component="h1" gutterBottom>Holiday</Typography>
-
-                            <TableContainer component={Paper}>
-                                <Table aria-label="simple table">
-                                    <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                                        <TableRow>
-                                            <TableCell>Title</TableCell>
-                                            <TableCell>Date</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-
-                                    <TableBody>
-                                        {Array.isArray(holdayList) && holdayList.map((row, index) => (
-                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                <TableCell component="th" scope="row">{row.title}</TableCell>
-                                                <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                        {
+                            holdayList.length > 0 &&
+                            <Grid item xs={4} md={4}>
+                                <Typography variant="h6" component="h1" gutterBottom>Holidays</Typography>
+                                <TableContainer component={Paper}>
+                                    <Table aria-label="simple table">
+                                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                            <TableRow>
+                                                <TableCell>Title</TableCell>
+                                                <TableCell>Date</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                        </TableHead>
 
-                            <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                                <Button variant="contained" onClick={() => goto('holiday')}>More...</Button>
-                            </Typography>
+                                        <TableBody>
+                                            {Array.isArray(holdayList) && holdayList.map((row, index) => (
+                                                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                    <TableCell component="th" scope="row">{row.title}</TableCell>
+                                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
 
-                        </Grid>
+                                <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                    <Button variant="contained" onClick={() => goto('holiday')}>More...</Button>
+                                </Typography>
+                            </Grid>
+                        }
 
-                        <Grid item xs={6} md={6}>
-
-                            <Typography variant="h6" component="h1" gutterBottom>My Voucher</Typography>
-
-                            <TableContainer component={Paper}>
-                                <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                                    <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                                        <TableRow>
-                                            <TableCell>Voucher No</TableCell>
-                                            <TableCell>Date</TableCell>
-                                            <TableCell>Total Amount</TableCell>
-                                            <TableCell>Approval Status</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-
-                                    <TableBody>
-                                        {Array.isArray(voucherList) && voucherList.map((row, index) => (
-                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
-                                                <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
-                                                <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
-                                                    {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
-                                                    {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
-                                                </TableCell>
+                        {
+                            userReport.length > 0 &&
+                            <Grid item xs={4} md={4}>
+                                <Typography variant="h6" component="h1" gutterBottom>My Report</Typography>
+                                <TableContainer component={Paper}>
+                                    <Table aria-label="simple table">
+                                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                            <TableRow>
+                                                <TableCell>Date</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                        </TableHead>
 
-                            <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                                <Button variant="contained" onClick={() => goto('voucher')}>More...</Button>
-                            </Typography>
+                                        <TableBody>
+                                            {Array.isArray(userReport) && userReport.map((row, index) => (
+                                                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.createdDate.toString())}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                    <Button variant="contained" onClick={() => goto('report')}>More...</Button>
+                                </Typography>
+                            </Grid>
+                        }
 
-                        </Grid>
 
-                        <Grid item xs={6} md={6} display={'none'}>
-
-                            <Typography variant="h6" component="h1" gutterBottom>Leave</Typography>
-
-                            <TableContainer component={Paper}>
-                                <Table aria-label="simple table">
-                                    <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                                        <TableRow>
-                                            <TableCell>Title</TableCell>
-                                            <TableCell>Reason</TableCell>
-                                            <TableCell>Date</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-
-                                    <TableBody>
-                                        {Array.isArray(leaveList) && leaveList.map((row, index) => (
-                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                <TableCell component="th" scope="row">{row.title}</TableCell>
-                                                <TableCell component="th" scope="row">{row.reason}</TableCell>
-                                                <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                        {
+                            leaveList.length > 0 &&
+                            <Grid item xs={4} md={4}>
+                                <Typography variant="h6" component="h1" gutterBottom>My Leave</Typography>
+                                <TableContainer component={Paper}>
+                                    <Table aria-label="simple table">
+                                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                            <TableRow>
+                                                <TableCell>Reason</TableCell>
+                                                <TableCell>Start Date</TableCell>
+                                                <TableCell>End Date</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                        </TableHead>
 
-                            <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                                <Button variant="contained" onClick={() => goto('leave')}>More...</Button>
-                            </Typography>
+                                        <TableBody>
+                                            {Array.isArray(leaveList) && leaveList.map((row, index) => (
+                                                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                    <TableCell component="th" scope="row">{row.reason}</TableCell>
+                                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.startDate.toString())}</TableCell>
+                                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.endDate.toString())}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                    <Button variant="contained" onClick={() => goto('leave')}>More...</Button>
+                                </Typography>
+                            </Grid>
+                        }
 
-                        </Grid>
+                        {
+                            voucherList.length > 0 &&
+                            <Grid item xs={12} md={12}>
+
+                                <Typography variant="h6" component="h1" gutterBottom>My Vouchers</Typography>
+
+                                <TableContainer component={Paper}>
+                                    <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                            <TableRow>
+                                                <TableCell>Voucher No</TableCell>
+                                                <TableCell>Date</TableCell>
+                                                <TableCell>Total Amount</TableCell>
+                                                <TableCell>Approval Status</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+
+                                        <TableBody>
+                                            {Array.isArray(voucherList) && voucherList.map((row, index) => (
+                                                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                    <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
+                                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
+                                                    <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
+                                                    <TableCell component="th" scope="row">
+                                                        {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                                        {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                                        {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+
+                                <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
+                                    <Button variant="contained" onClick={() => goto('voucher')}>More...</Button>
+                                </Typography>
+
+                            </Grid>
+                        }
+
+
+
                     </Grid>
                 </Container>
 

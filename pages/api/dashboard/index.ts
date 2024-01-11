@@ -15,7 +15,9 @@ type Task = { _id: ObjectId; clientName: string; username: string; taskName: str
 
 type User = { id: ObjectId; firstName: string; lastName: string; username: string; password: string; imgUrl: string; date: Date, designation: string };
 
-type ApiResponse = | { message: string } | Voucher | Voucher[] | Holiday | Holiday[] | Leave | Leave[] | Task | Task[] | User | User[] | { data: any } | { error: string };
+type Report = { _id: ObjectId; createdDate: Date; refId: string; reportData: { date: Date, detail: string, clientName: string } };
+
+type ApiResponse = | { message: string } | Voucher | Voucher[] | Holiday | Holiday[] | Leave | Leave[] | Task | Task[] | User | User[] | Report[] | { data: any } | { error: string };
 
 const cors = Cors({
   // Only allow requests with GET, POST and OPTIONS
@@ -75,7 +77,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Leave>("leave");
-            const data = await collection.find({}).limit(5).toArray();
+            const data = await collection.find({ refId: req.body.refId }).limit(2).toArray();
+            res.status(200).json(data);
+          }
+          catch (err) {
+            if (err instanceof Error) {
+              res.status(500).json({ error: err.message });
+            } else {
+              res.status(500).json({ error: 'An unknown error occurred' });
+            }
+          }
+          break;
+
+        case 'REPORT_LIST':
+          try {
+            const client = await clientPromise;
+            const db = client.db("Spak");
+            const collection = db.collection<Report>("report");
+            const data = await collection.find({ refId: req.body.refId }).limit(2).toArray();
             res.status(200).json(data);
           }
           catch (err) {
