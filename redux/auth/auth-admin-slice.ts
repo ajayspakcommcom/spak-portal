@@ -6,6 +6,20 @@ import getConfig from 'next/config';
 
 const { publicRuntimeConfig } = getConfig();
 
+type Profile = {
+    _id?: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    password?: string;
+    imgUrl?: string;
+    date?: Date;
+    designation?: string;
+    doj?: Date;
+    uploadDocument?: string;
+    type: string;
+};
+
 // Define your state type
 interface DataState {
     data: any | null;
@@ -25,18 +39,26 @@ const initialState: DataState = {
 // Define your async thunk function
 export const postLogin = createAsyncThunk('post/postLogin', async (data: { username: string, password: string }) => {
 
-    console.log(`${publicRuntimeConfig.API_URL}auth`);
-
-
     const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            // 'Authorization': 'Bearer YOUR_TOKEN_HERE'
-        },
+        headers: { 'Content-Type': 'application/json' }
     };
 
     const response = await axios.post(`${publicRuntimeConfig.API_URL}auth`, JSON.stringify(data), config);
     return response;
+});
+
+export const postUpdateUser = createAsyncThunk('post/postUpdateUser', async (userData: Profile) => {
+
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${window.localStorage.getItem('jwtToken')}`
+        }
+    };
+
+    const response = await axios.post(`${publicRuntimeConfig.API_URL}user`, JSON.stringify(userData), config);
+    return response;
+
 });
 
 
@@ -86,7 +108,27 @@ const authAdminSlice = createSlice({
                 state.status = 'failed';
                 state.token = '';
                 state.data = '';
-            });
+            })
+            // update user
+            .addCase(postUpdateUser.pending, (state, action) => {
+                // console.log('================================');
+                // console.log('Pending');
+                // console.log('================================');
+            })
+            .addCase(postUpdateUser.fulfilled, (state, action) => {
+                state.data = action.payload.data.data;
+                console.log('================================');
+                console.log('Fullfilled');
+                console.log('state', state.data);
+                console.log('action', action.payload.data.data);
+                console.log('================================');
+            })
+            .addCase(postUpdateUser.rejected, (state, action) => {
+                console.log('================================');
+                console.log('Rejected');
+                console.log('state', state.data);
+                console.log('================================');
+            })
     },
 });
 

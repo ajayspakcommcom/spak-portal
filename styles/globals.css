@@ -556,3 +556,28 @@ body {
   background-color: #2e7d32 !important;
   color: #fff !important;
 }
+
+.profile-label-wrapper {
+  padding: 10px 0;
+}
+
+.profile-label-wrapper>span {
+  color: rgba(128, 128, 128, 0.6);
+  font-size: 13px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.upload-image {
+  width: 0;
+  height: 0;
+}
+
+.round-img {
+  border-radius: 50px;
+  border: 1px solid lightgrey;
+}
+
+.upload-doc {
+  padding: 15px 0;
+}

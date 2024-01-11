@@ -197,8 +197,11 @@ const Index: React.FC = () => {
                                 type: "UPDATE",
                                 id: updateId,
                                 reportData: inputList,
-                                voucherAmount: totalAmount
+                                createdDate: new Date(),
+                                refId: userData.data._id
                             };
+
+                            console.log(objData);
 
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), config);
                             console.log(response);
@@ -207,6 +210,7 @@ const Index: React.FC = () => {
                                 console.log('');
                                 setInputList([]);
                                 setToggleModal(false);
+                                fetchData();
                             }
 
                         } else {
@@ -471,10 +475,10 @@ const Index: React.FC = () => {
                 {/* filter */}
 
                 <div>
-                    <div className='create-data-wrapper-heading report-header'>
+                    <div className='create-data-wrapper-heading report-header' style={{ marginBottom: '20px' }}>
                         <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                     </div>
-                    <div className='create-data-wrapper'>
+                    <div className='create-data-wrapper' style={{ display: 'none' }}>
 
                         <FormControl fullWidth>
                             <Box display="flex" justifyContent="space-between">
@@ -565,8 +569,8 @@ const Index: React.FC = () => {
 
                             {inputList.map((input, index) => (
 
-                                <>
-                                    <Box key={index} display="flex" flexDirection="row" alignItems="center">
+                                <div key={index}>
+                                    <Box display="flex" flexDirection="row" alignItems="center">
 
                                         <Box flex={1} mb={2} mr={2}>
                                             <FormControl fullWidth>
@@ -618,7 +622,7 @@ const Index: React.FC = () => {
                                             rows={3}
                                         />
                                     </Box>
-                                </>
+                                </div>
 
 
 

@@ -98,7 +98,6 @@ type userList = {
 const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
 
-
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();

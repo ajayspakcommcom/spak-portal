@@ -139,7 +139,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             const result = await collection.updateOne(
               { _id: new ObjectId(req.body.id) },
-              { $set: { "ReportData": req.body.ReportData, ReportAmount: req.body.ReportAmount } }
+              { $set: { reportData: req.body.reportData, createdDate: req.body.createdDate } }
             );
 
             res.status(200).json({ data: result });
