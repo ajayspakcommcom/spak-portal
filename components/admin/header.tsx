@@ -63,6 +63,8 @@ export default function Index() {
 
     }, []);
 
+    console.log(userData);
+
     return (
         <>
             <AppBar position="static">
@@ -72,6 +74,7 @@ export default function Index() {
                         <Typography variant="h6" noWrap component="a" sx={{ mr: 2, display: { xs: 'none', md: 'flex' }, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', color: 'inherit', textDecoration: 'none' }}>
                             <Image className='pointer' src={require('../../public/assets/img/logo.png')} alt="Description of the image" layout="responsive" onClick={() => handleCloseUserMenu('dashboard')} />
                         </Typography>
+
                         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                             <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit">
                                 <MenuIcon />
@@ -87,9 +90,30 @@ export default function Index() {
 
                         <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
                         <Typography variant="h5" noWrap component="a" href="#app-bar-with-responsive-menu" sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, flexGrow: 1, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', color: 'inherit', textDecoration: 'none' }}>LOGO</Typography>
-                        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+
+                        {/* <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (<Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>))}
-                        </Box>
+                        </Box> */}
+
+                        {
+                            userData.data.designation.toLowerCase() === 'admin' &&
+                            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                                {pages.map((page) => (
+                                    (page.toLowerCase() === 'leave' || page.toLowerCase() === 'report' || page.toLowerCase() === 'voucher' || page.toLowerCase() === 'task') ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
+                                ))}
+                            </Box>
+                        }
+
+                        {
+                            userData.data.designation.toLowerCase() !== 'admin' &&
+                            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                                {pages.map((page) => (
+                                    (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user') ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
+                                ))}
+                            </Box>
+                        }
+
+
 
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
