@@ -20,10 +20,12 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
-const pages = ['Task', 'Voucher', 'Holiday', 'Leave', 'Report', 'User'];
+const pages = ['Task', 'Voucher', 'Holiday', 'Leave', 'Report', 'User', 'Client'];
 const settings = ['Profile', 'Logout'];
 
-export default function Index() {
+
+
+const Index = () => {
 
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
@@ -136,3 +138,5 @@ export default function Index() {
         </>
     );
 }
+
+export default React.memo(Index);
