@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
 import CloseIcon from '@mui/icons-material/Close';
-import { formatDateToDDMMYYYY } from '@/utils/common';
+import { formatDateToDDMMYYYY, getCurrentDay, getMonthList, getYearList } from '@/utils/common';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { ThunkDispatch } from '@reduxjs/toolkit';
@@ -21,11 +21,21 @@ type FormValues = {
     date: Date | undefined | string;
 };
 
+interface Month {
+    mon: string;
+    date: string;
+}
+
+interface Year {
+    year: string;
+    date: string;
+}
+
+const months: Month[] = getMonthList();
+const years: Year[] = getYearList();
+
 const Index: React.FC = () => {
 
-
-
-    //const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
@@ -36,6 +46,8 @@ const Index: React.FC = () => {
     const [updateId, setUpdateId] = useState<string>();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
 
+    const [filterMonth, setFilterMonth] = useState<Date | null | string>(new Date());
+    const [filterYear, setFilterYear] = useState<Date | null | string>(new Date());
 
     if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
         router.push('/admin/login');
@@ -131,34 +143,34 @@ const Index: React.FC = () => {
     });
 
 
-    useEffect(() => {
+    const fetchData = async () => {
 
-        const fetchData = async () => {
+        try {
+            if (userData && userData.token) {
 
-            try {
-                if (userData && userData.token) {
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
 
-                    const config = {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
-                        },
-                    };
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify({ "type": "LIST" }), config);
 
-                    const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify({ "type": "LIST" }), config);
-
-                    if (response.status === 200) {
-                        setHolidayList(response.data)
-                    }
-
-                } else {
-                    console.error('No token available');
+                if (response.status === 200) {
+                    setHolidayList(response.data)
                 }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
 
-        };
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
+
+    useEffect(() => {
 
         fetchData();
 
@@ -264,21 +276,150 @@ const Index: React.FC = () => {
         setIsEditMode(false);
     };
 
+
+    const filterByMonth = async (selectedDate: string | Date | null) => {
+
+        setFilterMonth(selectedDate);
+
+        setHolidayList([]);
+
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const now = new Date(selectedDate as Date);
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+        const objData = {
+            type: "LIST",
+            firstDayOfMonth: firstDayOfMonth,
+            lastDayOfMonth: lastDayOfMonth
+        };
+
+        console.log(objData);
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify(objData), taskConfig);
+        console.log(response.data);
+
+        if (response.status === 200) {
+            setHolidayList(response.data);
+        }
+
+    };
+
+    const filterByYear = async (selectedDate: string | Date | null) => {
+
+        setFilterYear(selectedDate);
+        setHolidayList([]);
+
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const now = new Date(selectedDate as Date);
+        const firstDayOfYear = new Date(now.getFullYear(), 0, 1);
+        const LastDayOfYear = new Date(now.getFullYear() + 1, 0, -1);
+
+        const objData = {
+            type: "LIST",
+            firstDayOfYear: firstDayOfYear,
+            LastDayOfYear: LastDayOfYear
+        };
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify(objData), taskConfig);
+        console.log(response.data);
+
+        if (response.status === 200) {
+            setHolidayList(response.data);
+        }
+
+    };
+
+    const resetFilter = () => {
+        fetchData();
+    };
+
+
     return (
         <>
             <Header />
             <Container component="main">
 
-                <div className='create-data-wrapper'>
-                    <h2>Holiday</h2>
-                    <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
+                {/* filter */}
+                <div>
+                    <div className='create-data-wrapper-heading voucher-header'>
+                        <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
+                    </div>
+                    <div className='create-data-wrapper'>
+
+                        <FormControl fullWidth>
+                            <Box display="flex" justifyContent="space-between">
+
+                                <Box flex={1} marginRight={2}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Monthly</InputLabel>
+                                        <Select
+                                            label="Monthly"
+                                            variant="outlined"
+                                            value={filterMonth}
+                                            onChange={(e) => filterByMonth(e.target.value)}>
+                                            {
+                                                months.map((item) => (
+                                                    <MenuItem key={item.date} value={item.date}>
+                                                        {item.mon}
+                                                    </MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+
+                                <Box flex={1} marginRight={2}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Yearly</InputLabel>
+                                        <Select
+                                            label="Yearly"
+                                            variant="outlined"
+                                            value={filterYear}
+                                            onChange={(e) => filterByYear(e.target.value)}>
+                                            {
+                                                years.map((item) => (
+                                                    <MenuItem key={item.date} value={item.date}>
+                                                        {item.year}
+                                                    </MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+
+                                {/* <Box flex={1} marginRight={2}>
+                                    <Button type="submit" variant="contained" onClick={filterByMonth} size='large' fullWidth style={{ padding: '15px 0' }}>Search</Button>
+                                </Box> */}
+                                <Box flex={1}>
+                                    <Button type="submit" variant="contained" onClick={resetFilter} size='large' color='inherit' fullWidth style={{ padding: '15px 0' }}>Reset</Button>
+                                </Box>
+
+                            </Box>
+
+                        </FormControl>
+                    </div>
                 </div>
+                {/* filter */}
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
                         <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
                                 <TableCell>Holiday</TableCell>
+                                <TableCell>Day</TableCell>
                                 <TableCell>Date</TableCell>
                                 {userData.data.designation !== 'employee' && <TableCell>Action</TableCell>}
                             </TableRow>
@@ -287,6 +428,7 @@ const Index: React.FC = () => {
                             {Array.isArray(holdayList) && holdayList.map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{row.title}</TableCell>
+                                    <TableCell component="th" scope="row">{getCurrentDay(row.date as Date)}</TableCell>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
                                     {
                                         userData.data.designation !== 'employee' &&
@@ -299,6 +441,14 @@ const Index: React.FC = () => {
                                     }
                                 </TableRow>
                             ))}
+                            {holdayList.length < 1 &&
+                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                    <TableCell component="th" scope="row" colSpan={4}>
+                                        <Typography variant="body1" align='center'>No Holiday</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            }
+
                         </TableBody>
                     </Table>
                 </TableContainer>

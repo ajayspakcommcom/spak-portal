@@ -7,7 +7,7 @@ import Cors from 'cors';
 
 type Holiday = { id: ObjectId; title: string; date: number; };
 
-type ApiResponse = | { message: string } | Holiday | Holiday[] | { data: any } | { error: string };
+type ApiResponse = { message: string } | Holiday | Holiday[] | { data: any } | { error: string } | Document[];
 
 const cors = Cors({
   // Only allow requests with GET, POST and OPTIONS
@@ -30,11 +30,50 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         case 'LIST':
           try {
-            const client = await clientPromise;
-            const db = client.db("Spak");
-            const collection = db.collection<Holiday>("holiday");
-            const data = await collection.find({}).toArray();
-            res.status(200).json(data);
+
+            if (req.body.firstDayOfMonth && req.body.lastDayOfMonth) {
+
+              const client = await clientPromise;
+              const db = client.db("Spak");
+              const collection = db.collection<Holiday>("holiday");
+              const data = await collection.find({
+                date: {
+                  $gte: req.body.firstDayOfMonth,
+                  $lte: req.body.lastDayOfMonth
+                }
+              }).sort({ date: 1 }).toArray();
+
+              res.status(200).json(data);
+
+            } else if (req.body.firstDayOfYear && req.body.LastDayOfYear) {
+
+              console.log('Year');
+
+
+              const client = await clientPromise;
+              const db = client.db("Spak");
+              const collection = db.collection<Holiday>("holiday");
+              const data = await collection.find({
+                date: {
+                  $gte: req.body.firstDayOfYear,
+                  $lte: req.body.LastDayOfYear
+                }
+              }).sort({ date: 1 }).toArray();
+
+              res.status(200).json(data);
+
+            } else {
+
+              console.log('not filter');
+
+              const client = await clientPromise;
+              const db = client.db("Spak");
+              const collection = db.collection<Holiday>("holiday");
+              const data = await collection.find({}).sort({ date: 1 }).toArray();
+              res.status(200).json(data);
+            }
+
+
           }
           catch (err) {
             if (err instanceof Error) {
