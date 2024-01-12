@@ -110,7 +110,7 @@ const Index = () => {
                             userData.data.designation.toLowerCase() !== 'admin' &&
                             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                                 {pages.map((page) => (
-                                    (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user') ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
+                                    (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user' || page.toLowerCase() === 'client') ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
                                 ))}
                             </Box>
                         }

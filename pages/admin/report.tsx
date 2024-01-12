@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
 import CloseIcon from '@mui/icons-material/Close';
-import { formatDateToDDMMYYYY, capitalizeFirstLetter } from '@/utils/common';
+import { formatDateToDDMMYYYY, capitalizeFirstLetter, ClientList } from '@/utils/common';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
@@ -51,18 +51,20 @@ interface ClientName {
     label: string;
 }
 
-const clients: ClientName[] = [
-    { value: 'alupac', label: 'alupac' },
-    { value: 'aluwrap', label: 'aluwrap' },
-    { value: 'asb', label: 'asb' },
-    { value: 'avc', label: 'avc' },
-    { value: 'sahara star', label: 'sahara star' },
-    { value: 'bi', label: 'bi' },
-    { value: 'bsv', label: 'bsv' },
-    { value: 'cipla', label: 'cipla' },
-    { value: 'polycrack', label: 'polycrack' },
-    { value: 'esenpro', label: 'esenpro' },
-];
+// const clients: ClientName[] = [
+//     { value: 'alupac', label: 'alupac' },
+//     { value: 'aluwrap', label: 'aluwrap' },
+//     { value: 'asb', label: 'asb' },
+//     { value: 'avc', label: 'avc' },
+//     { value: 'sahara star', label: 'sahara star' },
+//     { value: 'bi', label: 'bi' },
+//     { value: 'bsv', label: 'bsv' },
+//     { value: 'cipla', label: 'cipla' },
+//     { value: 'polycrack', label: 'polycrack' },
+//     { value: 'esenpro', label: 'esenpro' },
+// ];
+
+const clients: ClientName[] = ClientList;
 
 
 const Index: React.FC = () => {

@@ -16,7 +16,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { formatDateToDDMMYYYY, truncateString, getDayText } from '@/utils/common';
+import { formatDateToDDMMYYYY, truncateString, getDayText, ClientList } from '@/utils/common';
 import Image from 'next/image';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
@@ -25,8 +25,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import Status from '@/components/admin/status';
-
 import TaskDetailModal from '@/components/admin/task-detail-modal';
+
 
 interface componentProps {
     isHeaderVisible: boolean;
@@ -47,19 +47,20 @@ interface ClientName {
     label: string;
 }
 
-const clients: ClientName[] = [
-    { value: 'alupac', label: 'alupac' },
-    { value: 'aluwrap', label: 'aluwrap' },
-    { value: 'asb', label: 'asb' },
-    { value: 'avc', label: 'avc' },
-    { value: 'sahara star', label: 'sahara star' },
-    { value: 'bi', label: 'bi' },
-    { value: 'bsv', label: 'bsv' },
-    { value: 'cipla', label: 'cipla' },
-    { value: 'polycrack', label: 'polycrack' },
-    { value: 'esenpro', label: 'esenpro' },
-];
+// const clients: ClientName[] = [
+//     { value: 'alupac', label: 'alupac' },
+//     { value: 'aluwrap', label: 'aluwrap' },
+//     { value: 'asb', label: 'asb' },
+//     { value: 'avc', label: 'avc' },
+//     { value: 'sahara star', label: 'sahara star' },
+//     { value: 'bi', label: 'bi' },
+//     { value: 'bsv', label: 'bsv' },
+//     { value: 'cipla', label: 'cipla' },
+//     { value: 'polycrack', label: 'polycrack' },
+//     { value: 'esenpro', label: 'esenpro' },
+// ];
 
+const clients: ClientName[] = ClientList;
 
 interface ResponseType {
     error?: any;
@@ -145,6 +146,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
     }
 
     const getUsersWithIdUserName = async () => {
+
         const taskConfig = {
             headers: {
                 'Content-Type': 'application/json',
@@ -449,7 +451,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                             <FormControl fullWidth>
                                 <Box display="flex" justifyContent="space-between">
 
-                                    <Box flex={1} marginRight={2} marginLeft={1}>
+                                    <Box flex={1} marginRight={2} >
                                         <FormControl fullWidth>
                                             <InputLabel id="demo-simple-select-label">Client Name</InputLabel>
                                             <Select
@@ -511,7 +513,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                                     <Box flex={1} marginRight={2}>
                                         <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Search</Button>
                                     </Box>
-                                    <Box flex={1} marginRight={2}>
+                                    <Box flex={1}>
                                         <Button type="submit" variant="contained" onClick={resetFilter} size='large' color='inherit' fullWidth style={{ padding: '15px 0' }}>Reset</Button>
                                     </Box>
 

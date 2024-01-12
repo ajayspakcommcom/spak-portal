@@ -109,7 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             //const result = await collection.replaceOne({ _id: new ObjectId(req.body.id) }, req.body);
 
             const result = await collection.updateOne(
-              { _id: new ObjectId(req.body._id) },
+              { _id: new ObjectId(req.body.id) },
               {
                 $set: {
                   firstName: req.body.firstName,

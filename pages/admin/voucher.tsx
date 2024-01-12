@@ -471,7 +471,7 @@ const Index: React.FC = () => {
                         <FormControl fullWidth>
                             <Box display="flex" justifyContent="space-between">
 
-                                <Box flex={1} marginRight={2} marginLeft={1}>
+                                <Box flex={1} marginRight={2}>
                                     <FormControl fullWidth>
                                         <InputLabel id="demo-simple-select-label">Status</InputLabel>
                                         <Select
@@ -512,7 +512,7 @@ const Index: React.FC = () => {
                                 <Box flex={1} marginRight={2}>
                                     <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Search</Button>
                                 </Box>
-                                <Box flex={1} marginRight={2}>
+                                <Box flex={1}>
                                     <Button type="submit" variant="contained" onClick={resetFilter} size='large' color='inherit' fullWidth style={{ padding: '15px 0' }}>Reset</Button>
                                 </Box>
 

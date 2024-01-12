@@ -1,3 +1,12 @@
+import getConfig from 'next/config';
+const { publicRuntimeConfig } = getConfig();
+import axios from 'axios';
+
+let ClientList: any[] = [];
+
+interface ClientName {
+    name: string;
+}
 
 export function formatDateToDDMMYYYY(date: Date | string): string {
     if (!(date instanceof Date)) {
@@ -104,6 +113,37 @@ export function getTotalDays(startDate: string, endDate: string): number {
 
     return diffDays;
 }
+
+export async function getClientList() {
+    if (typeof window !== 'undefined' && window.localStorage.getItem('jwtToken')) {
+        const taskConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${window.localStorage.getItem('jwtToken')}`
+            },
+        };
+
+        const objData = { type: "LIST" };
+
+        try {
+            const response = await axios.post(`${publicRuntimeConfig.API_URL}client`, JSON.stringify(objData), taskConfig);
+            ClientList = response.data.map((item: ClientName) => {
+                return {
+                    value: item.name,
+                    label: item.name.toLowerCase()
+                };
+            });
+
+        } catch (error) {
+            console.error('Error fetching client list', error);
+        }
+    }
+}
+
+await getClientList();
+
+// property exported
+export { ClientList };
 
 
 

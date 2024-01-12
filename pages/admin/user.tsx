@@ -25,7 +25,11 @@ type FormValues = {
     imgUrl: string;
     date: Date | undefined | string;
     designation: string;
+    doj?: Date | string;
+    uploadDocument?: string;
+    type?: string;
 };
+
 
 interface designationName {
     value: string;
@@ -78,7 +82,9 @@ const Index: React.FC = () => {
             password: '',
             imgUrl: '',
             date: '',
-            designation: ''
+            designation: '',
+            doj: '',
+            uploadDocument: ''
         },
         validationSchema: Yup.object({
             firstName: Yup.string().min(2).required('First name is required'),
@@ -86,15 +92,12 @@ const Index: React.FC = () => {
             username: Yup.string().email().required('User name is required'),
             password: Yup.string().min(5).required('Password is required'),
             imgUrl: Yup.string().nullable(),
-            date: Yup.date().required('Date is Required')
+            doj: Yup.date().required('Date of Joining is Required')
         }),
         onSubmit: (values) => {
 
-            console.log(isEditMode);
-
-
             if (isEditMode) {
-                const editLeave = async (obj: FormValues) => {
+                const editUser = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
                             const config = {
@@ -110,11 +113,14 @@ const Index: React.FC = () => {
                                 username: obj.username,
                                 password: obj.password,
                                 imgUrl: imageDataUrl,
-                                date: obj.date,
+                                doj: obj.doj,
+                                date: new Date(),
                                 designation: obj.designation,
                                 type: "UPDATE",
                                 id: updateId
                             };
+
+                            console.log(objData);
 
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}user`, JSON.stringify(objData), config);
                             console.log(response);
@@ -132,14 +138,14 @@ const Index: React.FC = () => {
                     }
                 };
 
-                editLeave(values);
+                editUser(values);
 
             } else {
                 console.log('Create');
 
                 setImageDataUrl('')
 
-                const createLeave = async (obj: FormValues) => {
+                const createUser = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
                             const config = {
@@ -154,11 +160,14 @@ const Index: React.FC = () => {
                                 lastName: obj.lastName,
                                 username: obj.username,
                                 password: obj.password,
-                                imgUrl: imageDataUrl,
-                                date: obj.date,
+                                imgUrl: '',
+                                date: new Date(),
                                 designation: obj.designation,
+                                doj: obj.doj,
                                 type: "CREATE"
                             };
+
+                            console.log(objData);
 
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}user`, JSON.stringify(objData), config);
                             console.log(response);
@@ -176,7 +185,7 @@ const Index: React.FC = () => {
                     }
                 };
 
-                createLeave(values);
+                createUser(values);
             }
 
             setToggleModal(false);
@@ -254,7 +263,7 @@ const Index: React.FC = () => {
                     formik.setFieldValue('username', response.data.username);
                     formik.setFieldValue('password', response.data.password);
                     formik.setFieldValue('imgUrl', response.data.imgUrl);
-                    formik.setFieldValue('date', response.data.date);
+                    formik.setFieldValue('doj', response.data.doj);
                     formik.setFieldValue('designation', response.data.designation);
                     setImageDataUrl(response.data.imgUrl)
                 }
@@ -336,7 +345,7 @@ const Index: React.FC = () => {
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                        <TableHead>
+                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
                                 <TableCell>First Name</TableCell>
                                 <TableCell>Last Name</TableCell>
@@ -361,7 +370,7 @@ const Index: React.FC = () => {
                                     <TableCell component="th" scope="row">
                                         {row.imgUrl && <Image src={row.imgUrl} alt="Description of the image" width={70} height={70} />}
                                     </TableCell>
-                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.date as string)}</TableCell>
+                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.doj as string)}</TableCell>
                                     <TableCell component="th" scope="row">{row.designation}</TableCell>
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="center" gap={2}>
@@ -383,11 +392,11 @@ const Index: React.FC = () => {
                             <CloseIcon />
                         </IconButton>
 
-                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Heading</Typography>
+                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Create</Typography>
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
 
-                            <Box margin={1}>
+                            <Box mb={3}>
                                 <TextField
                                     fullWidth
                                     id="firstName"
@@ -401,7 +410,7 @@ const Index: React.FC = () => {
                             </Box>
 
 
-                            <Box margin={1}>
+                            <Box mb={3}>
                                 <TextField
                                     fullWidth
                                     variant="outlined"
@@ -416,7 +425,7 @@ const Index: React.FC = () => {
                                 />
                             </Box>
 
-                            <Box margin={1}>
+                            <Box mb={3}>
                                 <TextField
                                     fullWidth
                                     id="username"
@@ -429,7 +438,7 @@ const Index: React.FC = () => {
                                     helperText={formik.touched.username && formik.errors.username} />
                             </Box>
 
-                            <Box margin={1}>
+                            <Box mb={3}>
                                 <TextField
                                     fullWidth
                                     id="password"
@@ -443,21 +452,21 @@ const Index: React.FC = () => {
                                     helperText={formik.touched.password && formik.errors.password} />
                             </Box>
 
-                            <Box margin={1}>
+                            <Box mb={3}>
                                 <TextField
                                     fullWidth
-                                    id="date"
-                                    name="date"
-                                    label="date"
+                                    id="doj"
+                                    name="doj"
+                                    label="DOJ"
                                     type='date'
-                                    value={formik.values.date}
+                                    value={formik.values.doj}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    error={formik.touched.date && Boolean(formik.errors.date)}
-                                    helperText={formik.touched.date && formik.errors.date} />
+                                    error={formik.touched.doj && Boolean(formik.errors.doj)}
+                                    helperText={formik.touched.doj && formik.errors.doj} />
                             </Box>
 
-                            <Box margin={1}>
+                            <Box mb={3}>
                                 <FormControl fullWidth error={formik.touched.designation && Boolean(formik.errors.designation)}>
                                     <InputLabel id="designation">Designation</InputLabel>
                                     <Select
@@ -481,14 +490,14 @@ const Index: React.FC = () => {
                                 </FormControl>
                             </Box>
 
-                            <br />
+                            {/* <br />
                             <input type="file" id='image' name='image' onChange={handleFileChange} accept="image/*" className='preview-input-image' />
                             <br />
-                            <br />
+                            <br /> */}
 
                             {imageDataUrl && <Image src={imageDataUrl} alt="Description of the image" width={70} height={70} />}
 
-                            <Box margin={1}>
+                            <Box>
                                 <Button color="primary" variant="contained" fullWidth type="submit">Submit</Button>
                             </Box>
                         </form>
