@@ -62,7 +62,7 @@ const Index = () => {
     };
 
     React.useEffect(() => {
-
+        console.log(userData);
     }, []);
 
     console.log(userData);
@@ -118,11 +118,16 @@ const Index = () => {
 
 
                         <Box sx={{ flexGrow: 0 }}>
-                            <Tooltip title="Open settings">
-                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt={userData.data.firstName.toUpperCase()} src="/static/images/avatar/2.jpg" />
-                                </IconButton>
-                            </Tooltip>
+                            {
+                                !userData.data.imgUrl &&
+                                <Tooltip title="Open settings">
+                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                        <Avatar alt={userData.data.firstName.toUpperCase()} src="/static/images/avatar/2.jpg" />
+                                    </IconButton>
+                                </Tooltip>
+                            }
+                            {userData.data.imgUrl && <Image src={userData.data.imgUrl} alt="Description of the image" width={50} height={50} className='pointer user-photo-nav' onClick={handleOpenUserMenu} />}
+
                             <Menu sx={{ mt: '45px' }} id="menu-appbar" anchorEl={anchorElUser} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }} open={Boolean(anchorElUser)} onClose={handleCloseUserMenu}>
                                 {settings.map((setting) => (
                                     <MenuItem key={setting} onClick={setting === 'Logout' ? logoutHandler : () => handleCloseUserMenu(setting)}>

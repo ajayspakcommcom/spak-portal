@@ -586,3 +586,7 @@ body {
 .upload-doc {
   padding: 15px 0;
 }
+
+.user-photo-nav {
+  border-radius: 50px;
+}
