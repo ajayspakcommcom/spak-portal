@@ -103,13 +103,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         case 'UPDATE':
           try {
+            console.log('update user');
+
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<User>("user");
             //const result = await collection.replaceOne({ _id: new ObjectId(req.body.id) }, req.body);
 
             const result = await collection.updateOne(
-              { _id: new ObjectId(req.body.id) },
+              { _id: new ObjectId(req.body._id) },
               {
                 $set: {
                   firstName: req.body.firstName,

@@ -117,7 +117,7 @@ const Index: React.FC = () => {
                                 date: new Date(),
                                 designation: obj.designation,
                                 type: "UPDATE",
-                                id: updateId
+                                _id: updateId
                             };
 
                             console.log(objData);

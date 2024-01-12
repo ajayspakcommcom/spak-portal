@@ -78,14 +78,6 @@ export default function Index() {
 
         onSubmit: async (values) => {
 
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
-                },
-            };
-
-
             const objData: Profile = {
                 _id: userData.data._id,
                 firstName: values.firstName,
@@ -104,9 +96,9 @@ export default function Index() {
             const response: ResponseType = await dispatch(postUpdateUser(objData));
             console.log(response);
 
-            if (response.payload.status === 200) {
-                setIsSuccess(true);
-            }
+            // if (response.payload.status === 200) {
+            //     setIsSuccess(true);
+            // }
 
         }
     });
