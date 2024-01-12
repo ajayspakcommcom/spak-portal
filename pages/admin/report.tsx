@@ -264,6 +264,7 @@ const Index: React.FC = () => {
                                 setIsEditMode(false);
                                 fetchData();
                                 setToggleModal(false);
+                                setInputList([]);
                             }
 
                         } else {
@@ -340,7 +341,7 @@ const Index: React.FC = () => {
                         });
 
                         setTotalAmount(totalAmt);
-                        setInputList([...inputList])
+                        setInputList([...inputList]);
                     }
                 }
 
