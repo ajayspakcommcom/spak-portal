@@ -511,6 +511,7 @@ const Index: React.FC = () => {
                                 <TableCell>Reason</TableCell>
                                 <TableCell>Start Date</TableCell>
                                 <TableCell>End Date</TableCell>
+                                <TableCell>Total Days</TableCell>
                                 <TableCell>Approval Status</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
@@ -522,6 +523,7 @@ const Index: React.FC = () => {
                                     <TableCell component="th" scope="row">{row.reason}</TableCell>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.startDate as string)}</TableCell>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.endDate as string)}</TableCell>
+                                    <TableCell component="th" scope="row">{getTotalDays(row.startDate as string, row.endDate as string)}</TableCell>
 
                                     <TableCell component="th" scope="row">
                                         {row.isApproved?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
