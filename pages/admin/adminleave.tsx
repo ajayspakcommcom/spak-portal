@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
+import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
 import CloseIcon from '@mui/icons-material/Close';
-import { formatDateToDDMMYYYY, capitalizeFirstLetter } from '@/utils/common';
-import { useSelector } from 'react-redux';
+import { formatDateToDDMMYYYY, formatDateToYYYYMMDD, getNextDate, disablePreviousDates, capitalizeFirstLetter, getTotalDays } from '@/utils/common';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import { ThunkDispatch } from '@reduxjs/toolkit';
 import { useRouter } from 'next/router';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
-import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VoucherModelDetail from '@/components/admin/voucher-detail-modal';
-import Image from 'next/image';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+type FormValues = {
+    _id?: string | undefined;
+    startDate: Date | undefined | string;
+    endDate: Date | undefined | string;
+    reason: string;
+    isApproved: ApprovalStatus;
+    refId: string;
+    firstName?: string;
+    lastName?: string;
+};
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -27,94 +32,36 @@ enum ApprovalStatus {
     Rejected = "rejected"
 }
 
-type FormValues = {
-    _id?: string | undefined;
-    voucherNo: number;
-    personId: string;
-    approvalStatus: ApprovalStatus;
-    voucherDate: Date | undefined | string;
-    voucherAmount: number,
-    refId: string,
-    firstName?: string,
-    lastName?: string
-};
-
-interface personName {
-    value: string;
-    label: string;
-}
-
-
-type InputSet = {
-    detail: string;
-    date: Date | undefined | string;
-    amount: number | '';
-};
-
-
 const Index: React.FC = () => {
-
-    const [inputList, setInputList] = React.useState<InputSet[]>([]);
-    const [validationErrors, setValidationErrors] = React.useState<string[]>([]);
 
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
-    const [voucherList, setVoucherList] = useState<FormValues[]>([]);
+    const [leaveList, setLeaveList] = useState<FormValues[]>([]);
     const [toggleModal, setToggleModal] = useState<boolean>(false);
     const [toggleDialogue, setToggleDialogue] = useState<boolean>(false);
-    const [toggleApproveDialogue, setToggleApproveDialogue] = useState<boolean>(false);
     const [deleteId, setDeleteId] = useState<string>();
     const [updateId, setUpdateId] = useState<string>();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
-    const [totalAmount, setTotalAmount] = useState<number>(0);
 
+    const [myUtilisedLeave, setMyUtilisedLeave] = useState<number>(0);
+    const [myTotalLeave, setMyTotalLeave] = useState<number>(0);
 
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterStatus, setFilterStatus] = useState('');
-
 
     if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
         router.push('/admin/login');
         return false;
     }
 
-    const handleAddInput = () => {
-        setInputList([...inputList, { detail: '', date: new Date(), amount: '' }]);
+    const onLoad = () => {
+        disablePreviousDates('startDate');
+        disablePreviousDates('endDate');
     };
 
-    const handleChange = (index: number, field: keyof InputSet, value: string) => {
-        const newList = [...inputList];
-        newList[index] = { ...newList[index], [field]: value };
-        setInputList(newList);
-
-        let totalAmt = 0;
-
-        newList.forEach((item) => {
-            totalAmt = totalAmt + +item.amount;
-        });
-
-        setTotalAmount(totalAmt);
-    };
-
-    const validateInputs = (): boolean => {
-        const errors: string[] = [];
-        inputList.forEach((input, index) => {
-            if (!input.detail) errors.push(`Detail is required for item ${index + 1}`);
-            if (!input.date) errors.push(`Date is required for item ${index + 1}`);
-            if (input.amount === '') errors.push(`Amount is required for item ${index + 1}`);
-        });
-
-        setValidationErrors(errors);
-        return errors.length === 0;
-    };
-
-    const handleRemoveInput = (index: number) => {
-        const newList = [...inputList];
-        newList.splice(index, 1);
-        setInputList(newList);
-    };
+    onLoad();
 
     const fetchData = async () => {
 
@@ -126,13 +73,24 @@ const Index: React.FC = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                     },
-
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify({ "type": "LIST", "refId": userData.data._id }), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify({ "type": "LIST" }), config);
+
 
                 if (response.status === 200) {
-                    setVoucherList(response.data)
+
+                    let totalUtilisedLeave = 0;
+
+                    for (const item of response.data) {
+                        if (item.isApproved.toLowerCase() === ApprovalStatus.Approved) {
+                            totalUtilisedLeave += getTotalDays(item.startDate, item.endDate);
+                        }
+                    }
+
+                    setMyUtilisedLeave(totalUtilisedLeave);
+                    setMyTotalLeave(15 - totalUtilisedLeave);
+                    setLeaveList(response.data)
                 }
 
             } else {
@@ -146,59 +104,44 @@ const Index: React.FC = () => {
 
     const formik = useFormik<FormValues>({
         initialValues: {
-            voucherNo: 0,
-            personId: '',
-            approvalStatus: ApprovalStatus.Pending,
-            voucherDate: new Date(),
-            voucherAmount: 0,
+            startDate: formatDateToYYYYMMDD(new Date()),
+            endDate: formatDateToYYYYMMDD(getNextDate(new Date())),
+            reason: '',
+            isApproved: ApprovalStatus.Pending,
             refId: ''
         },
         validationSchema: Yup.object({
-            voucherNo: Yup.number(),
-            personId: Yup.string(),
-            approvalStatus: Yup.string(),
-            voucherDate: Yup.date().required('Required'),
-            voucherAmount: Yup.number()
+            startDate: Yup.date().required('Start date is required'),
+            endDate: Yup.date().required('End date is required'),
+            reason: Yup.string().min(2).required('Reason is required')
         }),
         onSubmit: (values) => {
 
             if (isEditMode) {
-
-                setInputList([...inputList]);
-
-                const editVoucher = async (obj: FormValues) => {
+                const editLeave = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
-
-                            const isValid = validateInputs();
-
-                            if (!isValid) {
-                                alert('Please fill the detail');
-                                return;
-                            }
-
                             const config = {
                                 headers: {
                                     'Content-Type': 'application/json',
                                     'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                                 },
-
                             };
 
                             const objData = {
+                                startDate: obj.startDate,
+                                endDate: obj.endDate,
+                                reason: obj.reason,
+                                isApproved: obj.isApproved,
+                                refId: userData.data._id,
                                 type: "UPDATE",
-                                id: updateId,
-                                voucherData: inputList,
-                                voucherAmount: totalAmount
+                                id: updateId
                             };
 
-                            const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
-                            console.log(response);
+                            const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify(objData), config);
 
                             if (response.status === 200) {
-                                console.log('');
-                                setInputList([]);
-                                setToggleModal(false);
+                                setIsEditMode(false);
                             }
 
                         } else {
@@ -210,49 +153,36 @@ const Index: React.FC = () => {
                     }
                 };
 
-                editVoucher(values);
+                editLeave(values);
 
             } else {
 
-                setInputList([]);
-
-                const createVoucher = async (obj: FormValues) => {
+                const createLeave = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
-
-                            const isValid = validateInputs();
-
-                            setInputList([...inputList.slice(1, 1), { detail: '', date: '', amount: '' }]);
-
-                            if (!isValid) {
-                                alert('Please fill the detail');
-                                return;
-                            }
-
                             const config = {
                                 headers: {
                                     'Content-Type': 'application/json',
                                     'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                                 },
-
                             };
 
                             const objData = {
-                                type: "CREATE",
-                                voucherNo: obj.voucherNo,
-                                personId: userData.data._id,
-                                approvalStatus: ApprovalStatus.Pending,
-                                voucherDate: obj.voucherDate,
-                                voucherAmount: totalAmount,
-                                voucherData: inputList,
-                                refId: userData.data._id
+                                startDate: obj.startDate,
+                                endDate: obj.endDate,
+                                reason: obj.reason,
+                                isApproved: obj.isApproved,
+                                refId: userData.data._id,
+                                type: "CREATE"
                             };
 
-                            const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
+                            console.log(objData);
+
+                            const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify(objData), config);
+                            console.log(response);
+
                             if (response.status === 200) {
                                 setIsEditMode(false);
-                                fetchData();
-                                setToggleModal(false);
                             }
 
                         } else {
@@ -264,17 +194,19 @@ const Index: React.FC = () => {
                     }
                 };
 
-                createVoucher(values);
+                createLeave(values);
             }
 
-            //setToggleModal(false);
+            setToggleModal(false);
         }
     });
-
 
     useEffect(() => {
 
         fetchData();
+        disablePreviousDates('startDate');
+        disablePreviousDates('endDate');
+
         return () => console.log('Unbind UseEffect');
 
     }, [toggleModal, toggleDialogue]);
@@ -282,21 +214,12 @@ const Index: React.FC = () => {
     const toggleModalHandler = () => {
         formik.resetForm();
         setToggleModal(!toggleModal);
-
-        setInputList([]);
-
-        if (toggleModal) {
-            setInputList([]);
-        } else {
-            setInputList([...inputList, { detail: '', date: '', amount: '' }]);
-        }
     };
 
     const editHandler = async (id: string | undefined) => {
-
         setIsEditMode(true);
         toggleModalHandler();
-
+        setUpdateId(id);
 
         try {
             if (userData && userData.token) {
@@ -306,7 +229,6 @@ const Index: React.FC = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
                     },
-
                 };
 
                 const objData = {
@@ -314,26 +236,13 @@ const Index: React.FC = () => {
                     type: "DETAIL"
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
-
-                console.log(response);
-                setUpdateId(id);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify(objData), config);
+                console.log(response.data);
 
                 if (response.status === 200) {
-                    if (response.data.voucherData.length > 0) {
-                        response.data.voucherData.forEach((item: InputSet, indx: any) => {
-                            inputList.push({ detail: item.detail, amount: item.amount, date: item.date })
-                        });
-
-                        let totalAmt = 0;
-
-                        inputList.forEach((item) => {
-                            totalAmt = totalAmt + +item.amount;
-                        });
-
-                        setTotalAmount(totalAmt);
-                        setInputList([...inputList])
-                    }
+                    formik.setFieldValue('startDate', response.data.startDate);
+                    formik.setFieldValue('endDate', response.data.endDate);
+                    formik.setFieldValue('reason', response.data.reason);
                 }
 
             } else {
@@ -359,7 +268,6 @@ const Index: React.FC = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                     },
-
                 };
 
                 const objData = {
@@ -367,7 +275,7 @@ const Index: React.FC = () => {
                     type: "DELETE"
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify(objData), config);
                 console.log(response);
 
                 if (response.status === 200) {
@@ -384,13 +292,12 @@ const Index: React.FC = () => {
 
     };
 
-
     const modalStyle = {
         position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 600,
+        width: 400,
         bgcolor: 'background.paper',
         border: '2px solid #000',
         boxShadow: 24,
@@ -402,44 +309,19 @@ const Index: React.FC = () => {
         setIsEditMode(false);
     };
 
-    const getDetailHandler = async (voucherId: string | undefined) => {
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
-            },
-
-        };
-
-        const objData = {
-            id: voucherId,
-            type: "DETAIL"
-        };
-
-        const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
-
-        if (response.status === 200) {
-            console.log(response);
-        }
-
-    };
-
-
     const filterResult = async () => {
 
         console.log('filterStatus', filterStatus);
         console.log('filterStartDate', filterStartDate);
         console.log('filterEndDate', filterEndDate);
 
-        setVoucherList([]);
+        setLeaveList([]);
 
         const taskConfig = {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
             },
-
         };
 
         const objData = {
@@ -450,11 +332,13 @@ const Index: React.FC = () => {
             refId: userData.data._id
         };
 
-        const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), taskConfig);
+        console.log(objData);
+
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify(objData), taskConfig);
         console.log(response.data);
 
         if (response.status === 200) {
-            setVoucherList(response.data);
+            setLeaveList(response.data);
         }
 
     };
@@ -463,15 +347,98 @@ const Index: React.FC = () => {
         fetchData();
     };
 
+    const confirmToReject = async (id: string | undefined) => {
+
+        try {
+            if (userData && userData.token) {
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const objData = {
+                    id: id,
+                    type: "UPDATE",
+                    approvalStatus: 'REJECTED'
+                };
+
+                console.log(objData);
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify(objData), config);
+                console.log(response);
+
+                if (response.status === 200) {
+                    fetchData();
+                }
+
+            } else {
+                console.error('No token available');
+            }
+
+        } catch (error) {
+            console.error('Error creating data:', error);
+        }
+
+    };
+
+    const confirmToApprove = async (id: string | undefined) => {
+
+        try {
+            if (userData && userData.token) {
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const objData = {
+                    id: id,
+                    type: "UPDATE",
+                    approvalStatus: 'APPROVED'
+                };
+
+                console.log(objData);
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify(objData), config);
+                console.log(response);
+
+                if (response.status === 200) {
+                    fetchData();
+                }
+
+            } else {
+                console.error('No token available');
+            }
+
+        } catch (error) {
+            console.error('Error creating data:', error);
+        }
+
+    };
+
     return (
         <>
             <Header />
             <Container component="main">
 
-                {/* filter */}
-
                 <div>
-                    <div className='create-data-wrapper-heading voucher-header' style={{ display: 'none' }}>
+                    <div className='create-data-wrapper-heading leave-header' style={{ display: 'none' }}>
+                        <div>
+                            <div>
+                                <p>Total Leaves</p> :
+                                <b>15</b>
+                            </div>
+                            <div>
+                                <p>Utilised Leaves</p> :
+                                <b>{myUtilisedLeave}</b>
+                            </div>
+                            <div className={myTotalLeave > 0 ? 'green-bg' : 'red-bg'}>
+                                <p>{myTotalLeave > 0 ? 'Pending Leaves' : 'Excess Leaves'}</p> : <b>{Math.abs(myTotalLeave)}</b>
+                            </div>
+                        </div>
                         <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                     </div>
                     <div className='create-data-wrapper'>
@@ -530,48 +497,65 @@ const Index: React.FC = () => {
                     </div>
                 </div>
 
-                {/* filter */}
-
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
                         <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
-                                <TableCell>Voucher No</TableCell>
                                 <TableCell>Person</TableCell>
-                                <TableCell>Date</TableCell>
-                                <TableCell>Total Amount</TableCell>
+                                <TableCell>Reason</TableCell>
+                                <TableCell>Start Date</TableCell>
+                                <TableCell>End Date</TableCell>
                                 <TableCell>Approval Status</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
-
                         <TableBody>
-                            {Array.isArray(voucherList) && voucherList.map((row, index) => (
+                            {Array.isArray(leaveList) && leaveList.map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
                                     <TableCell component="th" scope="row">{row.firstName + ' ' + row.lastName}</TableCell>
-                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
-                                    <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
+                                    <TableCell component="th" scope="row">{row.reason}</TableCell>
+                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.startDate as string)}</TableCell>
+                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.endDate as string)}</TableCell>
+
                                     <TableCell component="th" scope="row">
-                                        {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
-                                        {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
-                                        {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                        {row.isApproved?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                        {row.isApproved?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                        {row.isApproved?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
                                     </TableCell>
+
                                     <TableCell component="th" scope="row">
-                                        <Box display="flex" alignItems="flex-end" gap={2}>
-                                            <span className='pointer'>
-                                                <VoucherModelDetail rowData={row} onClick={() => fetchData()} />
-                                            </span>
+                                        <Box display="flex" alignItems="center" gap={2}>
+
                                             {/* <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
-                                                <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span> */}
-                                            {/* <span className={'pointer'} onClick={() => approvedHandler(row._id)}><CheckCircleIcon color='primary' /></span> */}
+                                            <span className='pointer' onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span> */}
+
+                                            <div className='voucher-detail-approve-reject-wrapper'>
+                                                <span className={'pointer'} onClick={() => confirmToReject(row._id)}><CancelIcon color='error' /></span>
+                                                <span className={'pointer'} onClick={() => confirmToApprove(row._id)}><CheckCircleIcon color='primary' /></span>
+                                            </div>
+
                                         </Box>
                                     </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
+
                 </TableContainer>
+
+
+                {/* <Typography id="modal-modal-title" variant="h6" component="h1" sx={{ mt: 3 }} align='right'>
+                    <span>
+                        My Leaves : 15 Utilised Leaves : {myUtilisedLeave}  Pending Leaves :
+                        {myTotalLeave > 0 ? <span className='approved'>
+                            <b>{myTotalLeave}</b>
+                        </span> : <span className='rejected'>
+                            <b>{Math.abs(myTotalLeave)}</b>
+                        </span>}
+                        &nbsp;
+                        Days
+                    </span>
+                </Typography> */}
 
                 <Modal open={toggleModal} onClose={toggleModalHandler} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
 
@@ -581,71 +565,58 @@ const Index: React.FC = () => {
                             <CloseIcon />
                         </IconButton>
 
-                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Voucher</Typography>
+                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Create</Typography>
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
 
-                            {/* {validationErrors.map((error, index) => (
-                                <div key={index} style={{ color: 'red' }}>{error}</div>
-                            ))} */}
-
-                            {inputList.map((input, index) => (
-
-
-                                <Box margin={1} key={index} display="flex" flexDirection="row" alignItems="center">
-
-                                    <Box mb={2} flex={1} mr={2}>
-                                        <TextField
-                                            fullWidth
-                                            id="description"
-                                            name="description"
-                                            label="Description"
-                                            type="text"
-                                            value={input.detail}
-                                            onChange={(e) => handleChange(index, 'detail', e.target.value)}
-                                        />
-                                    </Box>
-
-                                    <Box mb={2} flex={1} mr={2}>
-                                        <TextField
-                                            fullWidth
-                                            id="date"
-                                            name="date"
-                                            label="Date"
-                                            type="date"
-                                            value={input.date || new Date()}
-                                            onChange={(e) => handleChange(index, 'date', e.target.value)}
-                                        />
-                                    </Box>
-                                    <Box mb={2} flex={1}>
-                                        <TextField
-                                            fullWidth
-                                            id="amount"
-                                            name="amount"
-                                            label="Amount"
-                                            type="number"
-                                            value={input.amount}
-                                            onChange={(e) => handleChange(index, 'amount', e.target.value)}
-                                        />
-                                    </Box>
-
-                                </Box>
-                            ))}
-
-                            <Box display="flex" flexDirection="row" justifyContent="flex-end" alignItems="flex-end" mb={3}>
-                                <Button variant="contained" onClick={handleAddInput} size='large' style={{ marginRight: '8px' }}>
-                                    <AddIcon />
-                                </Button>
+                            <Box mb={3}>
+                                <TextField
+                                    fullWidth
+                                    type='date'
+                                    id="startDate"
+                                    name="startDate"
+                                    label="Start Date"
+                                    value={formik.values.startDate}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+                                    helperText={formik.touched.startDate && formik.errors.startDate} />
                             </Box>
 
-                            <hr />
+                            <Box mb={3}>
+                                <TextField
+                                    fullWidth
+                                    id="endDate"
+                                    name="endDate"
+                                    label="End Date"
+                                    type="date"
+                                    value={formik.values.endDate}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                                    helperText={formik.touched.endDate && formik.errors.endDate} />
+                            </Box>
 
-                            <p className='total-amount'>
-                                <b>Total Amount : </b> {totalAmount}
-                            </p>
+                            <Box>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    id="reason"
+                                    name="reason"
+                                    label="Reason"
+                                    multiline
+                                    rows={3}
+                                    value={formik.values.reason}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.reason && Boolean(formik.errors.reason)}
+                                    helperText={formik.touched.reason && formik.errors.reason}
+                                    sx={{ mb: 3 }}
+                                />
+                            </Box>
 
-                            <Box margin={1}>
-                                <Button color="primary" variant="contained" size='large' fullWidth type="submit">Submit</Button>
+                            <Box>
+                                <Button color="primary" variant="contained" fullWidth type="submit">Submit for approval</Button>
                             </Box>
                         </form>
                     </Box>
@@ -660,7 +631,7 @@ const Index: React.FC = () => {
                     <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            Are you sure you want to delete this Voucher?
+                            Are you sure you want to delete this Holiday?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -668,6 +639,7 @@ const Index: React.FC = () => {
                         <Button onClick={confirmToDelete} color="secondary" autoFocus>Delete</Button>
                     </DialogActions>
                 </Dialog>
+
 
             </Container>
 

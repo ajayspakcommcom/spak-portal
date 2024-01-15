@@ -10,14 +10,19 @@ import { RootState } from '@/redux/store';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 interface componentProps {
     rowData: any,
+    onClick: () => void
 }
 
-const Index: React.FC<componentProps> = ({ rowData }) => {
+const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
 
     const userData = useSelector((state: RootState) => state.authAdmin);
+
+
 
     const fetchData = async () => {
 
@@ -45,7 +50,78 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
         }
     };
 
-    fetchData();
+    const confirmToReject = async () => {
+        // console.log(rowData);
+
+        try {
+            if (userData && userData.token) {
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const objData = {
+                    id: rowData._id,
+                    type: "UPDATE",
+                    approvalStatus: 'REJECTED'
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
+                console.log(response);
+
+                if (response.status === 200) {
+                    fetchData();
+                    onClick();
+                    setOpen(false);
+                }
+
+            } else {
+                console.error('No token available');
+            }
+
+        } catch (error) {
+            console.error('Error creating data:', error);
+        }
+
+    };
+
+    const confirmToApprove = async () => {
+
+        try {
+            if (userData && userData.token) {
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const objData = {
+                    id: rowData._id,
+                    type: "UPDATE",
+                    approvalStatus: 'APPROVED'
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
+                console.log(response);
+
+                if (response.status === 200) {
+                    fetchData();
+                    onClick();
+                    setOpen(false);
+                }
+
+            } else {
+                console.error('No token available');
+            }
+
+        } catch (error) {
+            console.error('Error creating data:', error);
+        }
+
+    };
 
 
     const [rowDetailData, setRowDetailData] = useState(rowData);
@@ -69,6 +145,7 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
     };
 
     useEffect(() => {
+        fetchData();
         return () => console.log('');
     }, []);
 
@@ -122,13 +199,23 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
 
                         <br /><br />
 
+                        {
+                            userData.data.designation === 'admin' &&
+                            <div className='voucher-detail-approve-reject-wrapper'>
+                                <span className={'pointer'} onClick={() => confirmToReject()}><CancelIcon color='error' /></span>
+                                <span className={'pointer'} onClick={() => confirmToApprove()}><CheckCircleIcon color='primary' /></span>
+                            </div>
+                        }
+
                         <hr />
 
                         <div className='total-amount'>
 
-                            {/* {row.approvalStatus.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                            {/* 
+                            {row.approvalStatus.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
                             {row.approvalStatus.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
-                            {row.approvalStatus.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>} */}
+                            {row.approvalStatus.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>} 
+                            */}
 
                             <div className='voucher-detail-status'>
                                 <div>

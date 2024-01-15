@@ -590,3 +590,12 @@ body {
 .user-photo-nav {
   border-radius: 50px;
 }
+
+.voucher-detail-approve-reject-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.voucher-detail-approve-reject-wrapper>span {
+  margin-right: 15px;
+}

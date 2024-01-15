@@ -20,9 +20,8 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
-const pages = ['Task', 'Voucher', 'Holiday', 'Leave', 'Report', 'User', 'Client', 'AdminVoucher'];
+const pages = ['Task', 'Voucher', 'Holiday', 'Leave', 'Report', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
 const settings = ['Profile', 'Logout'];
-
 
 
 const Index = () => {
@@ -101,7 +100,9 @@ const Index = () => {
                             userData.data.designation.toLowerCase() === 'admin' &&
                             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                                 {pages.map((page) => (
-                                    (page.toLowerCase() === 'leave' || page.toLowerCase() === 'report' || page.toLowerCase() === 'voucher' || page.toLowerCase() === 'task') ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
+                                    (page.toLowerCase() === 'leave' || page.toLowerCase() === 'report' || page.toLowerCase() === 'voucher' || page.toLowerCase() === 'task') ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{
+                                        page === 'AdminVoucher' ? 'Voucher' : page === 'AdminLeave' ? 'Leave' : page
+                                    }</Button>
                                 ))}
                             </Box>
                         }
@@ -110,7 +111,7 @@ const Index = () => {
                             userData.data.designation.toLowerCase() !== 'admin' &&
                             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                                 {pages.map((page) => (
-                                    (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user' || page.toLowerCase() === 'client') || page.toLowerCase() === 'adminvoucher' ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
+                                    (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user' || page.toLowerCase() === 'client') || page.toLowerCase() === 'adminvoucher' || page.toLowerCase() === 'adminleave' ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
                                 ))}
                             </Box>
                         }

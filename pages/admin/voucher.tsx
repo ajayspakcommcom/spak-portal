@@ -550,7 +550,7 @@ const Index: React.FC = () => {
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="flex-end" gap={2}>
                                             <span className='pointer'>
-                                                <VoucherModelDetail rowData={row} />
+                                                <VoucherModelDetail rowData={row} onClick={() => console.log('VoucherModelDetail')} />
                                             </span>
                                             {(row.approvalStatus?.toLowerCase() === 'pending' || row.approvalStatus?.toLowerCase() === 'rejected') && <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>}
                                             <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
