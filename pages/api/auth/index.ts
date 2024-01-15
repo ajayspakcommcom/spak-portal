@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (user) {
 
         try {
-            const token = jwt.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET as string, { expiresIn: '2m' });
+            const token = jwt.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET as string, { expiresIn: '2h' });
             return res.status(200).json({ token, user: user });
         } catch (err) {
             if (err instanceof Error) {
