@@ -44,6 +44,8 @@ export const postLogin = createAsyncThunk('post/postLogin', async (data: { usern
     };
 
     const response = await axios.post(`${publicRuntimeConfig.API_URL}auth`, JSON.stringify(data), config);
+    console.log(response);
+
     return response;
 });
 

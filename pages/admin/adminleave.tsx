@@ -14,6 +14,7 @@ const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import useIsUserLoggedIn from '@/hooks/authCheck';
 
 type FormValues = {
     _id?: string | undefined;
@@ -34,6 +35,8 @@ enum ApprovalStatus {
 
 const Index: React.FC = () => {
 
+    const isLoggedIn = useIsUserLoggedIn();
+
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
@@ -50,6 +53,9 @@ const Index: React.FC = () => {
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterStatus, setFilterStatus] = useState('');
+
+    console.log('isLoggedIn', isLoggedIn);
+
 
     if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
         router.push('/admin/login');
