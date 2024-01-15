@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
 import CloseIcon from '@mui/icons-material/Close';
-import { formatDateToDDMMYYYY, capitalizeFirstLetter, ClientList } from '@/utils/common';
+import { formatDateToDDMMYYYY, capitalizeFirstLetter } from '@/utils/common';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
@@ -18,7 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import ReportModelDetail from '@/components/admin/report-detail-modal';
+import VoucherModelDetail from '@/components/admin/voucher-detail-modal';
 import Image from 'next/image';
 
 enum ApprovalStatus {
@@ -29,8 +29,11 @@ enum ApprovalStatus {
 
 type FormValues = {
     _id?: string | undefined;
-    createdDate: Date | undefined | string;
-    reportData: [];
+    voucherNo: number;
+    personId: string;
+    approvalStatus: ApprovalStatus;
+    voucherDate: Date | undefined | string;
+    voucherAmount: number,
     refId: string
 };
 
@@ -39,31 +42,13 @@ interface personName {
     label: string;
 }
 
+
 type InputSet = {
     detail: string;
     date: Date | undefined | string;
-    clientName: string;
+    amount: number | '';
 };
 
-interface ClientName {
-    value: string;
-    label: string;
-}
-
-// const clients: ClientName[] = [
-//     { value: 'alupac', label: 'alupac' },
-//     { value: 'aluwrap', label: 'aluwrap' },
-//     { value: 'asb', label: 'asb' },
-//     { value: 'avc', label: 'avc' },
-//     { value: 'sahara star', label: 'sahara star' },
-//     { value: 'bi', label: 'bi' },
-//     { value: 'bsv', label: 'bsv' },
-//     { value: 'cipla', label: 'cipla' },
-//     { value: 'polycrack', label: 'polycrack' },
-//     { value: 'esenpro', label: 'esenpro' },
-// ];
-
-const clients: ClientName[] = ClientList;
 
 const Index: React.FC = () => {
 
@@ -73,9 +58,10 @@ const Index: React.FC = () => {
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
-    const [reportList, setReportList] = useState<FormValues[]>([]);
+    const [voucherList, setVoucherList] = useState<FormValues[]>([]);
     const [toggleModal, setToggleModal] = useState<boolean>(false);
     const [toggleDialogue, setToggleDialogue] = useState<boolean>(false);
+    const [toggleApproveDialogue, setToggleApproveDialogue] = useState<boolean>(false);
     const [deleteId, setDeleteId] = useState<string>();
     const [updateId, setUpdateId] = useState<string>();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
@@ -85,7 +71,6 @@ const Index: React.FC = () => {
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterStatus, setFilterStatus] = useState('');
-    const [filterClientName, setFilterClientName] = useState('');
 
 
     if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
@@ -94,11 +79,10 @@ const Index: React.FC = () => {
     }
 
     const handleAddInput = () => {
-        setInputList([...inputList, { clientName: '', date: new Date(), detail: '' }]);
+        setInputList([...inputList, { detail: '', date: new Date(), amount: '' }]);
     };
 
     const handleChange = (index: number, field: keyof InputSet, value: string) => {
-
         const newList = [...inputList];
         newList[index] = { ...newList[index], [field]: value };
         setInputList(newList);
@@ -106,7 +90,7 @@ const Index: React.FC = () => {
         let totalAmt = 0;
 
         newList.forEach((item) => {
-            totalAmt = totalAmt + +item.clientName;
+            totalAmt = totalAmt + +item.amount;
         });
 
         setTotalAmount(totalAmt);
@@ -117,8 +101,7 @@ const Index: React.FC = () => {
         inputList.forEach((input, index) => {
             if (!input.detail) errors.push(`Detail is required for item ${index + 1}`);
             if (!input.date) errors.push(`Date is required for item ${index + 1}`);
-            if (input.clientName === '') errors.push(`Amount is required for item ${index + 1}`);
-            //if (filterClientName === '') errors.push(`Amount is required for item ${index + 1}`);
+            if (input.amount === '') errors.push(`Amount is required for item ${index + 1}`);
         });
 
         setValidationErrors(errors);
@@ -141,13 +124,13 @@ const Index: React.FC = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                     },
+
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify({ type: "LIST", refId: userData.data._id }), config);
-                console.log(response);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify({ "type": "LIST", "refId": userData.data._id }), config);
 
                 if (response.status === 200) {
-                    setReportList(response.data)
+                    setVoucherList(response.data)
                 }
 
             } else {
@@ -161,13 +144,19 @@ const Index: React.FC = () => {
 
     const formik = useFormik<FormValues>({
         initialValues: {
-            createdDate: new Date(),
-            reportData: [],
+            voucherNo: 0,
+            personId: '',
+            approvalStatus: ApprovalStatus.Pending,
+            voucherDate: new Date(),
+            voucherAmount: 0,
             refId: ''
         },
         validationSchema: Yup.object({
-            createdDate: Yup.date(),
-            refId: Yup.string()
+            voucherNo: Yup.number(),
+            personId: Yup.string(),
+            approvalStatus: Yup.string(),
+            voucherDate: Yup.date().required('Required'),
+            voucherAmount: Yup.number()
         }),
         onSubmit: (values) => {
 
@@ -191,26 +180,23 @@ const Index: React.FC = () => {
                                     'Content-Type': 'application/json',
                                     'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                                 },
+
                             };
 
                             const objData = {
                                 type: "UPDATE",
                                 id: updateId,
-                                reportData: inputList,
-                                createdDate: new Date(),
-                                refId: userData.data._id
+                                voucherData: inputList,
+                                voucherAmount: totalAmount
                             };
 
-                            console.log(objData);
-
-                            const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), config);
+                            const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
                             console.log(response);
 
                             if (response.status === 200) {
                                 console.log('');
                                 setInputList([]);
                                 setToggleModal(false);
-                                fetchData();
                             }
 
                         } else {
@@ -228,13 +214,13 @@ const Index: React.FC = () => {
 
                 setInputList([]);
 
-                const createReport = async (obj: FormValues) => {
+                const createVoucher = async (obj: FormValues) => {
                     try {
                         if (userData && userData.token) {
 
                             const isValid = validateInputs();
 
-                            setInputList([...inputList.slice(1, 1), { clientName: '', date: '', detail: '' }]);
+                            setInputList([...inputList.slice(1, 1), { detail: '', date: '', amount: '' }]);
 
                             if (!isValid) {
                                 alert('Please fill the detail');
@@ -246,23 +232,25 @@ const Index: React.FC = () => {
                                     'Content-Type': 'application/json',
                                     'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                                 },
+
                             };
 
                             const objData = {
                                 type: "CREATE",
-                                reportData: inputList,
-                                createdDate: new Date(),
+                                voucherNo: obj.voucherNo,
+                                personId: userData.data._id,
+                                approvalStatus: ApprovalStatus.Pending,
+                                voucherDate: obj.voucherDate,
+                                voucherAmount: totalAmount,
+                                voucherData: inputList,
                                 refId: userData.data._id
                             };
 
-                            console.log(objData);
-
-                            const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), config);
+                            const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
                             if (response.status === 200) {
                                 setIsEditMode(false);
                                 fetchData();
                                 setToggleModal(false);
-                                setInputList([]);
                             }
 
                         } else {
@@ -274,7 +262,7 @@ const Index: React.FC = () => {
                     }
                 };
 
-                createReport(values);
+                createVoucher(values);
             }
 
             //setToggleModal(false);
@@ -283,8 +271,10 @@ const Index: React.FC = () => {
 
 
     useEffect(() => {
+
         fetchData();
         return () => console.log('Unbind UseEffect');
+
     }, [toggleModal, toggleDialogue]);
 
     const toggleModalHandler = () => {
@@ -296,7 +286,7 @@ const Index: React.FC = () => {
         if (toggleModal) {
             setInputList([]);
         } else {
-            setInputList([...inputList, { clientName: '', date: '', detail: '' }]);
+            setInputList([...inputList, { detail: '', date: '', amount: '' }]);
         }
     };
 
@@ -314,6 +304,7 @@ const Index: React.FC = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
                     },
+
                 };
 
                 const objData = {
@@ -321,25 +312,25 @@ const Index: React.FC = () => {
                     type: "DETAIL"
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
 
                 console.log(response);
                 setUpdateId(id);
 
                 if (response.status === 200) {
-                    if (response.data.reportData.length > 0) {
-                        response.data.reportData.forEach((item: InputSet, indx: any) => {
-                            inputList.push({ detail: item.detail, clientName: item.clientName, date: item.date })
+                    if (response.data.voucherData.length > 0) {
+                        response.data.voucherData.forEach((item: InputSet, indx: any) => {
+                            inputList.push({ detail: item.detail, amount: item.amount, date: item.date })
                         });
 
                         let totalAmt = 0;
 
                         inputList.forEach((item) => {
-                            totalAmt = totalAmt + +item.clientName;
+                            totalAmt = totalAmt + +item.amount;
                         });
 
                         setTotalAmount(totalAmt);
-                        setInputList([...inputList]);
+                        setInputList([...inputList])
                     }
                 }
 
@@ -357,6 +348,11 @@ const Index: React.FC = () => {
         setDeleteId(id);
     }
 
+    const approvedHandler = async (id: string | undefined) => {
+        setToggleApproveDialogue(true);
+        setUpdateId(id);
+    }
+
     const confirmToDelete = async () => {
 
         try {
@@ -366,6 +362,7 @@ const Index: React.FC = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                     },
+
                 };
 
                 const objData = {
@@ -373,11 +370,46 @@ const Index: React.FC = () => {
                     type: "DELETE"
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
                 console.log(response);
 
                 if (response.status === 200) {
                     setToggleDialogue(false);
+                }
+
+            } else {
+                console.error('No token available');
+            }
+
+        } catch (error) {
+            console.error('Error creating data:', error);
+        }
+
+    };
+
+    const confirmToApprove = async () => {
+
+        try {
+            if (userData && userData.token) {
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+
+                };
+
+                const objData = {
+                    id: updateId,
+                    type: "UPDATE"
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
+                console.log(response);
+
+                if (response.status === 200) {
+                    setToggleApproveDialogue(false);
+                    fetchData();
                 }
 
             } else {
@@ -416,6 +448,7 @@ const Index: React.FC = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
             },
+
         };
 
         const objData = {
@@ -423,7 +456,7 @@ const Index: React.FC = () => {
             type: "DETAIL"
         };
 
-        const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), config);
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
 
         if (response.status === 200) {
             console.log(response);
@@ -438,13 +471,14 @@ const Index: React.FC = () => {
         console.log('filterStartDate', filterStartDate);
         console.log('filterEndDate', filterEndDate);
 
-        setReportList([]);
+        setVoucherList([]);
 
         const taskConfig = {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
             },
+
         };
 
         const objData = {
@@ -455,11 +489,11 @@ const Index: React.FC = () => {
             refId: userData.data._id
         };
 
-        const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), taskConfig);
+        const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), taskConfig);
         console.log(response.data);
 
         if (response.status === 200) {
-            setReportList(response.data);
+            setVoucherList(response.data);
         }
 
     };
@@ -476,13 +510,28 @@ const Index: React.FC = () => {
                 {/* filter */}
 
                 <div>
-                    <div className='create-data-wrapper-heading report-header' style={{ marginBottom: '20px' }}>
+                    <div className='create-data-wrapper-heading voucher-header'>
                         <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                     </div>
-                    <div className='create-data-wrapper' style={{ display: 'none' }}>
+                    <div className='create-data-wrapper'>
 
                         <FormControl fullWidth>
                             <Box display="flex" justifyContent="space-between">
+
+                                <Box flex={1} marginRight={2}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                                        <Select
+                                            label="Status"
+                                            variant="outlined"
+                                            value={filterStatus}
+                                            onChange={(e) => setFilterStatus(e.target.value)}>
+                                            <MenuItem value={ApprovalStatus.Pending}><b>{ApprovalStatus.Pending}</b></MenuItem>
+                                            <MenuItem value={ApprovalStatus.Approved}>{ApprovalStatus.Approved}</MenuItem>
+                                            <MenuItem value={ApprovalStatus.Rejected}>{ApprovalStatus.Rejected}</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Box>
 
                                 <Box flex={1} marginRight={2} marginLeft={1}>
                                     <TextField
@@ -510,7 +559,7 @@ const Index: React.FC = () => {
                                 <Box flex={1} marginRight={2}>
                                     <Button type="submit" variant="contained" onClick={filterResult} size='large' fullWidth style={{ padding: '15px 0' }}>Search</Button>
                                 </Box>
-                                <Box flex={1} marginRight={2}>
+                                <Box flex={1}>
                                     <Button type="submit" variant="contained" onClick={resetFilter} size='large' color='inherit' fullWidth style={{ padding: '15px 0' }}>Reset</Button>
                                 </Box>
 
@@ -526,24 +575,33 @@ const Index: React.FC = () => {
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
                         <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
+                                <TableCell>Voucher No</TableCell>
                                 <TableCell>Date</TableCell>
-                                <TableCell>Total Task </TableCell>
+                                <TableCell>Total Amount</TableCell>
+                                <TableCell>Approval Status</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
 
                         <TableBody>
-                            {Array.isArray(reportList) && reportList.map((row, index) => (
+                            {Array.isArray(voucherList) && voucherList.map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.createdDate as string)}</TableCell>
-                                    <TableCell component="th" scope="row">{row.reportData.length}</TableCell>
+                                    <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
+                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
+                                    <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
+                                    <TableCell component="th" scope="row">
+                                        {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                        {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                        {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                    </TableCell>
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="flex-end" gap={2}>
                                             <span className='pointer'>
-                                                <ReportModelDetail rowData={row} />
+                                                <VoucherModelDetail rowData={row} />
                                             </span>
-                                            <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
-                                            <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
+                                            {/* <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
+                                            <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span> */}
+                                            <span className={'pointer'} onClick={() => approvedHandler(row._id)}><CheckCircleIcon color='primary' /></span>
                                         </Box>
                                     </TableCell>
                                 </TableRow>
@@ -560,7 +618,7 @@ const Index: React.FC = () => {
                             <CloseIcon />
                         </IconButton>
 
-                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Create Report</Typography>
+                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Voucher</Typography>
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
 
@@ -570,47 +628,10 @@ const Index: React.FC = () => {
 
                             {inputList.map((input, index) => (
 
-                                <div key={index}>
-                                    <Box display="flex" flexDirection="row" alignItems="center">
 
-                                        <Box flex={1} mb={2} mr={2}>
-                                            <FormControl fullWidth>
-                                                <InputLabel id="demo-simple-select-label">Client Name</InputLabel>
-                                                <Select
-                                                    label="Client Name"
-                                                    variant="outlined"
-                                                    id="clientName"
-                                                    name="clientName"
-                                                    value={input.clientName}
-                                                    onChange={(e) => handleChange(index, 'clientName', e.target.value)}
-                                                >
-                                                    {
-                                                        clients.map((item) => (
-                                                            <MenuItem key={item.value} value={item.value}>
-                                                                {item.label}
-                                                            </MenuItem>
-                                                        ))
-                                                    }
+                                <Box margin={1} key={index} display="flex" flexDirection="row" alignItems="center">
 
-                                                </Select>
-                                            </FormControl>
-                                        </Box>
-
-                                        <Box mb={2} flex={1}>
-                                            <TextField
-                                                fullWidth
-                                                id="date"
-                                                name="date"
-                                                label="Date"
-                                                type="date"
-                                                value={input.date || new Date()}
-                                                onChange={(e) => handleChange(index, 'date', e.target.value)}
-                                            />
-                                        </Box>
-
-                                    </Box>
-
-                                    <Box mb={2} flex={1}>
+                                    <Box mb={2} flex={1} mr={2}>
                                         <TextField
                                             fullWidth
                                             id="description"
@@ -619,14 +640,33 @@ const Index: React.FC = () => {
                                             type="text"
                                             value={input.detail}
                                             onChange={(e) => handleChange(index, 'detail', e.target.value)}
-                                            multiline
-                                            rows={3}
                                         />
                                     </Box>
-                                </div>
 
+                                    <Box mb={2} flex={1} mr={2}>
+                                        <TextField
+                                            fullWidth
+                                            id="date"
+                                            name="date"
+                                            label="Date"
+                                            type="date"
+                                            value={input.date || new Date()}
+                                            onChange={(e) => handleChange(index, 'date', e.target.value)}
+                                        />
+                                    </Box>
+                                    <Box mb={2} flex={1}>
+                                        <TextField
+                                            fullWidth
+                                            id="amount"
+                                            name="amount"
+                                            label="Amount"
+                                            type="number"
+                                            value={input.amount}
+                                            onChange={(e) => handleChange(index, 'amount', e.target.value)}
+                                        />
+                                    </Box>
 
-
+                                </Box>
                             ))}
 
                             <Box display="flex" flexDirection="row" justifyContent="flex-end" alignItems="flex-end" mb={3}>
@@ -634,6 +674,13 @@ const Index: React.FC = () => {
                                     <AddIcon />
                                 </Button>
                             </Box>
+
+                            <hr />
+
+                            <p className='total-amount'>
+                                <b>Total Amount : </b> {totalAmount}
+                            </p>
+
                             <Box margin={1}>
                                 <Button color="primary" variant="contained" size='large' fullWidth type="submit">Submit</Button>
                             </Box>
@@ -650,12 +697,29 @@ const Index: React.FC = () => {
                     <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            Are you sure you want to delete this Report?
+                            Are you sure you want to delete this Voucher?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => setToggleDialogue(false)} color="primary">Cancel</Button>
                         <Button onClick={confirmToDelete} color="secondary" autoFocus>Delete</Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Dialog
+                    open={toggleApproveDialogue}
+                    onClose={() => setToggleApproveDialogue(false)}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description">
+                    <DialogTitle id="alert-dialog-title">{"Confirm Approve"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Are you sure you want to approve this Voucher?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setToggleApproveDialogue(false)} color="primary">Cancel</Button>
+                        <Button onClick={confirmToApprove} color="secondary" autoFocus>Approve</Button>
                     </DialogActions>
                 </Dialog>
 
