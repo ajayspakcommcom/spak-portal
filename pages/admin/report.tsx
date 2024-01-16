@@ -20,6 +20,7 @@ import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ReportModelDetail from '@/components/admin/report-detail-modal';
 import Image from 'next/image';
+import useAutoLogout from '@/hooks/useAutoLogout';
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -67,6 +68,8 @@ const clients: ClientName[] = ClientList;
 
 const Index: React.FC = () => {
 
+    const autoLogout = useAutoLogout();
+
     const [inputList, setInputList] = React.useState<InputSet[]>([]);
     const [validationErrors, setValidationErrors] = React.useState<string[]>([]);
 
@@ -88,10 +91,10 @@ const Index: React.FC = () => {
     const [filterClientName, setFilterClientName] = useState('');
 
 
-    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-        router.push('/admin/login');
-        return false;
-    }
+    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+    //     router.push('/admin/login');
+    //     return false;
+    // }
 
     const handleAddInput = () => {
         setInputList([...inputList, { clientName: '', date: new Date(), detail: '' }]);

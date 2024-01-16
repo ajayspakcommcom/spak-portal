@@ -14,6 +14,7 @@ const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import useAutoLogout from '@/hooks/useAutoLogout';
 
 type FormValues = {
     _id?: string | undefined;
@@ -31,6 +32,8 @@ enum ApprovalStatus {
 }
 
 const Index: React.FC = () => {
+
+    const autoLogout = useAutoLogout();
 
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
@@ -51,10 +54,10 @@ const Index: React.FC = () => {
 
 
 
-    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-        router.push('/admin/login');
-        return false;
-    }
+    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+    //     router.push('/admin/login');
+    //     return false;
+    // }
 
     const onLoad = () => {
         disablePreviousDates('startDate');

@@ -14,6 +14,7 @@ const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import useAutoLogout from '@/hooks/useAutoLogout';
 
 type FormValues = {
     _id?: string;
@@ -23,7 +24,7 @@ type FormValues = {
 
 const Index: React.FC = () => {
 
-
+    const autoLogout = useAutoLogout();
 
     //const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
@@ -37,10 +38,10 @@ const Index: React.FC = () => {
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
 
 
-    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-        router.push('/admin/login');
-        return false;
-    }
+    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+    //     router.push('/admin/login');
+    //     return false;
+    // }
 
     const formik = useFormik<FormValues>({
         initialValues: {

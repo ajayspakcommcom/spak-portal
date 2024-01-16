@@ -140,10 +140,10 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
     };
 
 
-    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-        router.push('/admin/login');
-        return false;
-    }
+    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+    //     router.push('/admin/login');
+    //     return false;
+    // }
 
     const getUsersWithIdUserName = async () => {
 

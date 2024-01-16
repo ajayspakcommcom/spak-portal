@@ -177,7 +177,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             const result = await collection.updateOne(
               { _id: new ObjectId(req.body.id) },
-              { $set: { isApproved: req.body.approvalStatus === 'APPROVED' ? ApprovalStatus.Approved : ApprovalStatus.Rejected } }
+              { $set: { 'approvalStatus': req.body.approvalStatus } }
             );
 
             res.status(200).json({ data: result });

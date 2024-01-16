@@ -14,6 +14,7 @@ const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import useAutoLogout from '@/hooks/useAutoLogout';
 
 type FormValues = {
     _id?: string | undefined;
@@ -36,6 +37,8 @@ const years: Year[] = getYearList();
 
 const Index: React.FC = () => {
 
+    const autoLogout = useAutoLogout();
+
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
@@ -49,10 +52,10 @@ const Index: React.FC = () => {
     const [filterMonth, setFilterMonth] = useState<Date | null | string>(new Date());
     const [filterYear, setFilterYear] = useState<Date | null | string>(new Date());
 
-    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-        router.push('/admin/login');
-        return false;
-    }
+    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+    //     router.push('/admin/login');
+    //     return false;
+    // }
 
     const formik = useFormik<FormValues>({
         initialValues: {

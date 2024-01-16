@@ -65,7 +65,7 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
                 const objData = {
                     id: rowData._id,
                     type: "UPDATE",
-                    approvalStatus: 'REJECTED'
+                    approvalStatus: 'rejected'
                 };
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
@@ -101,8 +101,10 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
                 const objData = {
                     id: rowData._id,
                     type: "UPDATE",
-                    approvalStatus: 'APPROVED'
+                    approvalStatus: 'approved'
                 };
+
+                //console.log(objData);
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
                 console.log(response);

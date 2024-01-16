@@ -15,6 +15,7 @@ import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Image from 'next/image';
+import useAutoLogout from '@/hooks/useAutoLogout';
 
 type FormValues = {
     _id?: string | undefined;
@@ -43,6 +44,8 @@ const designations: designationName[] = [
 
 const Index: React.FC = () => {
 
+    const autoLogout = useAutoLogout();
+
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
@@ -55,10 +58,10 @@ const Index: React.FC = () => {
     const [imageDataUrl, setImageDataUrl] = useState('');
 
 
-    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-        router.push('/admin/login');
-        return false;
-    }
+    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+    //     router.push('/admin/login');
+    //     return false;
+    // }
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;

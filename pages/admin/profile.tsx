@@ -15,6 +15,7 @@ import { postUpdateUser } from '../../redux/auth/auth-admin-slice';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import SuccessAlert from '@/components/admin/success-alert';
+import useAutoLogout from '@/hooks/useAutoLogout';
 
 type Profile = {
     _id?: string;
@@ -38,6 +39,8 @@ interface ResponseType {
 
 export default function Index() {
 
+    const autoLogout = useAutoLogout();
+
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
@@ -48,10 +51,10 @@ export default function Index() {
     const userDocInputRef = React.useRef<HTMLInputElement>(null);
     const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
 
-    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-        router.push('/admin/login');
-        return false;
-    }
+    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+    //     router.push('/admin/login');
+    //     return false;
+    // }
 
     const formik = useFormik<Profile>({
         initialValues: {
@@ -154,18 +157,26 @@ export default function Index() {
                             !editMode &&
                             <div>
                                 <List>
-                                    <ListItem divider>
-                                        <div className='profile-label-wrapper'>
-                                            <span>First Name</span>
-                                            <b>{userData.data.firstName}</b>
-                                        </div>
-                                    </ListItem>
-                                    <ListItem divider>
-                                        <div className='profile-label-wrapper'>
-                                            <span>Last Name</span>
-                                            <b>{userData.data.lastName}</b>
-                                        </div>
-                                    </ListItem>
+
+                                    {
+                                        userData.data.firstName &&
+                                        <ListItem divider>
+                                            <div className='profile-label-wrapper'>
+                                                <span>First Name</span>
+                                                <b>{userData.data.firstName}</b>
+                                            </div>
+                                        </ListItem>
+                                    }
+
+                                    {
+                                        userData.data.lastName &&
+                                        <ListItem divider>
+                                            <div className='profile-label-wrapper'>
+                                                <span>Last Name</span>
+                                                <b>{userData.data.lastName}</b>
+                                            </div>
+                                        </ListItem>
+                                    }
 
                                     <ListItem>
                                         <div className='profile-label-wrapper'>
@@ -174,26 +185,35 @@ export default function Index() {
                                         </div>
                                     </ListItem>
 
-                                    <ListItem>
-                                        <div className='profile-label-wrapper'>
-                                            <span>Designation</span>
-                                            <b>{userData.data.designation}</b>
-                                        </div>
-                                    </ListItem>
+                                    {
+                                        userData.data.designation &&
+                                        <ListItem>
+                                            <div className='profile-label-wrapper'>
+                                                <span>Designation</span>
+                                                <b>{userData.data.designation}</b>
+                                            </div>
+                                        </ListItem>
+                                    }
 
-                                    <ListItem>
-                                        <div className='profile-label-wrapper'>
-                                            <span>Document</span>
-                                            {userDocument && <div className='upload-doc'> <Image src={userDocument} height={100} width={100} alt="Description of the image" className='pointer round-img' /></div>}
-                                        </div>
-                                    </ListItem>
+                                    {
+                                        userDocument &&
+                                        <ListItem>
+                                            <div className='profile-label-wrapper'>
+                                                <span>Document</span>
+                                                {userDocument && <div className='upload-doc'> <Image src={userDocument} height={100} width={100} alt="Description of the image" className='pointer round-img' /></div>}
+                                            </div>
+                                        </ListItem>
+                                    }
 
-                                    <ListItem>
-                                        <div className='profile-label-wrapper'>
-                                            <span>DOJ</span>
-                                            <b>{userData.data.doj}</b>
-                                        </div>
-                                    </ListItem>
+                                    {
+                                        userData.data.doj &&
+                                        <ListItem>
+                                            <div className='profile-label-wrapper'>
+                                                <span>DOJ</span>
+                                                <b>{userData.data.doj}</b>
+                                            </div>
+                                        </ListItem>
+                                    }
 
                                 </List>
 

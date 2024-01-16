@@ -20,6 +20,7 @@ import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VoucherModelDetail from '@/components/admin/voucher-detail-modal';
 import Image from 'next/image';
+import useAutoLogout from '@/hooks/useAutoLogout';
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -54,6 +55,8 @@ type InputSet = {
 
 const Index: React.FC = () => {
 
+    const autoLogout = useAutoLogout();
+
     const [inputList, setInputList] = React.useState<InputSet[]>([]);
     const [validationErrors, setValidationErrors] = React.useState<string[]>([]);
 
@@ -69,16 +72,14 @@ const Index: React.FC = () => {
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
     const [totalAmount, setTotalAmount] = useState<number>(0);
 
-
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterStatus, setFilterStatus] = useState('');
 
-
-    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-        router.push('/admin/login');
-        return false;
-    }
+    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+    //     router.push('/admin/login');
+    //     return false;
+    // }
 
     const handleAddInput = () => {
         setInputList([...inputList, { detail: '', date: new Date(), amount: '' }]);
