@@ -86,7 +86,7 @@ const Index: React.FC = () => {
                     let totalUtilisedLeave = 0;
 
                     for (const item of response.data) {
-                        if (item.isApproved.toLowerCase() === ApprovalStatus.Approved) {
+                        if (item.isApproved?.toLowerCase() === ApprovalStatus.Approved) {
                             totalUtilisedLeave += getTotalDays(item.startDate, item.endDate);
                         }
                     }
@@ -373,6 +373,15 @@ const Index: React.FC = () => {
                 console.log(response);
 
                 if (response.status === 200) {
+
+                    const notificationObj = {
+                        type: "CREATE",
+                        leaveId: objData.id,
+                        status: 'rejected',
+                        createdDate: new Date()
+                    };
+
+                    const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification`, JSON.stringify(notificationObj), config);
                     fetchData();
                 }
 
@@ -406,9 +415,17 @@ const Index: React.FC = () => {
                 console.log(objData);
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}adminleave`, JSON.stringify(objData), config);
-                console.log(response);
 
                 if (response.status === 200) {
+
+                    const notificationObj = {
+                        type: "CREATE",
+                        leaveId: objData.id,
+                        status: 'approved',
+                        createdDate: new Date()
+                    };
+
+                    const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification`, JSON.stringify(notificationObj), config);
                     fetchData();
                 }
 

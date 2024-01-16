@@ -599,3 +599,33 @@ body {
 .voucher-detail-approve-reject-wrapper>span {
   margin-right: 15px;
 }
+
+.notification-wrapper {
+  padding-top: 15px;
+}
+
+.notification-section {
+  padding: 15px 15px;
+  margin-bottom: 5px;
+  /* border-bottom: 1px solid lightgrey; */
+}
+
+.notification-section:last-child {
+  border-bottom: 0;
+}
+
+.notification-heading {
+  font-weight: 900 !important;
+  margin-bottom: 5px !important;
+}
+
+.notification-text {
+  padding: 0px 10px 5px 10px;
+  font-size: 13px !important;
+}
+
+.notification-content-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+}

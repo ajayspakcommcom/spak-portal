@@ -15,7 +15,7 @@ const useAutoLogout = (): void => {
     const resetTimer = (): void => {
         clearTimeout(logoutTimer);
         //logoutTimer = setTimeout(handleInactivity, 3600000); // Set to 1 hour (3600000 ms)
-        logoutTimer = setTimeout(handleInactivity, 3000); // Set to 1 hour (3600000 ms)
+        logoutTimer = setTimeout(handleInactivity, 3600000); // Set to 1 hour (3600000 ms)
     };
 
     useEffect(() => {

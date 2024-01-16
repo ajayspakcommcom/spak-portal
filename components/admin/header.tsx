@@ -19,6 +19,8 @@ import { RootState } from '@/redux/store';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import Notification from '@/components/admin/notification';
 
 const pages = ['Task', 'Voucher', 'Holiday', 'Leave', 'Report', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
 const settings = ['Profile', 'Logout'];
@@ -109,13 +111,17 @@ const Index = () => {
 
                         {
                             userData.data.designation.toLowerCase() !== 'admin' &&
-                            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                                {pages.map((page) => (
-                                    (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user' || page.toLowerCase() === 'client') || page.toLowerCase() === 'adminvoucher' || page.toLowerCase() === 'adminleave' ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
-                                ))}
-                            </Box>
+                            <>
+                                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                                    {pages.map((page) => (
+                                        (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user' || page.toLowerCase() === 'client') || page.toLowerCase() === 'adminvoucher' || page.toLowerCase() === 'adminleave' ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
+                                    ))}
+                                    <div className='notification-wrapper'>
+                                        <Notification />
+                                    </div>
+                                </Box>
+                            </>
                         }
-
 
 
                         <Box sx={{ flexGrow: 0 }}>
