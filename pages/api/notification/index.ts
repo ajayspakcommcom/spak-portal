@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       switch (req.body.type) {
 
-        case 'LIST':
+        case 'LEAVELIST':
           try {
 
             const client = await clientPromise;
@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           }
           break;
 
-        case 'CREATE':
+        case 'LEAVECREATE':
           try {
             const client = await clientPromise;
             const db = client.db("Spak");
@@ -76,6 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               res.status(500).json({ error: 'An unknown error occurred' });
             }
           }
+
           break;
 
         default:

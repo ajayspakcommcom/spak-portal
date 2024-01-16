@@ -375,7 +375,7 @@ const Index: React.FC = () => {
                 if (response.status === 200) {
 
                     const notificationObj = {
-                        type: "CREATE",
+                        type: "LEAVECREATE",
                         leaveId: objData.id,
                         status: 'rejected',
                         createdDate: new Date()
@@ -419,7 +419,7 @@ const Index: React.FC = () => {
                 if (response.status === 200) {
 
                     const notificationObj = {
-                        type: "CREATE",
+                        type: "LEAVECREATE",
                         leaveId: objData.id,
                         status: 'approved',
                         createdDate: new Date()

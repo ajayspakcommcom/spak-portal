@@ -48,7 +48,7 @@ const Index: React.FC = () => {
                     },
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification`, JSON.stringify({ type: "LIST" }), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification`, JSON.stringify({ type: "LEAVELIST" }), config);
                 console.log(response);
 
                 if (response.status === 200) {

@@ -617,6 +617,7 @@ body {
 .notification-heading {
   font-weight: 900 !important;
   margin-bottom: 5px !important;
+  font-size: 13px !important;
 }
 
 .notification-text {
