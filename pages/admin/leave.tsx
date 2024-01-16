@@ -53,7 +53,6 @@ const Index: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState('');
 
 
-
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
     //     router.push('/admin/login');
     //     return false;
@@ -349,6 +348,12 @@ const Index: React.FC = () => {
         fetchData();
     };
 
+    const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newStartDate = e.target.value;
+        formik.setFieldValue('startDate', newStartDate);
+        formik.setFieldValue('endDate', formatDateToYYYYMMDD(getNextDate(new Date(newStartDate))))
+    };
+
     return (
         <>
             <Header />
@@ -499,7 +504,8 @@ const Index: React.FC = () => {
                                     name="startDate"
                                     label="Start Date"
                                     value={formik.values.startDate}
-                                    onChange={formik.handleChange}
+                                    // onChange={formik.handleChange}
+                                    onChange={handleStartDateChange}
                                     onBlur={formik.handleBlur}
                                     error={formik.touched.startDate && Boolean(formik.errors.startDate)}
                                     helperText={formik.touched.startDate && formik.errors.startDate} />

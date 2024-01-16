@@ -199,13 +199,15 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
                             </TableContainer>
                         }
 
-                        <br /><br />
-
                         {
                             userData.data.designation === 'admin' &&
                             <div className='voucher-detail-approve-reject-wrapper'>
-                                <span className={'pointer'} onClick={() => confirmToReject()}><CancelIcon color='error' /></span>
-                                <span className={'pointer'} onClick={() => confirmToApprove()}><CheckCircleIcon color='primary' /></span>
+
+                                {/* <span className={'pointer'} onClick={() => confirmToReject()}><CancelIcon color='error' /></span> */}
+                                {/* <span className={'pointer'} onClick={() => confirmToApprove()}><CheckCircleIcon color='primary' /></span> */}
+
+                                <Button variant="contained" color="error" className={'pointer'} onClick={() => confirmToReject()} sx={{ mr: 2 }}>Reject</Button>
+                                <Button variant="contained" color="success" className={'pointer'} onClick={() => confirmToApprove()}>Confirm</Button>
                             </div>
                         }
 

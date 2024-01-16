@@ -9,6 +9,7 @@ import axios from 'axios';
 import getConfig from 'next/config';
 import { capitalizeFirstLetter } from '@/utils/common';
 const { publicRuntimeConfig } = getConfig();
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 
 type Leave = {
@@ -48,7 +49,7 @@ const Index: React.FC = () => {
                     },
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification`, JSON.stringify({ type: "LEAVELIST" }), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify({ type: "LEAVELIST" }), config);
                 console.log(response);
 
                 if (response.status === 200) {
@@ -80,9 +81,15 @@ const Index: React.FC = () => {
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}>
                 <section className='notification-section'>
-                    {leaveList.map((row, index) => <div key={index} className='notification-content-wrapper'><Typography className='notification-heading'><span>{row.startDate}</span>  <span style={{ color: row.status.toString() === 'rejected' ? 'red' : 'green' }}>{row.status.charAt(0).toUpperCase() + row.status.slice(1)}</span></Typography></div>)}
+                    <Typography className='notification-heading'>Leave</Typography>
+                    {leaveList.map((row, index) => <div key={index} className='notification-content-wrapper'><Typography className='notification-text'>
+                        <span>{row.startDate}</span>
+                        <span style={{ color: row.status.toString() === 'rejected' ? 'red' : 'green' }}>{row.status.charAt(0).toUpperCase() + row.status.slice(1)}</span>
+                        <span><CheckCircleIcon color='inherit' /></span>
+                    </Typography>
+                    </div>)}
                 </section>
-                <section className='notification-section' style={{ display: 'none' }}>
+                <section className='notification-section'>
                     <Typography className='notification-heading'>Voucher</Typography>
                     <Typography className='notification-text'>Your notifications..........</Typography>
                     <Typography className='notification-text'>Your notifications..........</Typography>

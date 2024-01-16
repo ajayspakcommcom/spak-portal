@@ -594,6 +594,7 @@ body {
 .voucher-detail-approve-reject-wrapper {
   display: flex;
   justify-content: flex-end;
+  padding: 15px 0 10px;
 }
 
 .voucher-detail-approve-reject-wrapper>span {
@@ -607,7 +608,7 @@ body {
 .notification-section {
   padding: 15px 15px;
   margin-bottom: 5px;
-  /* border-bottom: 1px solid lightgrey; */
+  border-bottom: 1px solid lightgrey;
 }
 
 .notification-section:last-child {
@@ -621,8 +622,25 @@ body {
 }
 
 .notification-text {
-  padding: 0px 10px 5px 10px;
+  padding: 0px 5px 5px 5px;
   font-size: 13px !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-text>span {
+  margin-right: 15px;
+}
+
+.notification-text>span:last-child {
+  margin-right: 0px;
+  cursor: pointer;
+}
+
+.notification-text svg {
+  width: 20px;
+  height: 20px;
 }
 
 .notification-content-wrapper {

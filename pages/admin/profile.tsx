@@ -316,8 +316,8 @@ export default function Index() {
 
                                 </Box>
                                 <Box display="flex" justifyContent="flex-end">
-                                    <Button variant="contained" sx={{ mr: 2 }} type='submit'>Save</Button>
-                                    <Button variant="outlined" onClick={() => setEditMode(false)}>Cancel</Button>
+                                    <Button variant="contained" onClick={() => setEditMode(false)} sx={{ mr: 2 }} color='error'>Cancel</Button>
+                                    <Button variant="contained" type='submit' color='success'>Save</Button>
                                 </Box>
 
                             </form>

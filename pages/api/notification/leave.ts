@@ -7,9 +7,9 @@ import Cors from 'cors';
 
 type Leave = { _id: ObjectId; startDate: Date; endDate: Date; isApproved: string; refId: string, type: string };
 
-type Notification = { id: ObjectId; leaveId: string; status: string; createdDate: Date, startDate: Date };
+type LeaveNotification = { id: ObjectId; leaveId: string; status: string; createdDate: Date, startDate: Date };
 
-type ApiResponse = | { message: string } | Notification | Notification[] | { data: any } | { error: string };
+type ApiResponse = | { message: string } | LeaveNotification | LeaveNotification[] | { data: any } | { error: string };
 
 
 enum ApprovalStatus {
@@ -42,8 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             const client = await clientPromise;
             const db = client.db("Spak");
-            const collection = db.collection<Notification>("notification");
-            const data = await collection.find({}).sort({ createdDate: -1 }).limit(2).toArray();
+            const collection = db.collection<LeaveNotification>("leavenotification");
+            const data = await collection.find({}).sort({ createdDate: -1 }).limit(4).toArray();
             res.status(200).json(data);
           }
           catch (err) {
@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           try {
             const client = await clientPromise;
             const db = client.db("Spak");
-            const collection = db.collection<Notification>("notification");
+            const collection = db.collection<LeaveNotification>("leavenotification");
             delete req.body.type;
 
             const leaveCollection = db.collection<Leave>("leave");

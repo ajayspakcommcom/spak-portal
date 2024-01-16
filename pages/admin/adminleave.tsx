@@ -381,7 +381,7 @@ const Index: React.FC = () => {
                         createdDate: new Date()
                     };
 
-                    const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification`, JSON.stringify(notificationObj), config);
+                    const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify(notificationObj), config);
                     fetchData();
                 }
 
@@ -425,7 +425,7 @@ const Index: React.FC = () => {
                         createdDate: new Date()
                     };
 
-                    const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification`, JSON.stringify(notificationObj), config);
+                    const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify(notificationObj), config);
                     fetchData();
                 }
 
@@ -552,8 +552,23 @@ const Index: React.FC = () => {
                                             <span className='pointer' onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span> */}
 
                                             <div className='voucher-detail-approve-reject-wrapper'>
-                                                <span className={'pointer'} onClick={() => confirmToReject(row._id)}><CancelIcon color='error' /></span>
-                                                <span className={'pointer'} onClick={() => confirmToApprove(row._id)}><CheckCircleIcon color='primary' /></span>
+                                                {row.isApproved?.toLowerCase() === 'rejected' &&
+                                                    <>
+                                                        {/* <span className={'pointer'} onClick={() => confirmToApprove(row._id)}><CheckCircleIcon color='success' /></span> */}
+                                                        <Button variant="contained" color='success' onClick={() => confirmToApprove(row._id)}>Approve</Button>
+                                                    </>
+                                                }
+                                                {row.isApproved?.toLowerCase() === 'approved' &&
+                                                    <>
+                                                        {/* <span className={'pointer'} ><CancelIcon color='error' /></span> */}
+                                                        <Button variant="contained" onClick={() => confirmToReject(row._id)} color='error'>Reject</Button>
+                                                    </>
+                                                }
+
+                                                {row.isApproved?.toLowerCase() === 'pending' && <>
+                                                    <Button variant="contained" onClick={() => confirmToReject(row._id)} color='error' sx={{ mr: 2 }}>Reject</Button>
+                                                    <Button variant="contained" color='success' onClick={() => confirmToApprove(row._id)}>Approve</Button>
+                                                </>}
                                             </div>
 
                                         </Box>
