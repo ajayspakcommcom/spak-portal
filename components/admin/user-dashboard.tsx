@@ -10,6 +10,7 @@ import axios from 'axios';
 import { capitalizeFirstLetter, formatDateToDDMMYYYY, getDayText, truncateString } from '@/utils/common';
 import Image from 'next/image';
 import Status from '@/components/admin/status';
+import Footer from './footer';
 
 // type Voucher = { _id?: string | undefined; voucherNo: string; person: string; amount: number; date: Date | undefined | string; summary: string };
 
@@ -490,6 +491,7 @@ export default function Index() {
 
                     </Grid>
                 </Container>
+                <Footer />
 
             </>
         )

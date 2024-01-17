@@ -44,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                     $concat: [{ $substrBytes: ["$firstName", 0, 1] }, '.', "$lastName"]
                   }
                 }
-              }).toArray();
+              }).sort({ date: -1 }).toArray();
               res.status(200).json(data);
             } else {
               const client = await clientPromise;

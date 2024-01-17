@@ -76,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               const client = await clientPromise;
               const db = client.db("Spak");
               const collection = db.collection<Voucher>("voucher");
-              const data = await collection.find({ refId: req.body.refId }).toArray();
+              const data = await collection.find({ refId: req.body.refId }).sort({ voucherDate: -1 }).toArray();
               res.status(200).json(data);
 
             }

@@ -16,6 +16,7 @@ import { ThunkDispatch } from "@reduxjs/toolkit";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import SuccessAlert from '@/components/admin/success-alert';
 import useAutoLogout from '@/hooks/useAutoLogout';
+import Footer from '@/components/admin/footer';
 
 type Profile = {
     _id?: string;
@@ -334,6 +335,8 @@ export default function Index() {
                     </Paper>
 
                 </Container>
+
+                <Footer />
 
             </>
         );

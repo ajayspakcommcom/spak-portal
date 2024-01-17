@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/admin/header';
 import { Container } from '@mui/material';
 import useAutoLogout from '@/hooks/useAutoLogout';
+import Footer from '@/components/admin/footer';
 
 export default function Index() {
 
@@ -14,6 +15,7 @@ export default function Index() {
             <Container component="main">
                 <TaskList isHeaderVisible={true} />
             </Container>
+            <Footer />
         </>
     );
 

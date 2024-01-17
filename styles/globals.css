@@ -686,3 +686,24 @@ body {
   align-items: center;
   border-radius: 50px;
 }
+
+.css-b8tju9 {
+  overflow-y: auto;
+  height: 400px;
+  min-height: 400px;
+}
+
+.footer-wrapper {
+  margin-top: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  background-color: #1976d2;
+}
+
+.footer-wrapper p {
+  margin: 0;
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 100;
+}

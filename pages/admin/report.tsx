@@ -21,6 +21,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ReportModelDetail from '@/components/admin/report-detail-modal';
 import Image from 'next/image';
 import useAutoLogout from '@/hooks/useAutoLogout';
+import Footer from '@/components/admin/footer';
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -600,7 +601,7 @@ const Index: React.FC = () => {
                                                     {
                                                         clients.map((item) => (
                                                             <MenuItem key={item.value} value={item.value}>
-                                                                {item.label}
+                                                                {capitalizeFirstLetter(item.label)}
                                                             </MenuItem>
                                                         ))
                                                     }
@@ -673,6 +674,8 @@ const Index: React.FC = () => {
                 </Dialog>
 
             </Container>
+
+            <Footer />
 
 
         </>

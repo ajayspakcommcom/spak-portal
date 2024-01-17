@@ -16,6 +16,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Image from 'next/image';
 import useAutoLogout from '@/hooks/useAutoLogout';
+import Footer from '@/components/admin/footer';
 
 type FormValues = {
     _id?: string | undefined;
@@ -536,6 +537,8 @@ const Index: React.FC = () => {
 
 
             </Container>
+
+            <Footer />
 
 
         </>

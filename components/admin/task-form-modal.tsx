@@ -13,6 +13,7 @@ import Image from 'next/image';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
+import { capitalizeFirstLetter } from '@/utils/common';
 
 interface ClientName {
     value: string;
@@ -286,7 +287,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                                         {
                                             clients.map((item) => (
                                                 <MenuItem key={item.value} value={item.value}>
-                                                    {item.label}
+                                                    {capitalizeFirstLetter(item.label)}
                                                 </MenuItem>
                                             ))
                                         }

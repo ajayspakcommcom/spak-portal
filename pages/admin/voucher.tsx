@@ -21,6 +21,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VoucherModelDetail from '@/components/admin/voucher-detail-modal';
 import Image from 'next/image';
 import useAutoLogout from '@/hooks/useAutoLogout';
+import Footer from '@/components/admin/footer';
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -673,6 +674,8 @@ const Index: React.FC = () => {
                 </Dialog>
 
             </Container>
+
+            <Footer />
 
 
         </>
