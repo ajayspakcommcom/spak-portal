@@ -16,7 +16,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { formatDateToDDMMYYYY, truncateString, getDayText, ClientList } from '@/utils/common';
+import { formatDateToDDMMYYYY, truncateString, getDayText, ClientList, capitalizeFirstLetter } from '@/utils/common';
 import Image from 'next/image';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
@@ -470,7 +470,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                                                 {
                                                     clients.map((item) => (
                                                         <MenuItem key={item.value} value={item.value}>
-                                                            {item.label}
+                                                            {capitalizeFirstLetter(item.label)}
                                                         </MenuItem>
                                                     ))
                                                 }
@@ -595,6 +595,15 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
                                 </TableRow>
                             ))}
+
+                            {tasks.length < 1 &&
+                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                    <TableCell component="th" scope="row" colSpan={11}>
+                                        <Typography variant="body1" align='center'>No Task</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            }
+
                         </TableBody>
                     </Table >
                 </TableContainer >

@@ -305,6 +305,15 @@ const Index: React.FC = () => {
                                     }
                                 </TableRow>
                             ))}
+
+                            {clientList.length < 1 &&
+                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                    <TableCell component="th" scope="row" colSpan={3}>
+                                        <Typography variant="body1" align='center'>No Client</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            }
+
                         </TableBody>
                     </Table>
                 </TableContainer>

@@ -21,6 +21,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Notification from '@/components/admin/notification';
+import useAutoLogout from '@/hooks/useAutoLogout';
 
 const pages = ['Task', 'Voucher', 'Holiday', 'Leave', 'Report', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
 const settings = ['Profile', 'Logout'];
@@ -28,6 +29,7 @@ const settings = ['Profile', 'Logout'];
 
 const Index = () => {
 
+    const autoLogout = useAutoLogout();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();

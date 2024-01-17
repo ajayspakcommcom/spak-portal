@@ -395,9 +395,9 @@ const Index: React.FC = () => {
                                             variant="outlined"
                                             value={filterStatus}
                                             onChange={(e) => setFilterStatus(e.target.value)}>
-                                            <MenuItem value={ApprovalStatus.Pending}><b>{ApprovalStatus.Pending}</b></MenuItem>
-                                            <MenuItem value={ApprovalStatus.Approved}>{ApprovalStatus.Approved}</MenuItem>
-                                            <MenuItem value={ApprovalStatus.Rejected}>{ApprovalStatus.Rejected}</MenuItem>
+                                            <MenuItem value={ApprovalStatus.Pending}><b>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b></MenuItem>
+                                            <MenuItem value={ApprovalStatus.Approved}>{capitalizeFirstLetter(ApprovalStatus.Approved)}</MenuItem>
+                                            <MenuItem value={ApprovalStatus.Rejected}>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</MenuItem>
                                         </Select>
                                     </FormControl>
                                 </Box>
@@ -470,6 +470,15 @@ const Index: React.FC = () => {
                                     </TableCell>
                                 </TableRow>
                             ))}
+
+                            {leaveList.length < 1 &&
+                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                    <TableCell component="th" scope="row" colSpan={5}>
+                                        <Typography variant="body1" align='center'>No Leave</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            }
+
                         </TableBody>
                     </Table>
 
