@@ -455,16 +455,32 @@ body {
 .create-data-wrapper-heading {
   padding: 20px 0 0 0;
   display: flex;
-  justify-content: end;
+  /* justify-content: end; */
+  justify-content: space-between;
+}
+
+.create-data-wrapper-heading>h1 {
+  margin: 0 0;
 }
 
 .voucher-header button,
-.leave-header button {
+.leave-header button,
+.user-header button,
+.client-header button {
   min-width: 218px !important;
+}
+
+.user-header,
+.client-header {
+  margin-bottom: 20px;
 }
 
 .holiday-header button {
   min-width: 372px !important;
+}
+
+.report-header {
+  margin-bottom: 20px;
 }
 
 .report-header button {

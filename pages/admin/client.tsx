@@ -275,8 +275,8 @@ const Index: React.FC = () => {
             <Header />
             <Container component="main">
 
-                <div className='create-data-wrapper'>
-                    <h2>Client</h2>
+                <div className='create-data-wrapper-heading client-header'>
+                    <h1>Client</h1>
                     <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                 </div>
 

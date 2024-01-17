@@ -250,6 +250,7 @@ const Index: React.FC = () => {
                             if (response.status === 200) {
                                 setIsEditMode(false);
                                 fetchData();
+                                setInputList([]);
                                 setToggleModal(false);
                             }
 
@@ -467,6 +468,7 @@ const Index: React.FC = () => {
 
                 <div>
                     <div className='create-data-wrapper-heading voucher-header'>
+                        <h1>Voucher</h1>
                         <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                     </div>
                     <div className='create-data-wrapper'>

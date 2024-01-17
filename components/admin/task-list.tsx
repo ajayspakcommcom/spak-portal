@@ -375,14 +375,21 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const result = reader.result;
-                if (typeof result === 'string') {
-                    setImageDataUrl(result);
-                }
-            };
-            reader.readAsDataURL(file);
+
+            const fileSize = file.size / 1024;
+
+            if (fileSize < 600) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const result = reader.result;
+                    if (typeof result === 'string') {
+                        setImageDataUrl(result);
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('File size is too big. It should be less than 600Kb');
+            }
         }
     };
 
@@ -444,6 +451,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                 {isHeaderVisible &&
                     <div>
                         <div className='create-data-wrapper-heading'>
+                            <h1>Task</h1>
                             <Button variant="contained" color="success" onClick={() => isFormEditModeHandler(false)}>Create</Button>
                         </div>
                         <div className='create-data-wrapper'>

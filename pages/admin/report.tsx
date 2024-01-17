@@ -479,9 +479,11 @@ const Index: React.FC = () => {
                 {/* filter */}
 
                 <div>
-                    <div className='create-data-wrapper-heading report-header' style={{ marginBottom: '20px' }}>
+                    <div className='create-data-wrapper-heading report-header'>
+                        <h1>Report</h1>
                         <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                     </div>
+
                     <div className='create-data-wrapper' style={{ display: 'none' }}>
 
                         <FormControl fullWidth>

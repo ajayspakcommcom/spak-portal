@@ -109,21 +109,29 @@ export default function Index() {
     const handleFileChange = (elem: string, event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const result = reader.result;
-                if (typeof result === 'string') {
 
-                    if (elem.toLowerCase() === 'userimg') {
-                        setImageDataUrl(result);
-                    }
+            const fileSize = file.size / 1024;
 
-                    if (elem.toLowerCase() === 'userdoc') {
-                        setUserDocument(result);
+            if (fileSize < 600) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const result = reader.result;
+                    if (typeof result === 'string') {
+
+                        if (elem.toLowerCase() === 'userimg') {
+                            setImageDataUrl(result);
+                        }
+
+                        if (elem.toLowerCase() === 'userdoc') {
+                            setUserDocument(result);
+                        }
                     }
-                }
-            };
-            reader.readAsDataURL(file);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('File size is too big. It should be less than 600Kb');
+            }
+
         }
     };
 

@@ -26,7 +26,7 @@ export default function Index() {
 
     return (
         <div>
-            <input type="file" accept=".xlsx, .xls" onChange={handleUpload} />
+            <input type="file" accept=".png, .jpg" onChange={handleUpload} />
         </div>
     );
 }

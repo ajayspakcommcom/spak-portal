@@ -444,6 +444,10 @@ const Index: React.FC = () => {
             <Header />
             <Container component="main">
 
+                <div className='create-data-wrapper-heading client-header'>
+                    <h1>Leave</h1>
+                </div>
+
                 <div>
                     <div className='create-data-wrapper-heading leave-header' style={{ display: 'none' }}>
                         <div>

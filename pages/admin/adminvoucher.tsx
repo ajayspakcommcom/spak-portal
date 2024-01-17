@@ -472,8 +472,9 @@ const Index: React.FC = () => {
                 {/* filter */}
 
                 <div>
-                    <div className='create-data-wrapper-heading voucher-header' style={{ display: 'none' }}>
-                        <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
+                    <div className='create-data-wrapper-heading voucher-header'>
+                        <h1>Voucher</h1>
+                        {/* <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button> */}
                     </div>
                     <div className='create-data-wrapper'>
 

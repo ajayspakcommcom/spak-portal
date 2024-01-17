@@ -358,6 +358,7 @@ const Index: React.FC = () => {
                 {/* filter */}
                 <div>
                     <div className='create-data-wrapper-heading holiday-header'>
+                        <h1>Report</h1>
                         <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button>
                     </div>
                     <div className='create-data-wrapper'>
