@@ -43,6 +43,7 @@ const Index: React.FC = () => {
     const id = open ? 'simple-popover' : undefined;
 
     const fetchLeaveData = async () => {
+
         try {
             if (userData && userData.token) {
 
@@ -53,7 +54,7 @@ const Index: React.FC = () => {
                     },
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify({ type: "LEAVELIST" }), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify({ type: "LEAVELIST", refId: userData.data._id }), config);
                 console.log(response);
 
                 if (response.status === 200) {
@@ -80,7 +81,7 @@ const Index: React.FC = () => {
                     },
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/voucher`, JSON.stringify({ type: "VOUCHERLIST" }), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/voucher`, JSON.stringify({ type: "VOUCHERLIST", refId: userData.data._id }), config);
 
                 if (response.status === 200) {
                     setVoucherList(response.data)
@@ -95,18 +96,6 @@ const Index: React.FC = () => {
 
     };
 
-    // function formatDateToDDMMYYYY(date: Date | string): string {
-    //     if (!(date instanceof Date)) {
-    //         date = new Date(date);
-    //     }
-
-    //     let day = date.getDate().toString().padStart(2, '0');
-    //     let month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() returns 0-11
-    //     let year = date.getFullYear();
-
-    //     return `${day}/${month}/${year}`;
-    // }
-
     useEffect(() => {
         fetchLeaveData();
         fetchVoucherData();
@@ -114,12 +103,6 @@ const Index: React.FC = () => {
 
     return (
         <div>
-
-            {/* <div className='notification-button-wrapper'>
-                <span className='count-notification'>5</span>
-                <Button aria-describedby={id} onClick={handleClick}><NotificationsIcon color="primary" fontSize="medium" style={{ fill: '#fff' }} /></Button>
-            </div> */}
-
 
             <Button aria-describedby={id} onClick={handleClick} className='notification-button-wrapper'>
                 {(leaveList.length > 0 || voucherList.length > 0) && <span className='count-notification'>{leaveList.length + voucherList.length}</span>}

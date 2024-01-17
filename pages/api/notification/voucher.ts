@@ -7,7 +7,7 @@ import Cors from 'cors';
 
 type Voucher = { _id: ObjectId, type: string, voucherNo: number, personId: string, approvalStatus: string, voucherDate: Date, voucherAmount: number, voucherData: any[], refId: string, isApproved: string };
 
-type VoucherNotification = { id: ObjectId; voucherId: string; status: string; actionDate: Date, requestedDate: Date };
+type VoucherNotification = { id: ObjectId; voucherId: string; status: string; actionDate: Date, requestedDate: Date, refId: string, };
 
 type ApiResponse = | { message: string } | VoucherNotification | VoucherNotification[] | { data: any } | { error: string };
 
@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<VoucherNotification>("vouchernotification");
-            const data = await collection.find({}).sort({ createdDate: -1 }).limit(4).toArray();
+            const data = await collection.find({ refId: req.body.refId }).sort({ createdDate: -1 }).limit(4).toArray();
             res.status(200).json(data);
           }
           catch (err) {
@@ -66,6 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const voucherData = await voucherCollection.findOne({ _id: new ObjectId(req.body.voucherId) });
 
             req.body.requestedDate = voucherData?.voucherDate;
+            req.body.refId = voucherData?.refId;
             const data = await collection.insertOne(req.body);
 
             res.status(200).json({ data: data });
