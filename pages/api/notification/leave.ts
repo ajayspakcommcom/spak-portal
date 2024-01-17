@@ -7,7 +7,7 @@ import Cors from 'cors';
 
 type Leave = { _id: ObjectId; startDate: Date; endDate: Date; isApproved: string; refId: string, type: string };
 
-type LeaveNotification = { id: ObjectId; leaveId: string; status: string; createdDate: Date, startDate: Date };
+type LeaveNotification = { id: ObjectId; leaveId: string; status: string; createdDate: Date, requestedDate: Date };
 
 type ApiResponse = | { message: string } | LeaveNotification | LeaveNotification[] | { data: any } | { error: string };
 
@@ -65,7 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const leaveCollection = db.collection<Leave>("leave");
             const leaveData = await leaveCollection.findOne({ _id: new ObjectId(req.body.leaveId) });
 
-            req.body.startDate = leaveData?.startDate;
+            req.body.requestedDate = leaveData?.startDate;
             const data = await collection.insertOne(req.body);
 
             res.status(200).json({ data: data });

@@ -5,9 +5,9 @@ import { verifyToken } from '../libs/verifyToken';
 import runMiddleware from '@/libs/runMiddleware';
 import Cors from 'cors';
 
-type Voucher = { id: ObjectId; voucherNo: number; person: string; amount: number; date: Date; summary: string };
+type Voucher = { _id: ObjectId, type: string, voucherNo: number, personId: string, approvalStatus: string, voucherDate: Date, voucherAmount: number, voucherData: any[], refId: string, isApproved: string };
 
-type VoucherNotification = { id: ObjectId; leaveId: string; status: string; createdDate: Date, startDate: Date };
+type VoucherNotification = { id: ObjectId; voucherId: string; status: string; actionDate: Date, requestedDate: Date };
 
 type ApiResponse = | { message: string } | VoucherNotification | VoucherNotification[] | { data: any } | { error: string };
 
@@ -65,7 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const voucherCollection = db.collection<Voucher>("voucher");
             const voucherData = await voucherCollection.findOne({ _id: new ObjectId(req.body.voucherId) });
 
-            req.body.startDate = voucherData?.date;
+            req.body.requestedDate = voucherData?.voucherDate;
             const data = await collection.insertOne(req.body);
 
             res.status(200).json({ data: data });

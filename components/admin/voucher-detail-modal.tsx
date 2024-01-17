@@ -69,12 +69,22 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
                 };
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
-                console.log(response);
 
                 if (response.status === 200) {
-                    fetchData();
-                    onClick();
-                    setOpen(false);
+                    const notificationObj = {
+                        type: "VOUCHERCREATE",
+                        voucherId: objData.id,
+                        status: 'rejected',
+                        actionDate: new Date()
+                    };
+
+                    const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification/voucher`, JSON.stringify(notificationObj), config);
+
+                    if (notificationResp.status === 200) {
+                        fetchData();
+                        onClick();
+                        setOpen(false);
+                    }
                 }
 
             } else {
@@ -107,12 +117,23 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
                 //console.log(objData);
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}adminvoucher`, JSON.stringify(objData), config);
-                console.log(response);
 
                 if (response.status === 200) {
-                    fetchData();
-                    onClick();
-                    setOpen(false);
+
+                    const notificationObj = {
+                        type: "VOUCHERCREATE",
+                        voucherId: objData.id,
+                        status: 'approved',
+                        actionDate: new Date()
+                    };
+
+                    const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification/voucher`, JSON.stringify(notificationObj), config);
+
+                    if (notificationResp.status === 200) {
+                        fetchData();
+                        onClick();
+                        setOpen(false);
+                    }
                 }
 
             } else {
@@ -206,8 +227,18 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
                                 {/* <span className={'pointer'} onClick={() => confirmToReject()}><CancelIcon color='error' /></span> */}
                                 {/* <span className={'pointer'} onClick={() => confirmToApprove()}><CheckCircleIcon color='primary' /></span> */}
 
-                                <Button variant="contained" color="error" className={'pointer'} onClick={() => confirmToReject()} sx={{ mr: 2 }}>Reject</Button>
-                                <Button variant="contained" color="success" className={'pointer'} onClick={() => confirmToApprove()}>Confirm</Button>
+                                {rowDetailData.approvalStatus?.toLowerCase() === 'pending' &&
+                                    <>
+                                        <Button variant="contained" color="error" className={'pointer'} onClick={() => confirmToReject()} sx={{ mr: 2 }}>Reject</Button>
+                                        <Button variant="contained" color="success" className={'pointer'} onClick={() => confirmToApprove()}>Confirm</Button>
+                                    </>
+                                }
+
+
+                                {rowDetailData.approvalStatus?.toLowerCase() === 'approved' && <Button variant="contained" color="error" className={'pointer'} onClick={() => confirmToReject()} >Reject</Button>}
+                                {rowDetailData.approvalStatus?.toLowerCase() === 'rejected' && <Button variant="contained" color="success" className={'pointer'} onClick={() => confirmToApprove()}>Confirm</Button>}
+
+
                             </div>
                         }
 
