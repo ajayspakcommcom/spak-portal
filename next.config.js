@@ -6,6 +6,7 @@ const nextConfig = {
     API_URL: process.env.API_URL,
     // Add more variables as needed
   },
+  //images: { domains: ['http://localhost:3000'] }
 }
 
 module.exports = nextConfig

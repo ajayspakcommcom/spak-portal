@@ -707,3 +707,9 @@ body {
   font-size: 14px;
   font-weight: 100;
 }
+
+.module-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

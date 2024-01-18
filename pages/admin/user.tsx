@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, FormHelperText, MenuItem } from '@mui/material';
+import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, FormHelperText, MenuItem, TablePagination } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
@@ -18,6 +18,7 @@ import Image from 'next/image';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
 import SuccessSnackbar from '@/components/admin/success-snackbar';
+import ImageDialogueBox from '@/components/admin/image-dialogue-box';
 
 type FormValues = {
     _id?: string | undefined;
@@ -61,12 +62,25 @@ const Index: React.FC = () => {
 
     const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
     const [successMessage, setSuccessMessage] = React.useState<string>('');
+    const [isImageDialogueBox, setIsImageDialogueBox] = React.useState<boolean>(false);
+    const [selectedImage, setSelectedImage] = React.useState<string>();
+    const [selectedUserName, setSelectedUserName] = React.useState<string>();
+
+
+    const [page, setPage] = useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
     //     router.push('/admin/login');
     //     return false;
     // }
+
+    const selectImageHandler = (selectedItem: FormValues) => {
+        setSelectedImage(selectedItem.imgUrl);
+        setSelectedUserName(selectedItem.firstName + ' ' + selectedItem.lastName)
+        setIsImageDialogueBox(true);
+    };
 
     const fetchData = async () => {
 
@@ -368,6 +382,16 @@ const Index: React.FC = () => {
         setImageDataUrl('')
     };
 
+
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
     return (
         <>
             <Header />
@@ -394,16 +418,14 @@ const Index: React.FC = () => {
                         </TableHead>
                         <TableBody>
 
-                            {/* {JSON.stringify(leaveList)} */}
-
-                            {Array.isArray(leaveList) && leaveList.map((row, index) => (
+                            {Array.isArray(leaveList) && leaveList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                     <TableCell component="th" scope="row">{row.firstName}</TableCell>
                                     <TableCell component="th" scope="row">{row.lastName}</TableCell>
                                     <TableCell component="th" scope="row">{row.username}</TableCell>
                                     <TableCell component="th" scope="row">{row.password ? '••••••' : 'Not Set'}</TableCell>
                                     <TableCell component="th" scope="row">
-                                        {row.imgUrl && <Image src={row.imgUrl} alt="Description of the image" width={70} height={70} />}
+                                        {row.imgUrl && <Image src={row.imgUrl} alt="Description of the image" className='pointer' width={70} height={70} onClick={() => selectImageHandler(row)} />}
                                     </TableCell>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.doj as string)}</TableCell>
                                     <TableCell component="th" scope="row">{row.designation}</TableCell>
@@ -427,6 +449,16 @@ const Index: React.FC = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={leaveList.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
 
                 <Modal open={toggleModal} onClose={toggleModalHandler} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
 
@@ -572,6 +604,8 @@ const Index: React.FC = () => {
             <Footer />
 
             {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
+            {/* {JSON.stringify(isImageDialogueBox)} */}
+            {isImageDialogueBox && <ImageDialogueBox isVisible={isImageDialogueBox} header={selectedUserName} img={selectedImage} onClick={() => setIsImageDialogueBox(false)} />}
 
 
         </>
