@@ -18,7 +18,7 @@ const Index: React.FC<componentProps> = ({ isVisible, message }) => {
     return (
         <Box sx={{ width: '100%' }}>
             <Collapse in={open}>
-                <Alert severity="success" action={<IconButton aria-label="close" color="inherit" size="small" onClick={() => { setOpen(false) }}> <CloseIcon fontSize="inherit" /></IconButton>} sx={{ mt: 2 }}>
+                <Alert severity="error" action={<IconButton aria-label="close" color="inherit" size="small" onClick={() => { setOpen(false) }}> <CloseIcon fontSize="inherit" /></IconButton>} sx={{ mt: 2 }}>
                     {message}
                 </Alert>
             </Collapse>

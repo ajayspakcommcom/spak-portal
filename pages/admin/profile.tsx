@@ -19,7 +19,7 @@ import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
-import SuccessMessage from '@/components/admin/success-message'
+import SuccessMessage from '@/components/admin/success-message';
 
 type Profile = {
     _id?: string;
@@ -108,14 +108,16 @@ export default function Index() {
                 type: 'UPDATE',
             };
 
-            console.log(objData);
-
             const response: ResponseType = await dispatch(postUpdateUser(objData));
             console.log(response);
 
-            // if (response.payload.status === 200) {
-            //     setIsSuccess(true);
-            // }
+            if (response.payload.status === 200) {
+                setIsSuccess(true);
+            }
+
+            setTimeout(() => {
+                setIsSuccess(false);
+            }, 5000);
 
         }
     });
@@ -353,11 +355,11 @@ export default function Index() {
 
                                 </Box>
                                 <Box display="flex" justifyContent="flex-end">
-                                    <Button variant="contained" onClick={() => setEditMode(false)} sx={{ mr: 2 }} color='error'>Cancel</Button>
+                                    <Button variant="contained" onClick={() => setEditMode(false)} sx={{ mr: 2 }} color='inherit'>Cancel</Button>
                                     <Button variant="contained" type='submit' color='success'>Save</Button>
                                 </Box>
 
-                                <SuccessMessage message='Success' />
+                                {isSuccess && <SuccessMessage isVisible={true} message={<b>Profile updated successfully!</b>} />}
 
                             </form>
                         }
