@@ -105,8 +105,12 @@ export default function Index() {
                 designation: values.designation,
                 doj: values.doj,
                 uploadDocument: userDocument,
+                username: values.username,
                 type: 'UPDATE',
             };
+
+            console.log(objData);
+
 
             const response: ResponseType = await dispatch(postUpdateUser(objData));
             console.log(response);

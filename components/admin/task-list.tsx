@@ -1,5 +1,5 @@
 import Header from '@/components/admin/header';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
@@ -26,6 +26,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import Status from '@/components/admin/status';
 import TaskDetailModal from '@/components/admin/task-detail-modal';
+
 
 
 interface componentProps {
@@ -125,7 +126,6 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterClientName, setFilterClientName] = useState('');
     const [filterStatus, setFilterStatus] = useState('Not Started');
-
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -658,6 +658,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                         <Button onClick={onCompleteSuccessHandler} color="secondary" autoFocus>Save</Button>
                     </DialogActions>
                 </Dialog>
+
 
             </>
         );

@@ -22,6 +22,7 @@ import ReportModelDetail from '@/components/admin/report-detail-modal';
 import Image from 'next/image';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
+import SuccessSnackbar from '@/components/admin/success-snackbar';
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -90,6 +91,9 @@ const Index: React.FC = () => {
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterStatus, setFilterStatus] = useState('');
     const [filterClientName, setFilterClientName] = useState('');
+
+    const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = React.useState<string>('');
 
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
@@ -215,6 +219,15 @@ const Index: React.FC = () => {
                                 setInputList([]);
                                 setToggleModal(false);
                                 fetchData();
+
+                                setIsSuccess(true);
+                                setSuccessMessage('Report Edited Successfully!');
+
+                                setTimeout(() => {
+                                    setIsSuccess(false);
+                                    setSuccessMessage('');
+                                }, 6000);
+
                             }
 
                         } else {
@@ -267,6 +280,14 @@ const Index: React.FC = () => {
                                 fetchData();
                                 setToggleModal(false);
                                 setInputList([]);
+
+                                setIsSuccess(true);
+                                setSuccessMessage('Report Created Successfully!');
+
+                                setTimeout(() => {
+                                    setIsSuccess(false);
+                                    setSuccessMessage('');
+                                }, 6000);
                             }
 
                         } else {
@@ -382,6 +403,15 @@ const Index: React.FC = () => {
 
                 if (response.status === 200) {
                     setToggleDialogue(false);
+                    fetchData();
+                    setIsSuccess(true);
+                    setSuccessMessage('Report Deleted Successfully!');
+
+                    setTimeout(() => {
+                        setIsSuccess(false);
+                        setSuccessMessage('');
+                    }, 6000);
+
                 }
 
             } else {
@@ -676,6 +706,8 @@ const Index: React.FC = () => {
             </Container>
 
             <Footer />
+
+            {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
 
 
         </>

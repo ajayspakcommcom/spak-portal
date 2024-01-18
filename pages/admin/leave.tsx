@@ -147,6 +147,7 @@ const Index: React.FC = () => {
                             const response = await axios.post(`${publicRuntimeConfig.API_URL}leave`, JSON.stringify(objData), config);
 
                             if (response.status === 200) {
+                                fetchData();
                                 setIsEditMode(false);
                                 setIsSuccess(true);
                                 setSuccessMessage('Leave Edit Successfully!');
@@ -195,6 +196,7 @@ const Index: React.FC = () => {
                             console.log(response);
 
                             if (response.status === 200) {
+                                fetchData();
                                 setIsEditMode(false);
                                 setIsSuccess(true);
                                 setSuccessMessage('Leave Created Successfully!');
@@ -301,6 +303,7 @@ const Index: React.FC = () => {
                 console.log(response);
 
                 if (response.status === 200) {
+                    fetchData();
                     setToggleDialogue(false);
                     setIsSuccess(true);
                     setSuccessMessage('Leave Deleted Successfully!');

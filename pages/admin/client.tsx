@@ -16,6 +16,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
+import SuccessSnackbar from '@/components/admin/success-snackbar';
 
 type FormValues = {
     _id?: string;
@@ -38,11 +39,43 @@ const Index: React.FC = () => {
     const [updateId, setUpdateId] = useState<string>();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
 
+    const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = React.useState<string>('');
+
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
     //     router.push('/admin/login');
     //     return false;
     // }
+
+    const fetchData = async () => {
+
+        try {
+            if (userData && userData.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}client`, JSON.stringify({ "type": "LIST" }), config);
+                console.log(response);
+
+
+                if (response.status === 200) {
+                    setClientList(response.data);
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
 
     const formik = useFormik<FormValues>({
         initialValues: {
@@ -78,6 +111,16 @@ const Index: React.FC = () => {
 
                             if (response.status === 200) {
                                 console.log('');
+                                fetchData();
+
+                                setIsSuccess(true);
+                                setSuccessMessage('Client Edited Successfully!');
+
+                                setTimeout(() => {
+                                    setIsSuccess(false);
+                                    setSuccessMessage('');
+                                }, 6000);
+
                             }
 
                         } else {
@@ -116,7 +159,17 @@ const Index: React.FC = () => {
                             console.log(response);
 
                             if (response.status === 200) {
+                                fetchData();
                                 setIsEditMode(false);
+
+                                setIsSuccess(true);
+                                setSuccessMessage('Client Created Successfully!');
+
+                                setTimeout(() => {
+                                    setIsSuccess(false);
+                                    setSuccessMessage('');
+                                }, 6000);
+
                             }
 
                         } else {
@@ -134,35 +187,6 @@ const Index: React.FC = () => {
             setToggleModal(false);
         }
     });
-
-    const fetchData = async () => {
-
-        try {
-            if (userData && userData.token) {
-
-                const config = {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
-                    },
-                };
-
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}client`, JSON.stringify({ "type": "LIST" }), config);
-                console.log(response);
-
-
-                if (response.status === 200) {
-                    setClientList(response.data);
-                }
-
-            } else {
-                console.error('No token available');
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-
-    };
 
 
     useEffect(() => {
@@ -242,6 +266,16 @@ const Index: React.FC = () => {
 
                 if (response.status === 200) {
                     setToggleDialogue(false);
+                    fetchData();
+
+                    setIsSuccess(true);
+                    setSuccessMessage('Client Deleted Successfully!');
+
+                    setTimeout(() => {
+                        setIsSuccess(false);
+                        setSuccessMessage('');
+                    }, 6000);
+
                 }
 
             } else {
@@ -387,6 +421,8 @@ const Index: React.FC = () => {
             </Container>
 
             <Footer />
+
+            {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
 
 
         </>

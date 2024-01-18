@@ -16,6 +16,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
+import SuccessSnackbar from '@/components/admin/success-snackbar';
 
 type FormValues = {
     _id?: string | undefined;
@@ -53,10 +54,40 @@ const Index: React.FC = () => {
     const [filterMonth, setFilterMonth] = useState<Date | null | string>(new Date());
     const [filterYear, setFilterYear] = useState<Date | null | string>(new Date());
 
+    const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = React.useState<string>('');
+
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
     //     router.push('/admin/login');
     //     return false;
     // }
+
+    const fetchData = async () => {
+
+        try {
+            if (userData && userData.token) {
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify({ "type": "LIST" }), config);
+
+                if (response.status === 200) {
+                    setHolidayList(response.data)
+                }
+
+            } else {
+                console.error('No token available');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+    };
 
     const formik = useFormik<FormValues>({
         initialValues: {
@@ -91,7 +122,16 @@ const Index: React.FC = () => {
                             console.log(response);
 
                             if (response.status === 200) {
-                                console.log('');
+                                fetchData();
+
+                                setIsSuccess(true);
+                                setSuccessMessage('Holiday Edited Successfully!');
+
+                                setTimeout(() => {
+                                    setIsSuccess(false);
+                                    setSuccessMessage('');
+                                }, 6000);
+
                             }
 
                         } else {
@@ -128,6 +168,16 @@ const Index: React.FC = () => {
 
                             if (response.status === 200) {
                                 setIsEditMode(false);
+                                fetchData();
+
+                                setIsSuccess(true);
+                                setSuccessMessage('Holiday Created Successfully!');
+
+                                setTimeout(() => {
+                                    setIsSuccess(false);
+                                    setSuccessMessage('');
+                                }, 6000);
+
                             }
 
                         } else {
@@ -146,33 +196,6 @@ const Index: React.FC = () => {
         }
     });
 
-
-    const fetchData = async () => {
-
-        try {
-            if (userData && userData.token) {
-
-                const config = {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
-                    },
-                };
-
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}holiday`, JSON.stringify({ "type": "LIST" }), config);
-
-                if (response.status === 200) {
-                    setHolidayList(response.data)
-                }
-
-            } else {
-                console.error('No token available');
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-
-    };
 
     useEffect(() => {
 
@@ -251,6 +274,16 @@ const Index: React.FC = () => {
 
                 if (response.status === 200) {
                     setToggleDialogue(false);
+                    fetchData();
+
+                    setIsSuccess(true);
+                    setSuccessMessage('Deleted Created Successfully!');
+
+                    setTimeout(() => {
+                        setIsSuccess(false);
+                        setSuccessMessage('');
+                    }, 6000);
+
                 }
 
             } else {
@@ -525,6 +558,8 @@ const Index: React.FC = () => {
             </Container>
 
             <Footer />
+
+            {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
 
 
         </>

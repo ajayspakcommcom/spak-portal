@@ -16,6 +16,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
+import SuccessSnackbar from '@/components/admin/success-snackbar';
 
 type FormValues = {
     _id?: string | undefined;
@@ -54,6 +55,9 @@ const Index: React.FC = () => {
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterStatus, setFilterStatus] = useState('');
+
+    const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = React.useState<string>('');
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
     //     router.push('/admin/login');
@@ -384,6 +388,15 @@ const Index: React.FC = () => {
 
                     const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify(notificationObj), config);
                     fetchData();
+
+                    setIsSuccess(true);
+                    setSuccessMessage('Leave Rejected Successfully!');
+
+                    setTimeout(() => {
+                        setIsSuccess(false);
+                        setSuccessMessage('');
+                    }, 6000);
+
                 }
 
             } else {
@@ -428,6 +441,14 @@ const Index: React.FC = () => {
 
                     const notificationResp = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify(notificationObj), config);
                     fetchData();
+
+                    setIsSuccess(true);
+                    setSuccessMessage('Leave Approved Successfully!');
+
+                    setTimeout(() => {
+                        setIsSuccess(false);
+                        setSuccessMessage('');
+                    }, 6000);
                 }
 
             } else {
@@ -695,6 +716,8 @@ const Index: React.FC = () => {
             </Container>
 
             <Footer />
+
+            {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
 
         </>
     )

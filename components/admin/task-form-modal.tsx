@@ -400,7 +400,10 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
                 </Box>
             </Modal>
 
+
+
         </div>
+
     );
 }
 

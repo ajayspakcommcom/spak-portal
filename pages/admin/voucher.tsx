@@ -22,6 +22,7 @@ import VoucherModelDetail from '@/components/admin/voucher-detail-modal';
 import Image from 'next/image';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
+import SuccessSnackbar from '@/components/admin/success-snackbar';
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -74,6 +75,9 @@ const Index: React.FC = () => {
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(new Date());
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
     const [filterStatus, setFilterStatus] = useState('');
+
+    const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = React.useState<string>('');
 
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
@@ -196,9 +200,17 @@ const Index: React.FC = () => {
                             console.log(response);
 
                             if (response.status === 200) {
-                                console.log('');
+                                fetchData();
                                 setInputList([]);
                                 setToggleModal(false);
+
+                                setIsSuccess(true);
+                                setSuccessMessage('Voucher Edit Successfully!');
+
+                                setTimeout(() => {
+                                    setIsSuccess(false);
+                                    setSuccessMessage('');
+                                }, 6000);
                             }
 
                         } else {
@@ -253,6 +265,15 @@ const Index: React.FC = () => {
                                 fetchData();
                                 setInputList([]);
                                 setToggleModal(false);
+
+                                setIsSuccess(true);
+                                setSuccessMessage('Voucher Created Successfully!');
+
+                                setTimeout(() => {
+                                    setIsSuccess(false);
+                                    setSuccessMessage('');
+                                }, 6000);
+
                             }
 
                         } else {
@@ -370,6 +391,15 @@ const Index: React.FC = () => {
 
                 if (response.status === 200) {
                     setToggleDialogue(false);
+                    fetchData();
+                    setIsSuccess(true);
+                    setSuccessMessage('Voucher Deleted Successfully!');
+
+                    setTimeout(() => {
+                        setIsSuccess(false);
+                        setSuccessMessage('');
+                    }, 6000);
+
                 }
 
             } else {
@@ -676,6 +706,8 @@ const Index: React.FC = () => {
             </Container>
 
             <Footer />
+
+            {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
 
 
         </>
