@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Avatar, Box, Typography, List, ListItem, Paper, Container, Button, TextField, FormControl } from '@mui/material';
+import { Avatar, Box, Typography, List, ListItem, Paper, Container, Button, TextField, FormControl, InputAdornment, IconButton } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
@@ -17,6 +17,9 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import SuccessAlert from '@/components/admin/success-alert';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Visibility from '@mui/icons-material/Visibility';
+import SuccessMessage from '@/components/admin/success-message'
 
 type Profile = {
     _id?: string;
@@ -51,6 +54,16 @@ export default function Index() {
     const [userDocument, setUserDocument] = React.useState(userData.data.uploadDocument);
     const userDocInputRef = React.useRef<HTMLInputElement>(null);
     const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
+
+    const [showPassword, setShowPassword] = React.useState<boolean>(false);
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
     //     router.push('/admin/login');
@@ -274,12 +287,27 @@ export default function Index() {
                                             id="password"
                                             name="password"
                                             label="Password"
-                                            type="password"
+                                            type={showPassword ? 'text' : 'password'}
                                             value={formik.values.password}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             error={formik.touched.password && Boolean(formik.errors.password)}
                                             helperText={formik.touched.password && formik.errors.password}
+
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={handleClickShowPassword}
+                                                            onMouseDown={handleMouseDownPassword}
+                                                            edge="end">
+                                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+
                                         />
                                     </Box>
 
@@ -328,6 +356,8 @@ export default function Index() {
                                     <Button variant="contained" onClick={() => setEditMode(false)} sx={{ mr: 2 }} color='error'>Cancel</Button>
                                     <Button variant="contained" type='submit' color='success'>Save</Button>
                                 </Box>
+
+                                <SuccessMessage message='Success' />
 
                             </form>
                         }

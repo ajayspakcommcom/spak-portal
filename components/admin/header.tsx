@@ -23,7 +23,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import Notification from '@/components/admin/notification';
 import useAutoLogout from '@/hooks/useAutoLogout';
 
-const pages = ['Task', 'Voucher', 'Holiday', 'Leave', 'Report', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
+const pages = ['Task', 'Report', 'AdminReport', 'Voucher', 'Holiday', 'Leave', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
 const settings = ['Profile', 'Logout'];
 
 
@@ -105,7 +105,7 @@ const Index = () => {
                             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                                 {pages.map((page) => (
                                     (page.toLowerCase() === 'leave' || page.toLowerCase() === 'report' || page.toLowerCase() === 'voucher' || page.toLowerCase() === 'task') ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{
-                                        page === 'AdminVoucher' ? 'Voucher' : page === 'AdminLeave' ? 'Leave' : page
+                                        page === 'AdminVoucher' ? 'Voucher' : page === 'AdminLeave' ? 'Leave' : page === 'AdminReport' ? 'Report' : page
                                     }</Button>
                                 ))}
                             </Box>
@@ -116,7 +116,7 @@ const Index = () => {
                             <>
                                 <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                                     {pages.map((page) => (
-                                        (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user' || page.toLowerCase() === 'client') || page.toLowerCase() === 'adminvoucher' || page.toLowerCase() === 'adminleave' ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
+                                        (page.toLowerCase() === 'holiday' || page.toLowerCase() === 'user' || page.toLowerCase() === 'client') || page.toLowerCase() === 'adminvoucher' || page.toLowerCase() === 'adminreport' || page.toLowerCase() === 'adminleave' ? '' : <Button key={page} onClick={() => handleCloseNavMenu(page)} sx={{ my: 2, color: 'white', display: 'block' }}>{page}</Button>
                                     ))}
                                     <div className='notification-wrapper'>
                                         <Notification />

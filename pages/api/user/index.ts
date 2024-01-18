@@ -121,6 +121,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                   date: req.body.date,
                   designation: req.body.designation,
                   doj: req.body.doj,
+                  username: req.body.username,
                   uploadDocument: req.body.uploadDocument
                 }
               }

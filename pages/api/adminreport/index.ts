@@ -7,6 +7,8 @@ import Cors from 'cors';
 
 type Report = { id: ObjectId; };
 
+type User = { id: ObjectId; firstName: string; lastName: string; username: string; password: string; imgUrl: string; date: Date, designation: string };
+
 type ApiResponse = | { message: string } | Report | Report[] | { data: any } | { error: string };
 
 const cors = Cors({
@@ -72,15 +74,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             } else {
 
-              console.log('All');
-              console.log(req.body.refId);
-
               const client = await clientPromise;
               const db = client.db("Spak");
               const collection = db.collection<Report>("report");
+              const data = await collection.find({}).sort({ createdDate: -1 }).toArray();
 
-              const data = await collection.find({ refId: req.body.refId }).sort({ createdDate: -1 }).toArray();
-              res.status(200).json(data);
+              const userCollection = db.collection<User>("user");
+              const userData = await userCollection.find({}).toArray();
+
+              userData.map((item: any) => {
+                item._id = item._id.toString();
+                delete item.uploadDocument;
+                delete item.imgUrl;
+                return {
+                  _id: item._id,
+                  firstName: item.firstName,
+                  lastName: item.lastName,
+                  username: item.username,
+                }
+              });
+
+              const output: any[] = [];
+
+              data.forEach((vItem: any, idx) => {
+                const user = userData.find(item => vItem.refId === item._id);
+                output.push({ ...user, ...vItem });
+              });
+
+              res.status(200).json(output);
 
             }
           }
