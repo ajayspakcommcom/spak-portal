@@ -502,7 +502,7 @@ const Index: React.FC = () => {
                         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Heading</Typography>
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
-                            <Box margin={1}>
+                            <Box margin={1} sx={{ mb: 3 }}>
                                 <TextField
                                     fullWidth
                                     id="Holiday"
@@ -515,7 +515,7 @@ const Index: React.FC = () => {
                                     helperText={formik.touched.title && formik.errors.title} />
                             </Box>
 
-                            <Box margin={1}>
+                            <Box margin={1} sx={{ mb: 3 }}>
                                 <TextField
                                     fullWidth
                                     id="date"
@@ -530,7 +530,7 @@ const Index: React.FC = () => {
                             </Box>
 
                             <Box margin={1}>
-                                <Button color="primary" variant="contained" fullWidth type="submit">Submit</Button>
+                                <Button color="primary" variant="contained" fullWidth type="submit" className='full-btn'>Submit</Button>
                             </Box>
                         </form>
                     </Box>

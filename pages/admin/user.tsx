@@ -573,9 +573,7 @@ const Index: React.FC = () => {
 
                             {imageDataUrl && <Image src={imageDataUrl} alt="Description of the image" width={70} height={70} />}
 
-                            <Box>
-                                <Button color="primary" variant="contained" fullWidth type="submit">Submit</Button>
-                            </Box>
+                            <Button color="primary" variant="contained" fullWidth type="submit" className='full-btn'>Submit</Button>
                         </form>
                     </Box>
 

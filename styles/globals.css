@@ -713,3 +713,46 @@ body {
   align-items: center;
   justify-content: space-between;
 }
+
+.default-btn {
+  min-width: 218px !important;
+  padding: 15px 0 !important;
+}
+
+.file-upload-full,
+.full-btn {
+  width: 100%;
+  padding: 15px 0 !important;
+}
+
+
+.header-drop-down-wrapper {
+  border-bottom: 1px solid lightgray;
+}
+
+.header-drop-down-wrapper:last-child {
+  border-bottom: 0px solid lightgray;
+}
+
+.update-profile-btn-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.update-profile-btn-wrapper>button {
+  width: 50%;
+}
+
+.profile-edit-mode-btn {
+  width: 100%;
+}
+
+.update-profile-btn-wrapper>button:first-child {
+  margin-right: 10px;
+}
+
+.update-profile-btn-wrapper>button:last-child {
+  margin-left: 10px;
+}

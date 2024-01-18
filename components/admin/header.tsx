@@ -24,7 +24,7 @@ import Notification from '@/components/admin/notification';
 import useAutoLogout from '@/hooks/useAutoLogout';
 
 const pages = ['Task', 'Report', 'AdminReport', 'Voucher', 'Holiday', 'Leave', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
-const settings = ['Profile', 'Logout'];
+const settings = ['Logout'];
 
 
 const Index = () => {
@@ -138,10 +138,17 @@ const Index = () => {
                             {userData.data.imgUrl && <Image src={userData.data.imgUrl} alt="Description of the image" width={50} height={50} className='pointer user-photo-nav' onClick={handleOpenUserMenu} />}
 
                             <Menu sx={{ mt: '45px' }} id="menu-appbar" anchorEl={anchorElUser} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }} open={Boolean(anchorElUser)} onClose={handleCloseUserMenu}>
-                                {settings.map((setting) => (
-                                    <MenuItem key={setting} onClick={setting === 'Logout' ? logoutHandler : () => handleCloseUserMenu(setting)}>
-                                        <Typography textAlign="center">{setting}</Typography>
+                                <div className='header-drop-down-wrapper' onClick={() => handleCloseUserMenu('profile')}>
+                                    <MenuItem>
+                                        <Typography textAlign="center">{userData.data.firstName[0] + '.' + userData.data.lastName}</Typography>
                                     </MenuItem>
+                                </div>
+                                {settings.map((setting, index) => (
+                                    <div className='header-drop-down-wrapper' key={`setting-${index}`} onClick={setting === 'Logout' ? logoutHandler : () => handleCloseUserMenu(setting)}>
+                                        <MenuItem>
+                                            <Typography textAlign="center">{setting}</Typography>
+                                        </MenuItem>
+                                    </div>
                                 ))}
                             </Menu>
                         </Box>

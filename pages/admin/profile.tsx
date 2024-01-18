@@ -245,9 +245,8 @@ export default function Index() {
 
                                 </List>
 
-                                <Box display="flex" justifyContent="flex-end" p={1}>
-                                    <Button variant="contained" onClick={() => setEditMode(true)}>Edit</Button>
-                                </Box>
+                                <Button variant="contained" onClick={() => setEditMode(true)} className='default-btn profile-edit-mode-btn'>Edit</Button>
+
                             </div>
                         }
 
@@ -287,7 +286,7 @@ export default function Index() {
                                         />
                                     </Box>
 
-                                    <Box mb={2} flex={1}>
+                                    <Box mb={4} flex={1}>
                                         <TextField
                                             fullWidth
                                             id="password"
@@ -317,7 +316,7 @@ export default function Index() {
                                         />
                                     </Box>
 
-                                    <Box mb={2} flex={1}>
+                                    <Box mb={4} flex={1}>
                                         <TextField
                                             fullWidth
                                             id="designation"
@@ -332,7 +331,7 @@ export default function Index() {
                                         />
                                     </Box>
 
-                                    <Box mb={2} flex={1}>
+                                    <Box mb={4} flex={1}>
                                         <TextField
                                             fullWidth
                                             id="doj"
@@ -352,16 +351,18 @@ export default function Index() {
                                     <input type="file" id='userdoc' name='userdoc' onChange={(e) => handleFileChange('userdoc', e)} accept="image/png, image/jpeg" className='upload-image' ref={userDocInputRef} />
 
                                     <label htmlFor='userdoc'>
-                                        <Button variant="contained" onClick={() => userDocInputRef.current && userDocInputRef.current.click()} startIcon={<CloudUploadIcon />}>Upload Document</Button>
+                                        <Button variant="contained" onClick={() => userDocInputRef.current && userDocInputRef.current.click()} startIcon={<CloudUploadIcon />} className='file-upload-full'>Upload Document</Button>
                                     </label>
 
                                     {userDocument && <div className='upload-doc'> <Image src={userDocument} height={100} width={100} alt="Description of the image" className='pointer round-img' /></div>}
 
                                 </Box>
-                                <Box display="flex" justifyContent="flex-end">
-                                    <Button variant="contained" onClick={() => setEditMode(false)} sx={{ mr: 2 }} color='inherit'>Cancel</Button>
-                                    <Button variant="contained" type='submit' color='success'>Save</Button>
-                                </Box>
+
+                                <div className='update-profile-btn-wrapper'>
+                                    <Button variant="contained" onClick={() => setEditMode(false)} color='inherit' className='default-btn'>Cancel</Button>
+                                    <Button variant="contained" type='submit' color='success' className='default-btn'>Save</Button>
+                                </div>
+
 
                                 {isSuccess && <SuccessMessage isVisible={true} message={<b>Profile updated successfully!</b>} />}
 

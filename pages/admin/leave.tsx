@@ -588,7 +588,7 @@ const Index: React.FC = () => {
                             </Box>
 
                             <Box>
-                                <Button color="primary" variant="contained" fullWidth type="submit">Submit for approval</Button>
+                                <Button color="primary" variant="contained" fullWidth type="submit" className='full-btn'>Submit for approval</Button>
                             </Box>
                         </form>
                     </Box>

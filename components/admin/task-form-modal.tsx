@@ -392,7 +392,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
 
                         {isEditMode && imageDataUrl && <Image src={imageDataUrl} alt="Description of the image" width={70} height={70} />}
 
-                        <Button type="submit" variant="contained" onClick={formHandler} sx={{ mt: 4 }}>
+                        <Button type="submit" variant="contained" onClick={formHandler} sx={{ mt: 4 }} className='full-btn'>
                             {isEditMode ? 'Edit' : 'Submit'}
                         </Button>
 

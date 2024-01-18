@@ -393,7 +393,7 @@ const Index: React.FC = () => {
                             </Box>
 
                             <Box mb={1}>
-                                <Button color="primary" variant="contained" fullWidth type="submit">Submit</Button>
+                                <Button color="primary" variant="contained" fullWidth type="submit" className='full-btn'>Submit</Button>
                             </Box>
                         </form>
                     </Box>
