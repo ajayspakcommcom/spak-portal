@@ -108,7 +108,7 @@ export default function Index() {
                                 error={!!errors.password}
                                 helperText={errors.password}
                             />
-                            {showError && <p>Invalid Username and Password</p>}
+                            {showError && <p className='error'>Invalid Username and Password</p>}
                             <Button type="submit" variant="contained" color="primary" sx={{ m: 1, width: '100%', height: 56 }}>Login</Button>
                         </Box>
                     </CardContent>

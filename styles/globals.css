@@ -756,3 +756,7 @@ body {
 .update-profile-btn-wrapper>button:last-child {
   margin-left: 10px;
 }
+
+.error {
+  color: #d32f2f;
+}

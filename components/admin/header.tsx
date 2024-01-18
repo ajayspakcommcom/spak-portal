@@ -140,7 +140,7 @@ const Index = () => {
                             <Menu sx={{ mt: '45px' }} id="menu-appbar" anchorEl={anchorElUser} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }} open={Boolean(anchorElUser)} onClose={handleCloseUserMenu}>
                                 <div className='header-drop-down-wrapper' onClick={() => handleCloseUserMenu('profile')}>
                                     <MenuItem>
-                                        <Typography textAlign="center">{userData.data.firstName[0] + '.' + userData.data.lastName}</Typography>
+                                        <Typography textAlign="center">{'Hello, ' + userData.data.firstName[0] + '.' + userData.data.lastName}</Typography>
                                     </MenuItem>
                                 </div>
                                 {settings.map((setting, index) => (

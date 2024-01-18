@@ -409,7 +409,7 @@ export default function Index() {
                                     </Table>
                                 </TableContainer>
                                 <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                                    <Button variant="contained" onClick={() => goto('report')}>More...</Button>
+                                    <Button variant="contained" onClick={() => goto('adminreport')}>More...</Button>
                                 </Typography>
                             </Grid>
                         }
@@ -441,7 +441,7 @@ export default function Index() {
                                     </Table>
                                 </TableContainer>
                                 <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                                    <Button variant="contained" onClick={() => goto('leave')}>More...</Button>
+                                    <Button variant="contained" onClick={() => goto('adminleave')}>More...</Button>
                                 </Typography>
                             </Grid>
                         }
@@ -481,7 +481,7 @@ export default function Index() {
                                 </TableContainer>
 
                                 <Typography variant="h6" component="h1" gutterBottom align='right' sx={{ marginTop: '20px' }}>
-                                    <Button variant="contained" onClick={() => goto('voucher')}>More...</Button>
+                                    <Button variant="contained" onClick={() => goto('adminvoucher')}>More...</Button>
                                 </Typography>
 
                             </Grid>
