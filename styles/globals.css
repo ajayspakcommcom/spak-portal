@@ -641,9 +641,12 @@ body {
 .notification-text {
   padding: 0px 5px 5px 5px;
   font-size: 13px !important;
-  display: flex;
+  /* display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; */
+  display: grid;
+  grid-template-columns: auto auto auto;
+  width: 100%;
 }
 
 .notification-text>span {

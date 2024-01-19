@@ -9,7 +9,7 @@ import axios from 'axios';
 import getConfig from 'next/config';
 import { formatDateToDDMMYYYY } from '@/utils/common';
 const { publicRuntimeConfig } = getConfig();
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 
@@ -96,6 +96,73 @@ const Index: React.FC = () => {
 
     };
 
+    const deleteVoucherNotification = async (id: string) => {
+        console.log('Voucher');
+        console.log(id);
+
+        try {
+            if (userData && userData.token) {
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const objData = {
+                    id: id,
+                    type: "DELETE"
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/voucher`, JSON.stringify(objData), config);
+                console.log(response);
+
+                if (response.status === 200) {
+                    fetchVoucherData();
+                }
+
+            } else {
+                console.error('No token available');
+            }
+
+        } catch (error) {
+            console.error('Error creating data:', error);
+        }
+
+    };
+
+    const deleteLeaveNotification = async (id: string) => {
+
+        try {
+            if (userData && userData.token) {
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
+                    },
+                };
+
+                const objData = {
+                    id: id,
+                    type: "DELETE"
+                };
+
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify(objData), config);
+                console.log(response);
+
+                if (response.status === 200) {
+                    fetchLeaveData();
+                }
+
+            } else {
+                console.error('No token available');
+            }
+
+        } catch (error) {
+            console.error('Error creating data:', error);
+        }
+    };
+
     useEffect(() => {
         fetchLeaveData();
         fetchVoucherData();
@@ -124,7 +191,7 @@ const Index: React.FC = () => {
                             {leaveList.map((row, index) => <div key={index} className='notification-content-wrapper'><Typography className='notification-text'>
                                 {row.requestedDate && <span>{formatDateToDDMMYYYY(row.requestedDate)}</span>}
                                 <span style={{ color: row.status.toString() === 'rejected' ? 'red' : 'green' }}>{row.status.charAt(0).toUpperCase() + row.status.slice(1)}</span>
-                                <span><CheckCircleIcon color='inherit' /></span>
+                                <span onClick={() => deleteLeaveNotification(row._id as string)}><CloseIcon color='inherit' /></span>
                             </Typography>
                             </div>)}
                         </section>
@@ -137,7 +204,7 @@ const Index: React.FC = () => {
                             {voucherList.map((row, index) => <div key={index} className='notification-content-wrapper'><Typography className='notification-text'>
                                 {row.requestedDate && <span>{formatDateToDDMMYYYY(row.requestedDate)}</span>}
                                 <span style={{ color: row.status.toString() === 'rejected' ? 'red' : 'green' }}>{row.status.charAt(0).toUpperCase() + row.status.slice(1)}</span>
-                                <span><CheckCircleIcon color='inherit' /></span>
+                                <span onClick={() => deleteVoucherNotification(row._id as string)}><CloseIcon color='inherit' /></span>
                             </Typography>
                             </div>)}
 

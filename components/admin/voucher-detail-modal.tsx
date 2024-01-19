@@ -230,7 +230,7 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
                                 {rowDetailData.approvalStatus?.toLowerCase() === 'pending' &&
                                     <>
                                         <Button variant="contained" color="error" className={'pointer'} onClick={() => confirmToReject()} sx={{ mr: 2 }}>Reject</Button>
-                                        <Button variant="contained" color="success" className={'pointer'} onClick={() => confirmToApprove()}>Confirm</Button>
+                                        <Button variant="contained" color="success" className={'pointer'} onClick={() => confirmToApprove()}>Approve</Button>
                                     </>
                                 }
 

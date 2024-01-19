@@ -77,7 +77,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               res.status(500).json({ error: 'An unknown error occurred' });
             }
           }
+          break;
 
+        case 'DELETE':
+          try {
+            const client = await clientPromise;
+            const db = client.db("Spak");
+            const collection = db.collection<LeaveNotification>("leavenotification");
+            const result = await collection.deleteOne({ _id: new ObjectId(req.body.id) });
+            res.status(200).json({ data: result });
+          } catch (err) {
+            if (err instanceof Error) {
+              res.status(500).json({ error: err.message });
+            } else {
+              res.status(500).json({ error: 'An unknown error occurred' });
+            }
+          }
           break;
 
         default:
