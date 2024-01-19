@@ -85,7 +85,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               userData.map((item: any) => {
                 item._id = item._id.toString();
                 delete item.uploadDocument;
-                delete item.imgUrl;
+                //delete item.imgUrl;
                 return {
                   _id: item._id,
                   firstName: item.firstName,

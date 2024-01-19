@@ -36,6 +36,7 @@ type FormValues = {
     refId: string;
     firstName?: string;
     lastName?: string;
+    imgUrl?: string;
 };
 
 interface personName {

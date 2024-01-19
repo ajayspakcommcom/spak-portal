@@ -450,6 +450,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-left: 20px;
 }
 
 .create-data-wrapper-heading {
@@ -734,14 +735,16 @@ body {
   border-bottom: 0px solid lightgray;
 }
 
-.update-profile-btn-wrapper {
+.update-profile-btn-wrapper,
+.custom-modal-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
 }
 
-.update-profile-btn-wrapper>button {
+.update-profile-btn-wrapper>button,
+.custom-modal-btn>button {
   width: 50%;
 }
 
@@ -749,14 +752,46 @@ body {
   width: 100%;
 }
 
-.update-profile-btn-wrapper>button:first-child {
+.update-profile-btn-wrapper>button:first-child,
+.custom-modal-btn>button:first-child {
   margin-right: 10px;
 }
 
-.update-profile-btn-wrapper>button:last-child {
+.update-profile-btn-wrapper>button:last-child,
+.custom-modal-btn:last-child {
   margin-left: 10px;
 }
 
 .error {
   color: #d32f2f;
+}
+
+.round-img {
+  border-radius: 50px;
+}
+
+.userimg {
+  position: relative;
+}
+
+.edit-btn {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #1976d2;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  cursor: pointer;
+}
+
+.crop-img-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

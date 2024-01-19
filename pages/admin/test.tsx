@@ -1,81 +1,33 @@
 import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Container } from '@mui/material';
-import Header from '@/components/admin/header';
-import { JsonWebTokenError } from 'jsonwebtoken';
+import CropImage from '@/components/admin/crop-image';
 
-interface RowData {
-    id: number;
-    name: string;
-}
 
-const MyTableComponent: React.FC = () => {
 
-    const [page, setPage] = useState<number>(0);
-    const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+const Index: React.FC = () => {
 
-    const generateRowData = (numRows: number): RowData[] => {
-        const rows: RowData[] = [];
+    const [imageDataUrl, setImageDataUrl] = React.useState<string>();
+    const [getCroppedImg, setGetCroppedImg] = React.useState<string>();
 
-        for (let i = 0; i < numRows; i++) {
-            rows.push({
-                id: i,
-                name: `Name ${i}`
-            });
-        }
-
-        return rows;
+    const selectImage = (file: File) => {
+        setImageDataUrl(URL.createObjectURL(file));
     };
 
-    const rows: RowData[] = [...generateRowData(1000)];
-
-    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+    const getCroppedImgUrl = (img: string) => {
+        setGetCroppedImg(img);
     };
 
     return (
         <>
-            <Header />
-            <Container component="main">
-                <Paper>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableCell>Id</TableCell>
-                                <TableCell>Name</TableCell>
-                            </TableHead>
-                            <TableBody>
-                                {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                                    <TableRow key={row.id}>
-                                        <TableCell component="th" scope="row">{row.id}</TableCell>
-                                        <TableCell component="th" scope="row">{row.name}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
-
-                {JSON.stringify({ page })}
-                <br />
-                {JSON.stringify({ rowsPerPage })}
-
-            </Container>
+            <input type="file" id='userimg' name='userimg' onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                if (e.target.files && e.target.files[0]) {
+                    selectImage(e.target.files[0]);
+                }
+            }}
+                accept="image/png, image/jpeg"
+            />
+            {imageDataUrl && <CropImage src={imageDataUrl} onGetCroppedImgUrl={getCroppedImgUrl} />}
         </>
     );
 };
 
-export default MyTableComponent;
+export default Index;

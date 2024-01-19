@@ -85,7 +85,7 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
                 <Card sx={modalStyle}>
                     <div className='custom-task-detail-wrapper'>
                         <div className='voucher-detail-logo-no'>
-                            <Image className='pointer' src={require('../../public/assets/img/b-logo.jpg')} alt="Description of the image" width={'50'} height={'50'} />
+                            {rowData.imgUrl ? <Image className='pointer round-img' src={rowData.imgUrl} alt="Description of the image" width={'50'} height={'50'} /> : <Image className='pointer round-img' src={require('../../public/assets/img/b-logo.jpg')} alt="Description of the image" width={'50'} height={'50'} />}
                         </div>
                         <Button size="small" color='inherit' onClick={handleClose}>
                             <CloseIcon />

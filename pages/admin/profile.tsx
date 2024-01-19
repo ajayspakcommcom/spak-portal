@@ -20,6 +20,7 @@ import Footer from '@/components/admin/footer';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
 import SuccessMessage from '@/components/admin/success-message';
+import EditIcon from '@mui/icons-material/Edit';
 
 type Profile = {
     _id?: string;
@@ -172,11 +173,12 @@ export default function Index() {
                     <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
 
                         <Box display="flex" flexDirection="column" alignItems="center" marginBottom={2}>
-
-                            <label htmlFor='userimg' className=''>
+                            <span className='userimg'>
                                 <Image src={imageDataUrl} height={100} width={100} alt="Description of the image" className='pointer round-img' />
-                            </label>
-
+                                {editMode && <label htmlFor='userimg'>
+                                    <span className='edit-btn'><EditIcon /></span>
+                                </label>}
+                            </span>
                             <Typography component="h1" variant="h5">{'User'}</Typography>
                             <Typography variant="subtitle1" color="textSecondary">{userData.data.username}</Typography>
                         </Box>
