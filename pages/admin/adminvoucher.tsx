@@ -35,10 +35,11 @@ type FormValues = {
     personId: string;
     approvalStatus: ApprovalStatus;
     voucherDate: Date | undefined | string;
-    voucherAmount: number,
-    refId: string,
-    firstName?: string,
-    lastName?: string
+    voucherAmount: number;
+    refId: string;
+    firstName?: string;
+    lastName?: string;
+    imgUrl: string;
 };
 
 interface personName {
@@ -159,6 +160,7 @@ const Index: React.FC = () => {
             approvalStatus: ApprovalStatus.Pending,
             voucherDate: new Date(),
             voucherAmount: 0,
+            imgUrl: '',
             refId: ''
         },
         validationSchema: Yup.object({

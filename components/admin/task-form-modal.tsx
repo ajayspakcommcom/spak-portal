@@ -360,6 +360,7 @@ const Index: React.FC<componentProps> = ({ onClick, isEditMode, editData, isComp
 
 
                                 <TextField
+                                    type='number'
                                     label="DeadLine"
                                     variant="outlined"
                                     value={deadLine}

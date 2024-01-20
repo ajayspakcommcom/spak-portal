@@ -587,19 +587,19 @@ const Index: React.FC = () => {
                                                 {row.isApproved?.toLowerCase() === 'rejected' &&
                                                     <>
                                                         {/* <span className={'pointer'} onClick={() => confirmToApprove(row._id)}><CheckCircleIcon color='success' /></span> */}
-                                                        <Button variant="contained" color='success' onClick={() => confirmToApprove(row._id)}>Approve</Button>
+                                                        <Button variant="contained" color='primary' onClick={() => confirmToApprove(row._id)}>Approve</Button>
                                                     </>
                                                 }
                                                 {row.isApproved?.toLowerCase() === 'approved' &&
                                                     <>
                                                         {/* <span className={'pointer'} ><CancelIcon color='error' /></span> */}
-                                                        <Button variant="contained" onClick={() => confirmToReject(row._id)} color='error'>Reject</Button>
+                                                        <Button variant="contained" onClick={() => confirmToReject(row._id)} color='inherit'>Reject</Button>
                                                     </>
                                                 }
 
                                                 {row.isApproved?.toLowerCase() === 'pending' && <>
-                                                    <Button variant="contained" onClick={() => confirmToReject(row._id)} color='error' sx={{ mr: 2 }}>Reject</Button>
-                                                    <Button variant="contained" color='success' onClick={() => confirmToApprove(row._id)}>Approve</Button>
+                                                    <Button variant="contained" onClick={() => confirmToReject(row._id)} color='inherit' sx={{ mr: 2 }}>Reject</Button>
+                                                    <Button variant="contained" color='primary' onClick={() => confirmToApprove(row._id)}>Approve</Button>
                                                 </>}
                                             </div>
 

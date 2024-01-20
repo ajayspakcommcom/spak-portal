@@ -431,7 +431,7 @@ const Index: React.FC = () => {
                                     <TableCell component="th" scope="row">{row.username}</TableCell>
                                     <TableCell component="th" scope="row">{row.password ? '••••••' : 'Not Set'}</TableCell>
                                     <TableCell component="th" scope="row">
-                                        {row.imgUrl && <Image src={row.imgUrl} alt="Description of the image" className='pointer' width={70} height={70} onClick={() => selectImageHandler(row)} />}
+                                        {row.imgUrl && <Image src={row.imgUrl} alt="Description of the image" className='pointer round-img' width={70} height={70} onClick={() => selectImageHandler(row)} />}
                                     </TableCell>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.doj as string)}</TableCell>
                                     <TableCell component="th" scope="row">{row.designation}</TableCell>

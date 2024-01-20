@@ -22,7 +22,7 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
 
     const userData = useSelector((state: RootState) => state.authAdmin);
 
-
+    console.log(rowData);
 
     const fetchData = async () => {
 
@@ -185,8 +185,10 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
                 <Card sx={modalStyle}>
                     <div className='custom-task-detail-wrapper'>
                         <div className='voucher-detail-logo-no'>
-                            <Image className='pointer' src={require('../../public/assets/img/b-logo.jpg')} alt="Description of the image" width={'50'} height={'50'} />
-                            <CardHeader title={rowDetailData.voucherNo} />
+                            {rowData.imgUrl ?
+                                <Image className='pointer round-img' src={rowData.imgUrl} alt="Description of the image" width={'50'} height={'50'} /> :
+                                <Image className='pointer round-img' src={require('../../public/assets/img/b-logo.jpg')} alt="Description of the image" width={'50'} height={'50'} />}
+                            <CardHeader title={'Voucher No ' + rowDetailData.voucherNo} />
                         </div>
                         <Button size="small" color='inherit' onClick={handleClose}>
                             <CloseIcon />
@@ -229,14 +231,14 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
 
                                 {rowDetailData.approvalStatus?.toLowerCase() === 'pending' &&
                                     <>
-                                        <Button variant="contained" color="error" className={'pointer'} onClick={() => confirmToReject()} sx={{ mr: 2 }}>Reject</Button>
-                                        <Button variant="contained" color="success" className={'pointer'} onClick={() => confirmToApprove()}>Approve</Button>
+                                        <Button variant="contained" color="inherit" className={'pointer default-btn'} onClick={() => confirmToReject()} sx={{ mr: 2 }}>Reject</Button>
+                                        <Button variant="contained" color="primary" className={'pointer default-btn'} onClick={() => confirmToApprove()}>Approve</Button>
                                     </>
                                 }
 
 
-                                {rowDetailData.approvalStatus?.toLowerCase() === 'approved' && <Button variant="contained" color="error" className={'pointer'} onClick={() => confirmToReject()} >Reject</Button>}
-                                {rowDetailData.approvalStatus?.toLowerCase() === 'rejected' && <Button variant="contained" color="success" className={'pointer'} onClick={() => confirmToApprove()}>Approve</Button>}
+                                {rowDetailData.approvalStatus?.toLowerCase() === 'approved' && <Button variant="contained" color="inherit" className={'pointer default-btn'} onClick={() => confirmToReject()} >Reject</Button>}
+                                {rowDetailData.approvalStatus?.toLowerCase() === 'rejected' && <Button variant="contained" color="primary" className={'pointer default-btn'} onClick={() => confirmToApprove()}>Approve</Button>}
 
 
                             </div>
@@ -273,4 +275,4 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
     );
 }
 
-export default Index;
+export default React.memo(Index);
