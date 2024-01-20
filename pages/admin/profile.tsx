@@ -50,6 +50,12 @@ export default function Index() {
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
+    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+        router.push('/admin/login');
+        return false;
+    }
+
+
     const [editMode, setEditMode] = React.useState<boolean>(false);
     const [imageDataUrl, setImageDataUrl] = React.useState(userData.data.imgUrl);
     const [userDocument, setUserDocument] = React.useState(userData.data.uploadDocument);

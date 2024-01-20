@@ -14,12 +14,10 @@ export default function Index() {
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
-    // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
-    //     router.push('/admin/login');
-    //     return false;
-    // }
-
-    console.log(userData);
+    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+        router.push('/admin/login');
+        return false;
+    }
 
     return (
         <>

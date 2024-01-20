@@ -29,10 +29,16 @@ const settings = ['Logout'];
 
 const Index = () => {
 
+
     const autoLogout = useAutoLogout();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
+
+    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+        router.push('/admin/login');
+        return false;
+    }
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);

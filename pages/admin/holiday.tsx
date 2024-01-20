@@ -44,6 +44,12 @@ const Index: React.FC = () => {
     const userData = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
+    if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
+        router.push('/admin/login');
+        return false;
+    }
+
+
     const [holdayList, setHolidayList] = useState<FormValues[]>([]);
     const [toggleModal, setToggleModal] = useState<boolean>(false);
     const [toggleDialogue, setToggleDialogue] = useState<boolean>(false);

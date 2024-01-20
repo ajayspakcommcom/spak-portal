@@ -1,10 +1,16 @@
 // hooks/useAutoLogout.ts
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 const useAutoLogout = (): void => {
-    const router = useRouter();
+
     let logoutTimer: NodeJS.Timeout;
+
+
+    const userData = useSelector((state: RootState) => state.authAdmin);
+    const router = useRouter();
 
     const handleInactivity = (): void => {
         // Clear user session, authentication state, etc.
@@ -22,6 +28,7 @@ const useAutoLogout = (): void => {
         // Event listeners for user activity
         window.addEventListener('mousemove', resetTimer);
         window.addEventListener('keydown', resetTimer);
+        window.addEventListener('click', resetTimer);
 
         // Set initial timer
         resetTimer();
