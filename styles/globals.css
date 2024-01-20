@@ -798,3 +798,7 @@ body {
   justify-content: space-between;
   align-items: center;
 }
+
+.dashboard-bottom-space {
+  margin-bottom: 20px;
+}

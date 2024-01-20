@@ -86,7 +86,7 @@ const Index: React.FC = () => {
     // }
 
     const handleAddInput = () => {
-        setInputList([...inputList, { detail: '', date: new Date(), amount: '' }]);
+        setInputList([...inputList, { detail: '', date: new Date().toISOString().split('T')[0], amount: '' }]);
     };
 
     const handleChange = (index: number, field: keyof InputSet, value: string) => {
@@ -132,7 +132,6 @@ const Index: React.FC = () => {
                         'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')}`
                     },
                 };
-
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify({ "type": "LIST", "refId": userData.data._id }), config);
 
@@ -309,7 +308,7 @@ const Index: React.FC = () => {
         if (toggleModal) {
             setInputList([]);
         } else {
-            setInputList([...inputList, { detail: '', date: '', amount: '' }]);
+            setInputList([...inputList, { detail: '', date: new Date().toISOString().split('T')[0], amount: '' }]);
         }
     };
 

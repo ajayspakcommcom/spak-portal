@@ -108,7 +108,7 @@ const Index: React.FC = () => {
     // }
 
     const handleAddInput = () => {
-        setInputList([...inputList, { clientName: '', date: new Date(), detail: '' }]);
+        setInputList([...inputList, { clientName: '', date: new Date().toISOString().split('T')[0], detail: '' }]);
     };
 
     const handleChange = (index: number, field: keyof InputSet, value: string) => {
@@ -327,7 +327,7 @@ const Index: React.FC = () => {
         if (toggleModal) {
             setInputList([]);
         } else {
-            setInputList([...inputList, { clientName: '', date: '', detail: '' }]);
+            setInputList([...inputList, { clientName: '', date: new Date().toISOString().split('T')[0], detail: '' }]);
         }
     };
 
@@ -568,7 +568,7 @@ const Index: React.FC = () => {
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
                         <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
-                                <TableCell>Date</TableCell>
+                                <TableCell>Entry Date</TableCell>
                                 <TableCell>Total Task </TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
