@@ -17,6 +17,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
 import SuccessSnackbar from '@/components/admin/success-snackbar';
+import AppContext from '@/context/App/AppContext';
 
 type FormValues = {
     _id?: string | undefined;
@@ -36,6 +37,9 @@ enum ApprovalStatus {
 }
 
 const Index: React.FC = () => {
+
+    const ctx = React.useContext(AppContext);
+    const mainDimensionRef = React.useRef<HTMLDivElement>(null);
 
     const autoLogout = useAutoLogout();
 
@@ -220,6 +224,10 @@ const Index: React.FC = () => {
         fetchData();
         disablePreviousDates('startDate');
         disablePreviousDates('endDate');
+
+        setTimeout(() => {
+            ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
+        }, 5000);
 
         return () => console.log('Unbind UseEffect');
 
@@ -470,7 +478,7 @@ const Index: React.FC = () => {
     return (
         <>
             <Header />
-            <Container component="main">
+            <Container component="main" ref={mainDimensionRef}>
 
                 <div className='create-data-wrapper-heading client-header'>
                     <h1>Leave</h1>

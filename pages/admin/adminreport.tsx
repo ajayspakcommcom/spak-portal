@@ -22,6 +22,7 @@ import ReportModelDetail from '@/components/admin/report-detail-modal';
 import Image from 'next/image';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import Footer from '@/components/admin/footer';
+import AppContext from '@/context/App/AppContext';
 
 enum ApprovalStatus {
     Pending = "pending",
@@ -71,6 +72,9 @@ interface ClientName {
 const clients: ClientName[] = ClientList;
 
 const Index: React.FC = () => {
+
+    const ctx = React.useContext(AppContext);
+    const mainDimensionRef = React.useRef<HTMLDivElement>(null);
 
     const autoLogout = useAutoLogout();
 
@@ -297,6 +301,11 @@ const Index: React.FC = () => {
 
     useEffect(() => {
         fetchData();
+
+        setTimeout(() => {
+            ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
+        }, 5000);
+
         return () => console.log('Unbind UseEffect');
     }, [toggleModal, toggleDialogue]);
 
@@ -484,7 +493,7 @@ const Index: React.FC = () => {
     return (
         <>
             <Header />
-            <Container component="main">
+            <Container component="main" ref={mainDimensionRef}>
 
                 {/* filter */}
 
@@ -685,10 +694,7 @@ const Index: React.FC = () => {
                 </Dialog>
 
             </Container>
-
             <Footer />
-
-
         </>
     )
 };
