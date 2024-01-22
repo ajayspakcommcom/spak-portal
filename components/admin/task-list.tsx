@@ -26,6 +26,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import Status from '@/components/admin/status';
 import TaskDetailModal from '@/components/admin/task-detail-modal';
+import AppContext from '@/context/App/AppContext';
 
 
 
@@ -98,6 +99,9 @@ type userList = {
 
 
 const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
+
+    const ctx = React.useContext(AppContext);
+    const mainDimensionRef = React.useRef<HTMLDivElement>(null);
 
 
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
@@ -195,6 +199,11 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
     useEffect(() => {
         fetchData();
         getUsersWithIdUserName();
+
+        setTimeout(() => {
+            ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
+        }, 5000);
+
     }, [toggle, deleteId]);
 
     const isFormEditModeHandler = (mode: boolean) => {
@@ -446,7 +455,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
     if (userData.token || window.localStorage.getItem('jwtToken')) {
         return (
-            <>
+            <div ref={mainDimensionRef}>
 
                 {isHeaderVisible &&
                     <div>
@@ -660,7 +669,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                 </Dialog>
 
 
-            </>
+            </div>
         );
     }
 }

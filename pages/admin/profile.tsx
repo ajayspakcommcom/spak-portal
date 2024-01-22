@@ -180,7 +180,7 @@ export default function Index() {
 
                         <Box display="flex" flexDirection="column" alignItems="center" marginBottom={2}>
                             <span className='userimg'>
-                                <Image src={imageDataUrl} height={100} width={100} alt="Description of the image" className='pointer round-img' />
+                                <Image src={imageDataUrl} height={100} width={100} alt="Description of the image" className='pointer profile-img' />
                                 {editMode && <label htmlFor='userimg'>
                                     <span className='edit-btn'><EditIcon /></span>
                                 </label>}

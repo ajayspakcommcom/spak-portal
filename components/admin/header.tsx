@@ -22,13 +22,16 @@ import Image from 'next/image';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Notification from '@/components/admin/notification';
 import useAutoLogout from '@/hooks/useAutoLogout';
+import AppContext from '@/context/App/AppContext';
 
 const pages = ['Task', 'Report', 'AdminReport', 'Voucher', 'Holiday', 'Leave', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
 const settings = ['Logout'];
 
-
 const Index = () => {
 
+    const ctx = React.useContext(AppContext);
+
+    const headerDimensionRef = React.useRef<HTMLDivElement>(null);
 
     const autoLogout = useAutoLogout();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
@@ -71,13 +74,12 @@ const Index = () => {
     };
 
     React.useEffect(() => {
-        console.log(userData);
+        ctx.onHeaderDimension({ height: headerDimensionRef.current?.clientHeight });
     }, []);
 
-    console.log(userData);
 
     return (
-        <>
+        <div ref={headerDimensionRef}>
             <AppBar position="static">
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
@@ -162,7 +164,7 @@ const Index = () => {
                     </Toolbar>
                 </Container>
             </AppBar>
-        </>
+        </div>
     );
 }
 

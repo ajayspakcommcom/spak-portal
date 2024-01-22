@@ -602,6 +602,12 @@ body {
   height: 50px;
 }
 
+.profile-img {
+  border-radius: 50px;
+  width: 100px;
+  height: 100px;
+}
+
 .upload-doc {
   padding: 15px 0;
 }
@@ -700,10 +706,17 @@ body {
 }
 
 .footer-wrapper {
+  width: 100%;
   margin-top: 30px;
   padding-top: 30px;
   padding-bottom: 30px;
   background-color: #1976d2;
+}
+
+.footer-wrapper.fixed {
+  position: fixed;
+  left: 0;
+  bottom: 0;
 }
 
 .footer-wrapper p {

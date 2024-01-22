@@ -720,9 +720,7 @@ const Index: React.FC = () => {
 
 
             </Container>
-
             <Footer />
-
             {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
 
         </>

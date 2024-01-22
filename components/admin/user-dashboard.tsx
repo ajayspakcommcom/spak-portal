@@ -11,6 +11,7 @@ import { capitalizeFirstLetter, formatDateToDDMMYYYY, getDayText, truncateString
 import Image from 'next/image';
 import Status from '@/components/admin/status';
 import Footer from './footer';
+import AppContext from '@/context/App/AppContext';
 
 // type Voucher = { _id?: string | undefined; voucherNo: string; person: string; amount: number; date: Date | undefined | string; summary: string };
 
@@ -86,6 +87,9 @@ type userList = {
 
 export default function Index() {
 
+    const ctx = React.useContext(AppContext);
+    const mainDimensionRef = React.useRef<HTMLDivElement>(null);
+
     const data = useSelector((state: RootState) => state.authAdmin);
     const router = useRouter();
 
@@ -95,7 +99,6 @@ export default function Index() {
     const [userList, setUserList] = React.useState<userList[]>([]);
     const [userReport, setReportList] = React.useState<Report[]>([]);
     const [taskList, setTaskList] = React.useState<Task[]>([]);
-
 
 
     if (!data.token || !(window.localStorage.getItem('jwtToken'))) {
@@ -269,12 +272,16 @@ export default function Index() {
     React.useEffect(() => {
 
         getUsersWithIdUserName();
-
         fetchVoucherData();
         fetchHoldayData();
         fetchLeaveData();
         fetchTaskData();
         fetchReportData();
+
+        setTimeout(() => {
+            ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
+        }, 5000);
+
 
     }, []);
 
@@ -285,7 +292,7 @@ export default function Index() {
             <>
                 <Header />
 
-                <Container component="main">
+                <Container component="main" ref={mainDimensionRef}>
                     <Grid container spacing={2} className='dashboard-container'>
 
                         <Grid item xs={12} md={12}>

@@ -19,8 +19,6 @@ export default function Index() {
         return false;
     }
 
-
-
     return (
         <>
             {userData.data.designation.toLowerCase() === 'admin' && <AdminDashboard />}
