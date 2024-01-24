@@ -404,7 +404,7 @@ const Index: React.FC = () => {
             <Container component="main" ref={mainDimensionRef}>
 
                 <div className='create-data-wrapper-heading'>
-                    <h1>Voucher</h1>
+                    <h1>Leave</h1>
                     {/* <Button variant="contained" color="success" onClick={openCreateModalHandler}>Create</Button> */}
                 </div>
 

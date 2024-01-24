@@ -21,6 +21,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Notification from '@/components/admin/notification';
+import AdminNotification from '@/components/admin/admin-notification';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import AppContext from '@/context/App/AppContext';
 
@@ -116,6 +117,11 @@ const Index = () => {
                                         page === 'AdminVoucher' ? 'Voucher' : page === 'AdminLeave' ? 'Leave' : page === 'AdminReport' ? 'Report' : page
                                     }</Button>
                                 ))}
+
+                                <div className='notification-wrapper'>
+                                    <AdminNotification />
+                                </div>
+
                             </Box>
                         }
 

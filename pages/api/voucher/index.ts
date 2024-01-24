@@ -7,6 +7,8 @@ import Cors from 'cors';
 
 type Voucher = { id: ObjectId; voucherNo: number; person: string; amount: number; date: Date; summary: string };
 
+type AdminVoucherNotification = { voucherId: ObjectId; refId: string, createdDate: Date };
+
 type ApiResponse = | { message: string } | Voucher | Voucher[] | { data: any } | { error: string };
 
 const cors = Cors({
@@ -81,9 +83,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             }
 
-
-
-
           }
           catch (err) {
             if (err instanceof Error) {
@@ -121,7 +120,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             const client = await clientPromise;
             const db = client.db("Spak");
             const collection = db.collection<Voucher>("voucher");
-
             const lastEntryData = await collection.find().sort({ _id: -1 }).limit(1).toArray();
 
             console.log(lastEntryData);
@@ -135,6 +133,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             }
 
             const result = await collection.insertOne(req.body);
+
+            const adminCollection = db.collection<AdminVoucherNotification>("adminVoucherNotification");
+
+            const voucherNotificationObj: AdminVoucherNotification = { voucherId: new ObjectId(), refId: '', createdDate: new Date() };
+
+            voucherNotificationObj.voucherId = result.insertedId;
+            voucherNotificationObj.refId = req.body.refId;
+
+            await adminCollection.insertOne(voucherNotificationObj);
             res.status(200).json({ data: result });
 
           } catch (err) {
