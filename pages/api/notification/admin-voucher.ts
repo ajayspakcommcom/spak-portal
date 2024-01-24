@@ -7,6 +7,8 @@ import Cors from 'cors';
 
 type Voucher = { _id: ObjectId, type: string, voucherNo: number, personId: string, approvalStatus: string, voucherDate: Date, voucherAmount: number, voucherData: any[], refId: string, isApproved: string };
 
+type User = { _id: ObjectId, firstName: string, lastName: string, username: string, password: string, imgUrl: string, date: Date, designation: '', doj: string, uploadDocument: string };
+
 type AdminVoucherNotification = { id: ObjectId; voucherId: string; status: string; actionDate: Date, requestedDate: Date, refId: string, };
 
 type ApiResponse = | { message: string } | AdminVoucherNotification | AdminVoucherNotification[] | { data: any } | { error: string };
@@ -41,9 +43,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             const client = await clientPromise;
             const db = client.db("Spak");
+
             const collection = db.collection<AdminVoucherNotification>("adminVoucherNotification");
             const data = await collection.find({}).sort({ createdDate: -1 }).limit(4).toArray();
-            res.status(200).json(data);
+
+            const voucherCollection = db.collection<Voucher>("voucher");
+            const voucherData = await voucherCollection.find({}).toArray();
+
+            const userCollection = db.collection<User>("user");
+            const userData = await userCollection.find({}).toArray();
+
+            const voucherOutput: any[] = [];
+
+            data.forEach((item, indx) => {
+              const result = voucherData.find((vItem) => vItem._id.toString() === item.voucherId.toString());
+              if (result) {
+                voucherOutput.push({ ...result, notificationId: item._id });
+              }
+            });
+
+            const finalOutput: any[] = [];
+
+            voucherOutput.forEach((item, indx) => {
+              const user = userData.find((uItem) => uItem._id.toString() === item.refId.toString());
+              if (user) {
+                finalOutput.push({ user: user, voucher: item });
+              }
+            });
+
+            console.log(finalOutput);
+
+            res.status(200).json(finalOutput);
           }
           catch (err) {
             if (err instanceof Error) {

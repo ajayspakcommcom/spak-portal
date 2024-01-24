@@ -10,7 +10,8 @@ import getConfig from 'next/config';
 import { formatDateToDDMMYYYY } from '@/utils/common';
 const { publicRuntimeConfig } = getConfig();
 import CloseIcon from '@mui/icons-material/Close';
-
+import { ObjectId } from 'mongodb';
+import Image from 'next/image';
 
 
 type LeaveNotification = {
@@ -21,7 +22,29 @@ type LeaveNotification = {
     status: string;
 };
 
-type VoucherNotification = { _id?: string | undefined; voucherId: string; status: string; actionDate: Date | undefined | string, requestedDate: Date | string };
+type User = {
+    date: Date;
+    designation: string;
+    doj: Date;
+    firstName: string;
+    imgUrl: string;
+    lastName: string;
+    username: string;
+};
+
+type Voucher = {
+    approvalStatus: string;
+    notificationId: string;
+    personId: Date;
+    refId: string;
+    voucherAmount: number;
+    voucherDate: Date;
+};
+
+type VoucherNotification = {
+    user: User,
+    voucher: Voucher
+};
 
 const Index: React.FC = () => {
 
@@ -81,10 +104,12 @@ const Index: React.FC = () => {
                     },
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/voucher`, JSON.stringify({ type: "VOUCHERLIST", refId: userData.data._id }), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/admin-voucher`, JSON.stringify({ type: "VOUCHERLIST" }), config);
+
+                console.log(response.data);
 
                 if (response.status === 200) {
-                    setVoucherList(response.data)
+                    setVoucherList(response.data);
                 }
 
             } else {
@@ -201,15 +226,18 @@ const Index: React.FC = () => {
                         voucherList.length > 0 &&
                         <section className='notification-section'>
                             <Typography className='notification-heading'>Voucher</Typography>
-                            {voucherList.map((row, index) => <div key={index} className='notification-content-wrapper'><Typography className='notification-text'>
-                                {row.requestedDate && <span>{formatDateToDDMMYYYY(row.requestedDate)}</span>}
-                                <span style={{ color: row.status.toString() === 'rejected' ? 'red' : 'green' }}>{row.status.charAt(0).toUpperCase() + row.status.slice(1)}</span>
-                                <span onClick={() => deleteVoucherNotification(row._id as string)}><CloseIcon color='inherit' /></span>
-                            </Typography>
+                            {voucherList.map((row, index) => <div key={index} className='notification-content-wrapper'>
+                                <Typography className='notification-text admin-text'>
+                                    {row.user.imgUrl && <Image src={row.user.imgUrl} alt="Description of the image" layout="responsive" width={50} height={50} className='pointer user-photo-nav notification' />}
+                                    <span>{row.user.firstName}</span>
+                                    <span >{formatDateToDDMMYYYY(row.voucher.voucherDate)}</span>
+                                    <span >{row.voucher.voucherAmount}</span>
+                                    <span onClick={() => deleteVoucherNotification(row.voucher.notificationId as string)}><CloseIcon color='inherit' /></span>
+                                </Typography>
                             </div>)}
-
                         </section>
                     }
+
 
                 </Popover>
             }

@@ -616,6 +616,11 @@ body {
   border-radius: 50px;
 }
 
+.user-photo-nav.notification {
+  width: 40px !important;
+  height: 40px !important;
+}
+
 .voucher-detail-approve-reject-wrapper {
   display: flex;
   justify-content: flex-end;
@@ -655,6 +660,17 @@ body {
   display: grid;
   grid-template-columns: auto auto auto;
   width: 100%;
+}
+
+.notification-text.admin-text {
+  grid-template-columns: auto auto auto auto auto !important;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.notification-text.admin-text>img {
+  display: inline-block;
+  margin-right: 10px;
 }
 
 .notification-text>span {
