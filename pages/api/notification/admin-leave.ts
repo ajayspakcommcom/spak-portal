@@ -5,13 +5,13 @@ import { verifyToken } from '../libs/verifyToken';
 import runMiddleware from '@/libs/runMiddleware';
 import Cors from 'cors';
 
-type Voucher = { _id: ObjectId, type: string, voucherNo: number, personId: string, approvalStatus: string, voucherDate: Date, voucherAmount: number, voucherData: any[], refId: string, isApproved: string };
+type Leave = { _id: ObjectId; startDate: Date; endDate: Date; isApproved: string; refId: string, type: string };
 
 type User = { _id: ObjectId, firstName: string, lastName: string, username: string, password: string, imgUrl: string, date: Date, designation: '', doj: string, uploadDocument: string };
 
-type AdminVoucherNotification = { id: ObjectId; voucherId: string; status: string; actionDate: Date, requestedDate: Date, refId: string, };
+type AdminLeaveNotification = { id: ObjectId; leaveId: string; status: string; createdDate: Date, requestedDate: Date, refId: string };
 
-type ApiResponse = | { message: string } | AdminVoucherNotification | AdminVoucherNotification[] | { data: any } | { error: string };
+type ApiResponse = | { message: string } | AdminLeaveNotification | AdminLeaveNotification[] | { data: any } | { error: string };
 
 
 enum ApprovalStatus {
@@ -21,6 +21,7 @@ enum ApprovalStatus {
 }
 
 const cors = Cors({
+  // Only allow requests with GET, POST and OPTIONS
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
 
@@ -38,40 +39,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       switch (req.body.type) {
 
-        case 'VOUCHERLIST':
+        case 'LEAVELIST':
           try {
 
             const client = await clientPromise;
             const db = client.db("Spak");
-
-            const collection = db.collection<AdminVoucherNotification>("adminVoucherNotification");
+            const collection = db.collection<AdminLeaveNotification>("adminLeaveNotification");
             const data = await collection.find({}).sort({ createdDate: -1 }).toArray();
 
-            const voucherCollection = db.collection<Voucher>("voucher");
-            const voucherData = await voucherCollection.find({}).toArray();
+            const leaveCollection = db.collection<Leave>("leave");
+            const leaveData = await leaveCollection.find({}).toArray();
+
+            const leaveOutput: any[] = [];
+
+            data.forEach((item, indx) => {
+              const result = leaveData.find((lItem) => item.leaveId.toString() === lItem._id.toString());
+              if (result) {
+                leaveOutput.push({ ...result, notificationId: item._id });
+              }
+            });
+
+            // console.log('data', data);
+            // console.log('leaveData', leaveData);
+            // console.log('leaveOutput', leaveOutput);
 
             const userCollection = db.collection<User>("user");
             const userData = await userCollection.find({}).toArray();
 
-            const voucherOutput: any[] = [];
-
-            data.forEach((item, indx) => {
-              const result = voucherData.find((vItem) => vItem._id.toString() === item.voucherId.toString());
-              if (result) {
-                voucherOutput.push({ ...result, notificationId: item._id });
-              }
-            });
-
             const finalOutput: any[] = [];
 
-            voucherOutput.forEach((item, indx) => {
+            leaveOutput.forEach((item, indx) => {
               const user = userData.find((uItem) => uItem._id.toString() === item.refId.toString());
+              //console.log('final Data', user);
               if (user) {
-                finalOutput.push({ user: user, voucher: item });
+                finalOutput.push({ user: user, leave: item });
               }
             });
-
-            console.log(finalOutput);
 
             res.status(200).json(finalOutput);
           }
@@ -84,18 +87,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           }
           break;
 
-        // case 'VOUCHERCREATE':
+        // case 'LEAVECREATE':
         //   try {
         //     const client = await clientPromise;
         //     const db = client.db("Spak");
-        //     const collection = db.collection<VoucherNotification>("vouchernotification");
+        //     const collection = db.collection<AdminLeaveNotification>("adminLeaveNotification");
         //     delete req.body.type;
 
-        //     const voucherCollection = db.collection<Voucher>("voucher");
-        //     const voucherData = await voucherCollection.findOne({ _id: new ObjectId(req.body.voucherId) });
+        //     const leaveCollection = db.collection<Leave>("leave");
+        //     const leaveData = await leaveCollection.findOne({ _id: new ObjectId(req.body.leaveId) });
 
-        //     req.body.requestedDate = voucherData?.voucherDate;
-        //     req.body.refId = voucherData?.refId;
+        //     req.body.requestedDate = leaveData?.startDate;
+        //     req.body.refId = leaveData?.refId;
         //     const data = await collection.insertOne(req.body);
 
         //     res.status(200).json({ data: data });
@@ -106,14 +109,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         //       res.status(500).json({ error: 'An unknown error occurred' });
         //     }
         //   }
-
         //   break;
 
         case 'DELETE':
           try {
             const client = await clientPromise;
             const db = client.db("Spak");
-            const collection = db.collection<AdminVoucherNotification>("adminVoucherNotification");
+            const collection = db.collection<AdminLeaveNotification>("adminLeaveNotification");
             const result = await collection.deleteOne({ _id: new ObjectId(req.body.id) });
             res.status(200).json({ data: result });
           } catch (err) {

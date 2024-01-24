@@ -26,6 +26,7 @@ export default function Index() {
     const [password, setPassword] = useState('12345');
     const [errors, setErrors] = useState({ username: '', password: '' });
     const [showError, setShowError] = useState(false);
+    const [isLoader, setIsLoader] = useState(false);
 
     const isValidEmail = (username: string): boolean => {
         // Simple regex for username validation
@@ -62,8 +63,14 @@ export default function Index() {
         event.preventDefault();
         setShowError(false);
 
+        setIsLoader(true);
+
         if (validate()) {
             const resp: ResponseType = await dispatch(postLogin({ username: username, password: password }));
+
+            console.log('login data', resp.payload);
+            setIsLoader(false);
+
             resp.error ? setShowError(true) : redirectToDashboardRoute();
         } else {
             console.log('Form is invalid');
@@ -98,6 +105,7 @@ export default function Index() {
                                 onChange={(e) => setUsername(e.target.value)}
                                 error={!!errors.username}
                                 helperText={errors.username}
+                                disabled={isLoader}
                             />
                             <TextField
                                 label="Password"
@@ -107,9 +115,12 @@ export default function Index() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 error={!!errors.password}
                                 helperText={errors.password}
+                                disabled={isLoader}
                             />
                             {showError && <p className='error'>Invalid Username and Password</p>}
-                            <Button type="submit" variant="contained" color="primary" sx={{ m: 1, width: '100%', height: 56 }}>Login</Button>
+                            <Button type="submit" variant="contained" color="primary" sx={{ m: 1, width: '100%', height: 56 }} disabled={isLoader} >
+                                {isLoader ? <span>Login...</span> : <span>Login</span>}
+                            </Button>
                         </Box>
                     </CardContent>
                 </Card>

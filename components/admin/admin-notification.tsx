@@ -14,13 +14,13 @@ import { ObjectId } from 'mongodb';
 import Image from 'next/image';
 
 
-type LeaveNotification = {
-    _id?: string | undefined;
-    createdDate: Date | undefined | string;
-    leaveId: string;
-    requestedDate: Date | string | undefined;
-    status: string;
-};
+// type LeaveNotification = {
+//     _id?: string | undefined;
+//     createdDate: Date | undefined | string;
+//     leaveId: string;
+//     requestedDate: Date | string | undefined;
+//     status: string;
+// };
 
 type User = {
     date: Date;
@@ -41,9 +41,23 @@ type Voucher = {
     voucherDate: Date;
 };
 
+type Leave = {
+    notificationId: string;
+    isApproved: string;
+    reason: string;
+    createdDate: Date;
+    startDate: string;
+    refId: string;
+};
+
 type VoucherNotification = {
     user: User,
     voucher: Voucher
+};
+
+type LeaveNotification = {
+    user: User,
+    leave: Leave
 };
 
 const Index: React.FC = () => {
@@ -77,7 +91,7 @@ const Index: React.FC = () => {
                     },
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify({ type: "LEAVELIST", refId: userData.data._id }), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/admin-leave`, JSON.stringify({ type: "LEAVELIST" }), config);
                 console.log(response);
 
                 if (response.status === 200) {
@@ -105,8 +119,6 @@ const Index: React.FC = () => {
                 };
 
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/admin-voucher`, JSON.stringify({ type: "VOUCHERLIST" }), config);
-
-                console.log(response.data);
 
                 if (response.status === 200) {
                     setVoucherList(response.data);
@@ -139,7 +151,7 @@ const Index: React.FC = () => {
                     type: "DELETE"
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/voucher`, JSON.stringify(objData), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/admin-voucher`, JSON.stringify(objData), config);
                 console.log(response);
 
                 if (response.status === 200) {
@@ -172,7 +184,7 @@ const Index: React.FC = () => {
                     type: "DELETE"
                 };
 
-                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/leave`, JSON.stringify(objData), config);
+                const response = await axios.post(`${publicRuntimeConfig.API_URL}notification/admin-leave`, JSON.stringify(objData), config);
                 console.log(response);
 
                 if (response.status === 200) {
@@ -209,15 +221,18 @@ const Index: React.FC = () => {
                     anchorEl={anchorEl}
                     onClose={handleClose}
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}>
+
                     {
                         leaveList.length > 0 &&
                         <section className='notification-section'>
                             <Typography className='notification-heading'>Leave</Typography>
-                            {leaveList.map((row, index) => <div key={index} className='notification-content-wrapper'><Typography className='notification-text'>
-                                {row.requestedDate && <span>{formatDateToDDMMYYYY(row.requestedDate)}</span>}
-                                <span style={{ color: row.status.toString() === 'rejected' ? 'red' : 'green' }}>{row.status.charAt(0).toUpperCase() + row.status.slice(1)}</span>
-                                <span onClick={() => deleteLeaveNotification(row._id as string)}><CloseIcon color='inherit' /></span>
-                            </Typography>
+                            {leaveList.map((row, index) => <div key={index} className='notification-content-wrapper'>
+                                <Typography className='notification-text admin-leave-text'>
+                                    {row.user.imgUrl && <Image src={row.user.imgUrl} alt="Description of the image" layout="responsive" width={50} height={50} className='pointer user-photo-nav notification' />}
+                                    <span>{row.user.firstName}</span>
+                                    <span >{formatDateToDDMMYYYY(row.leave.startDate)}</span>
+                                    <span onClick={() => deleteLeaveNotification(row.leave.notificationId as string)}><CloseIcon color='inherit' /></span>
+                                </Typography>
                             </div>)}
                         </section>
                     }

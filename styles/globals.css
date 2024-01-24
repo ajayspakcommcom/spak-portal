@@ -662,10 +662,15 @@ body {
   width: 100%;
 }
 
-.notification-text.admin-text {
+.notification-text.admin-text,
+.notification-text.admin-leave-text {
   grid-template-columns: auto auto auto auto auto !important;
   align-items: center;
   margin-bottom: 10px;
+}
+
+.notification-text.admin-leave-text {
+  grid-template-columns: auto auto auto auto !important;
 }
 
 .notification-text.admin-text>img {
