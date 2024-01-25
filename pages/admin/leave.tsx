@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, MenuItem, Skeleton } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
@@ -66,6 +66,7 @@ const Index: React.FC = () => {
 
     const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
     const [successMessage, setSuccessMessage] = React.useState<string>('');
+    const [isLoader, setIsLoader] = React.useState<boolean>(false);
 
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
@@ -81,6 +82,8 @@ const Index: React.FC = () => {
     onLoad();
 
     const fetchData = async () => {
+
+        setIsLoader(true);
 
         try {
             if (userData && userData.token) {
@@ -499,7 +502,6 @@ const Index: React.FC = () => {
                                     <TableCell component="th" scope="row">{row.reason}</TableCell>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.startDate as string)}</TableCell>
                                     <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.endDate as string)}</TableCell>
-
                                     <TableCell component="th" scope="row">
                                         {row.isApproved?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
                                         {row.isApproved?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
@@ -525,7 +527,6 @@ const Index: React.FC = () => {
 
                         </TableBody>
                     </Table>
-
                 </TableContainer>
 
 

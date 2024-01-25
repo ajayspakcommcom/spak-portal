@@ -22,8 +22,6 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
 
     const userData = useSelector((state: RootState) => state.authAdmin);
 
-    console.log(rowData);
-
     const fetchData = async () => {
 
         try {
@@ -224,27 +222,24 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
 
                         {
                             userData.data.designation === 'admin' &&
-                            <div className='voucher-detail-approve-reject-wrapper'>
-
-                                {/* <span className={'pointer'} onClick={() => confirmToReject()}><CancelIcon color='error' /></span> */}
-                                {/* <span className={'pointer'} onClick={() => confirmToApprove()}><CheckCircleIcon color='primary' /></span> */}
-
-                                {rowDetailData.approvalStatus?.toLowerCase() === 'pending' &&
-                                    <>
-                                        <Button variant="contained" color="inherit" className={'pointer default-btn'} onClick={() => confirmToReject()} sx={{ mr: 2 }}>Reject</Button>
-                                        <Button variant="contained" color="primary" className={'pointer default-btn'} onClick={() => confirmToApprove()}>Approve</Button>
-                                    </>
-                                }
-
-
-                                {rowDetailData.approvalStatus?.toLowerCase() === 'approved' && <Button variant="contained" color="inherit" className={'pointer default-btn'} onClick={() => confirmToReject()} >Reject</Button>}
-                                {rowDetailData.approvalStatus?.toLowerCase() === 'rejected' && <Button variant="contained" color="primary" className={'pointer default-btn'} onClick={() => confirmToApprove()}>Approve</Button>}
-
-
-                            </div>
+                            <>
+                                <div className='voucher-detail-approve-reject-wrapper'>
+                                    {/* <span className={'pointer'} onClick={() => confirmToReject()}><CancelIcon color='error' /></span> */}
+                                    {/* <span className={'pointer'} onClick={() => confirmToApprove()}><CheckCircleIcon color='primary' /></span> */}
+                                    {rowDetailData.approvalStatus?.toLowerCase() === 'pending' &&
+                                        <>
+                                            <Button variant="contained" color="inherit" className={'pointer default-btn'} onClick={() => confirmToReject()} sx={{ mr: 2 }}>Reject</Button>
+                                            <Button variant="contained" color="primary" className={'pointer default-btn'} onClick={() => confirmToApprove()}>Approve</Button>
+                                        </>
+                                    }
+                                    {rowDetailData.approvalStatus?.toLowerCase() === 'approved' && <Button variant="contained" color="inherit" className={'pointer default-btn'} onClick={() => confirmToReject()} >Reject</Button>}
+                                    {rowDetailData.approvalStatus?.toLowerCase() === 'rejected' && <Button variant="contained" color="primary" className={'pointer default-btn'} onClick={() => confirmToApprove()}>Approve</Button>}
+                                </div>
+                                <hr />
+                            </>
                         }
 
-                        <hr />
+
 
                         <div className='total-amount'>
 

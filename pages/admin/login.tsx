@@ -22,8 +22,8 @@ export default function Index() {
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const router = useRouter();
 
-    const [username, setUsername] = useState('ajay@spakcomm.com');
-    const [password, setPassword] = useState('12345');
+    const [username, setUsername] = useState('admin@spakcomm.com');
+    const [password, setPassword] = useState('Admin@1234');
     const [errors, setErrors] = useState({ username: '', password: '' });
     const [showError, setShowError] = useState(false);
     const [isLoader, setIsLoader] = useState(false);
