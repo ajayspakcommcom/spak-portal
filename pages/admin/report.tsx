@@ -524,8 +524,6 @@ const Index: React.FC = () => {
             <Header />
             <Container component="main" ref={mainDimensionRef}>
 
-                {/* filter */}
-
                 <div>
                     <div className='create-data-wrapper-heading report-header'>
                         <h1>Report</h1>
@@ -573,7 +571,7 @@ const Index: React.FC = () => {
                     </div>
                 </div>
 
-                {/* filter */}
+
 
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 800 }} aria-label="simple table">
@@ -586,21 +584,24 @@ const Index: React.FC = () => {
                         </TableHead>
 
                         <TableBody>
-                            {Array.isArray(reportList) && reportList.map((row, index) => (
-                                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.createdDate as string)}</TableCell>
-                                    <TableCell component="th" scope="row">{row.reportData.length}</TableCell>
-                                    <TableCell component="th" scope="row">
-                                        <Box display="flex" alignItems="flex-end" gap={2}>
-                                            <span className='pointer'>
-                                                <ReportModelDetail rowData={row} />
-                                            </span>
-                                            <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
-                                            <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
-                                        </Box>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {reportList.length > 0 &&
+                                Array.isArray(reportList) && reportList.map((row, index) => (
+                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.createdDate as string)}</TableCell>
+                                        <TableCell component="th" scope="row">{row.reportData.length}</TableCell>
+                                        <TableCell component="th" scope="row">
+                                            <Box display="flex" alignItems="flex-end" gap={2}>
+                                                <span className='pointer'>
+                                                    <ReportModelDetail rowData={row} />
+                                                </span>
+                                                <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
+                                                <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            }
+
 
                             {reportList.length < 1 &&
                                 <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -624,10 +625,6 @@ const Index: React.FC = () => {
                         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 3 }}>Create Report</Typography>
 
                         <form onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
-
-                            {/* {validationErrors.map((error, index) => (
-                                <div key={index} style={{ color: 'red' }}>{error}</div>
-                            ))} */}
 
                             {inputList.map((input, index) => (
 
@@ -723,6 +720,7 @@ const Index: React.FC = () => {
             </Container>
 
             <Footer />
+
             {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
         </>
     )

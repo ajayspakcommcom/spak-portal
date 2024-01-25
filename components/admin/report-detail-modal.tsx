@@ -45,9 +45,6 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
         }
     };
 
-    fetchData();
-
-
     const [rowDetailData, setRowDetailData] = useState(rowData);
     const [open, setOpen] = useState(false);
 
@@ -69,8 +66,9 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
     };
 
     useEffect(() => {
+        fetchData();
         return () => console.log('');
-    }, []);
+    }, [rowData]);
 
     return (
         <>
@@ -129,4 +127,4 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
     );
 }
 
-export default Index;
+export default React.memo(Index);
