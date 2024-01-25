@@ -28,8 +28,6 @@ import Status from '@/components/admin/status';
 import TaskDetailModal from '@/components/admin/task-detail-modal';
 import AppContext from '@/context/App/AppContext';
 
-
-
 interface componentProps {
     isHeaderVisible: boolean;
 }

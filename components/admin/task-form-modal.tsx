@@ -13,25 +13,27 @@ import Image from 'next/image';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 import axios from 'axios';
-import { capitalizeFirstLetter } from '@/utils/common';
+import { capitalizeFirstLetter, ClientList } from '@/utils/common';
 
 interface ClientName {
     value: string;
     label: string;
 }
 
-const clients: ClientName[] = [
-    { value: 'alupac', label: 'alupac' },
-    { value: 'aluwrap', label: 'aluwrap' },
-    { value: 'asb', label: 'asb' },
-    { value: 'avc', label: 'avc' },
-    { value: 'sahara star', label: 'sahara star' },
-    { value: 'bi', label: 'bi' },
-    { value: 'bsv', label: 'bsv' },
-    { value: 'cipla', label: 'cipla' },
-    { value: 'polycrack', label: 'polycrack' },
-    { value: 'esenpro', label: 'esenpro' },
-];
+// const clients: ClientName[] = [
+//     { value: 'alupac', label: 'alupac' },
+//     { value: 'aluwrap', label: 'aluwrap' },
+//     { value: 'asb', label: 'asb' },
+//     { value: 'avc', label: 'avc' },
+//     { value: 'sahara star', label: 'sahara star' },
+//     { value: 'bi', label: 'bi' },
+//     { value: 'bsv', label: 'bsv' },
+//     { value: 'cipla', label: 'cipla' },
+//     { value: 'polycrack', label: 'polycrack' },
+//     { value: 'esenpro', label: 'esenpro' },
+// ];
+
+const clients: ClientName[] = ClientList;
 
 interface componentProps {
     onClick: () => void;
