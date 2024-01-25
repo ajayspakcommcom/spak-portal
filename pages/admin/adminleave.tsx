@@ -227,7 +227,7 @@ const Index: React.FC = () => {
 
         setTimeout(() => {
             ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
-        }, 5000);
+        }, 1000);
 
         return () => console.log('Unbind UseEffect');
 

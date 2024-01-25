@@ -202,7 +202,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
 
         setTimeout(() => {
             ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
-        }, 5000);
+        }, 1000);
 
     }, [toggle, deleteId]);
 

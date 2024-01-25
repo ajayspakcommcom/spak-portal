@@ -300,7 +300,7 @@ export default function Index() {
 
         setTimeout(() => {
             ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
-        }, 5000);
+        }, 1000);
 
     }, [taskList]);
 

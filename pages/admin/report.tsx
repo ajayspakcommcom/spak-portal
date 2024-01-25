@@ -87,7 +87,6 @@ const Index: React.FC = () => {
         return false;
     }
 
-
     const [reportList, setReportList] = useState<FormValues[]>([]);
     const [toggleModal, setToggleModal] = useState<boolean>(false);
     const [toggleDialogue, setToggleDialogue] = useState<boolean>(false);
@@ -451,29 +450,29 @@ const Index: React.FC = () => {
         setIsEditMode(false);
     };
 
-    const getDetailHandler = async (voucherId: string | undefined) => {
+    // const getDetailHandler = async (voucherId: string | undefined) => {
 
-        console.log(voucherId);
+    //     console.log(voucherId);
 
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
-            },
-        };
+    //     const config = {
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Bearer ${userData.token || window.localStorage.getItem('jwtToken')} `
+    //         },
+    //     };
 
-        const objData = {
-            id: voucherId,
-            type: "DETAIL"
-        };
+    //     const objData = {
+    //         id: voucherId,
+    //         type: "DETAIL"
+    //     };
 
-        const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), config);
+    //     const response = await axios.post(`${publicRuntimeConfig.API_URL}report`, JSON.stringify(objData), config);
 
-        if (response.status === 200) {
-            console.log(response);
-        }
+    //     if (response.status === 200) {
+    //         console.log(response);
+    //     }
 
-    };
+    // };
 
 
     const filterResult = async () => {
@@ -513,10 +512,9 @@ const Index: React.FC = () => {
     };
 
     React.useEffect(() => {
-
         setTimeout(() => {
             ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
-        }, 5000);
+        }, 1000);
 
         return () => console.log('');
     }, [reportList]);
@@ -725,10 +723,7 @@ const Index: React.FC = () => {
             </Container>
 
             <Footer />
-
             {isSuccess && <SuccessSnackbar isVisible={true} message={<b>{successMessage}</b>} />}
-
-
         </>
     )
 };

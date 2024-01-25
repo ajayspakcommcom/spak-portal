@@ -19,13 +19,11 @@ import { RootState } from '@/redux/store';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import Notification from '@/components/admin/notification';
-import AdminNotification from '@/components/admin/admin-notification';
 import useAutoLogout from '@/hooks/useAutoLogout';
 import AppContext from '@/context/App/AppContext';
 
-const pages = ['Task', 'Report', 'AdminReport', 'Voucher', 'Holiday', 'Leave', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
+const pages = ['Dashboard', 'Task', 'Report', 'AdminReport', 'Voucher', 'Holiday', 'Leave', 'User', 'Client', 'AdminVoucher', 'AdminLeave'];
 const settings = ['Logout'];
 
 const Index = () => {
@@ -119,7 +117,7 @@ const Index = () => {
                                 ))}
 
                                 <div className='notification-wrapper'>
-                                    <AdminNotification />
+                                    {/* <AdminNotification /> */}
                                 </div>
 
                             </Box>

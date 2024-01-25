@@ -304,7 +304,7 @@ const Index: React.FC = () => {
 
         setTimeout(() => {
             ctx.onMainDimension({ height: mainDimensionRef.current?.clientHeight });
-        }, 5000);
+        }, 1000);
 
         return () => console.log('Unbind UseEffect');
     }, [toggleModal, toggleDialogue]);
@@ -577,7 +577,7 @@ const Index: React.FC = () => {
 
                             {reportList.length < 1 &&
                                 <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" colSpan={3}>
+                                    <TableCell component="th" scope="row" colSpan={4}>
                                         <Typography variant="body1" align='center'>No Report</Typography>
                                     </TableCell>
                                 </TableRow>
