@@ -144,6 +144,10 @@ export async function getClientList() {
                 };
             });
 
+            ClientList.sort((a, b) => a.label.localeCompare(b.label));
+
+            console.log('ClientList', ClientList);
+
         } catch (error) {
             console.error('Error fetching client list', error);
         }
