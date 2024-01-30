@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                   clientName: req.body.clientName,
                   status: req.body.status,
                   startDate: { $gte: req.body.filterStartDate, $lte: req.body.filterEndDate }
-                }).toArray();
+                }).sort({ startDate: -1 }).toArray();
                 res.status(200).json(data);
               }
 
@@ -69,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
               const client = await clientPromise;
               const db = client.db("Spak");
               const collection = db.collection<Task>("task");
-              const data = await collection.find({}).sort({ createdDate: -1 }).toArray();
+              const data = await collection.find({}).sort({ createdDate: 1 }).toArray();
               res.status(200).json(data);
             }
 

@@ -17,6 +17,8 @@ interface componentProps {
 
 const Index: React.FC<componentProps> = ({ rowData }) => {
 
+    console.log(rowData);
+
     const userData = useSelector((state: RootState) => state.authAdmin);
 
     const fetchData = async () => {
@@ -66,7 +68,7 @@ const Index: React.FC<componentProps> = ({ rowData }) => {
     };
 
     useEffect(() => {
-        fetchData();
+        //fetchData();
         return () => console.log('');
     }, [rowData]);
 

@@ -166,7 +166,7 @@ const Index: React.FC<componentProps> = ({ rowData, onClick }) => {
     };
 
     useEffect(() => {
-        fetchData();
+        //fetchData();
         return () => console.log('');
     }, []);
 

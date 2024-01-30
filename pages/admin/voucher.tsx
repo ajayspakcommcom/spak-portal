@@ -592,9 +592,7 @@ const Index: React.FC = () => {
                                     </TableCell>
                                     <TableCell component="th" scope="row">
                                         <Box display="flex" alignItems="flex-end" gap={2}>
-                                            <span className='pointer'>
-                                                <VoucherModelDetail rowData={row} onClick={() => console.log('VoucherModelDetail')} />
-                                            </span>
+                                            <span className='pointer'><VoucherModelDetail rowData={row} onClick={() => console.log('VoucherModelDetail')} /></span>
                                             {(row.approvalStatus?.toLowerCase() === 'pending' || row.approvalStatus?.toLowerCase() === 'rejected') && <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>}
                                             <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
                                         </Box>
@@ -632,10 +630,8 @@ const Index: React.FC = () => {
 
                             {inputList.map((input, index) => (
 
-
                                 <Box margin={1} key={index} display="flex" flexDirection="row" alignItems="center">
-
-                                    <Box mb={2} flex={1} mr={2}>
+                                    <Box mb={2} flex={2} mr={2}>
                                         <TextField
                                             fullWidth
                                             id="description"
@@ -647,7 +643,7 @@ const Index: React.FC = () => {
                                         />
                                     </Box>
 
-                                    <Box mb={2} flex={1} mr={2}>
+                                    <Box mb={2} flex={2} mr={2}>
                                         <TextField
                                             fullWidth
                                             id="date"
@@ -658,7 +654,7 @@ const Index: React.FC = () => {
                                             onChange={(e) => handleChange(index, 'date', e.target.value)}
                                         />
                                     </Box>
-                                    <Box mb={2} flex={1}>
+                                    <Box mb={2} flex={2} mr={2}>
                                         <TextField
                                             fullWidth
                                             id="amount"
@@ -668,6 +664,12 @@ const Index: React.FC = () => {
                                             value={input.amount}
                                             onChange={(e) => handleChange(index, 'amount', e.target.value)}
                                         />
+                                    </Box>
+
+                                    <Box mb={2} flex={1}>
+                                        <Button variant="contained" color='inherit' onClick={() => handleRemoveInput(index)} size='large' style={{ marginRight: '8px' }}>
+                                            <RemoveIcon />
+                                        </Button>
                                     </Box>
 
                                 </Box>
