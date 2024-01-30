@@ -19,6 +19,7 @@ import Footer from '@/components/admin/footer';
 import SuccessSnackbar from '@/components/admin/success-snackbar';
 import AppContext from '@/context/App/AppContext';
 
+
 type FormValues = {
     _id?: string | undefined;
     startDate: Date | undefined | string;
@@ -68,6 +69,8 @@ const Index: React.FC = () => {
     const [successMessage, setSuccessMessage] = React.useState<string>('');
     const [isLoader, setIsLoader] = React.useState<boolean>(false);
 
+    const rows = Array.from({ length: 8 }, (_, index) => index);
+
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
     //     router.push('/admin/login');
@@ -109,7 +112,7 @@ const Index: React.FC = () => {
 
                     setMyUtilisedLeave(totalUtilisedLeave);
                     setMyTotalLeave(15 - totalUtilisedLeave);
-                    setLeaveList(response.data)
+                    setLeaveList(response.data);
                 }
 
             } else {
@@ -486,47 +489,70 @@ const Index: React.FC = () => {
                 </div>
 
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                            <TableRow>
-                                <TableCell>Reason</TableCell>
-                                <TableCell>Start Date</TableCell>
-                                <TableCell>End Date</TableCell>
-                                <TableCell>Approval Status</TableCell>
-                                <TableCell>Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {Array.isArray(leaveList) && leaveList.map((row, index) => (
-                                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row">{row.reason}</TableCell>
-                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.startDate as string)}</TableCell>
-                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.endDate as string)}</TableCell>
-                                    <TableCell component="th" scope="row">
-                                        {row.isApproved?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
-                                        {row.isApproved?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
-                                        {row.isApproved?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
-                                    </TableCell>
 
-                                    <TableCell component="th" scope="row">
-                                        <Box display="flex" alignItems="center" gap={2}>
-                                            <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
-                                            <span className='pointer' onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
-                                        </Box>
-                                    </TableCell>
+                    {
+                        leaveList.length > 0 &&
+                        <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                            <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                <TableRow>
+                                    <TableCell>Reason</TableCell>
+                                    <TableCell>Start Date</TableCell>
+                                    <TableCell>End Date</TableCell>
+                                    <TableCell>Approval Status</TableCell>
+                                    <TableCell>Action</TableCell>
                                 </TableRow>
-                            ))}
+                            </TableHead>
+                            <TableBody>
+                                {Array.isArray(leaveList) && leaveList.map((row, index) => (
+                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row">{row.reason}</TableCell>
+                                        <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.startDate as string)}</TableCell>
+                                        <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.endDate as string)}</TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {row.isApproved?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                            {row.isApproved?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                            {row.isApproved?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                        </TableCell>
 
-                            {leaveList.length < 1 &&
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" colSpan={5}>
-                                        <Typography variant="body1" align='center'>No Leave</Typography>
-                                    </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            <Box display="flex" alignItems="center" gap={2}>
+                                                <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>
+                                                <span className='pointer' onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    }
+
+                    {
+                        leaveList.length < 1 &&
+                        <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                            <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                <TableRow>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
                                 </TableRow>
-                            }
+                            </TableHead>
+                            <TableBody>
+                                {rows.map((rowIndex) => (
+                                    <TableRow key={rowIndex}>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    </TableRow>
+                                ))}
 
-                        </TableBody>
-                    </Table>
+                            </TableBody>
+                        </Table>
+                    }
+
                 </TableContainer>
 
 

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useRouter } from 'next/router';
-import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent, TextField, FormControl, Select, MenuItem, InputLabel, Tooltip, Typography } from '@mui/material';
+import { Container, Modal, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SelectChangeEvent, TextField, FormControl, Select, MenuItem, InputLabel, Tooltip, Typography, Skeleton } from '@mui/material';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { useDispatch } from 'react-redux';
 import { getTask } from '../../redux/task/task-admin-slice';
@@ -132,6 +132,8 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
     const [userList, setUserList] = useState<userList[]>([]);
+
+    const rowData = Array.from({ length: 8 }, (_, index) => index);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -542,7 +544,7 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                 {toggle && <TaskFormModal onClick={() => toggleFormHandler()} isEditMode={isEditForm} editData={editData} isCompleted={isCompleted} />}
 
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                    {tasks.length > 0 && <Table sx={{ minWidth: 800 }} aria-label="simple table">
                         <TableHead style={{ backgroundColor: 'lightgrey' }}>
                             <TableRow>
                                 <TableCell>Client</TableCell>
@@ -603,16 +605,32 @@ const Index: React.FC<componentProps> = ({ isHeaderVisible = false }) => {
                                 </TableRow>
                             ))}
 
-                            {tasks.length < 1 &&
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" colSpan={11}>
-                                        <Typography variant="body1" align='center'>No Task</Typography>
-                                    </TableCell>
-                                </TableRow>
-                            }
-
                         </TableBody>
-                    </Table >
+                    </Table>}
+
+                    {
+                        tasks.length < 1 &&
+                        <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                            <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                <TableRow>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rowData.map((rowIndex) => (
+                                    <TableRow key={rowIndex}>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    }
+
+
                 </TableContainer >
 
 

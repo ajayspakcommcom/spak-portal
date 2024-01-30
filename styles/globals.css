@@ -561,6 +561,12 @@ body {
   font-size: 14px;
 }
 
+.leave-header>div>div>div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .leave-header>div>div>p {
   margin-right: 5px;
 }

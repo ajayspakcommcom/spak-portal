@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
+import { TextField, Button, Container, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Modal, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Select, MenuItem, FormHelperText, Skeleton } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import Header from '@/components/admin/header';
@@ -83,6 +83,8 @@ const Index: React.FC = () => {
     const [isSuccess, setIsSuccess] = React.useState<boolean>(false);
     const [successMessage, setSuccessMessage] = React.useState<string>('');
 
+    const rows = Array.from({ length: 8 }, (_, index) => index);
+
 
     // if (!userData.token || !(window.localStorage.getItem('jwtToken'))) {
     //     router.push('/admin/login');
@@ -107,6 +109,21 @@ const Index: React.FC = () => {
         setTotalAmount(totalAmt);
     };
 
+    const handleRemoveInput = (index: number) => {
+        const newList = [...inputList];
+        newList.splice(index, 1);
+        setInputList(newList);
+
+        let totalAmt = 0;
+
+        newList.forEach((item) => {
+            totalAmt = totalAmt + +item.amount;
+        });
+
+        setTotalAmount(totalAmt);
+
+    };
+
     const validateInputs = (): boolean => {
         const errors: string[] = [];
         inputList.forEach((input, index) => {
@@ -119,11 +136,7 @@ const Index: React.FC = () => {
         return errors.length === 0;
     };
 
-    const handleRemoveInput = (index: number) => {
-        const newList = [...inputList];
-        newList.splice(index, 1);
-        setInputList(newList);
-    };
+
 
     const fetchData = async () => {
 
@@ -140,7 +153,7 @@ const Index: React.FC = () => {
                 const response = await axios.post(`${publicRuntimeConfig.API_URL}voucher`, JSON.stringify({ "type": "LIST", "refId": userData.data._id }), config);
 
                 if (response.status === 200) {
-                    setVoucherList(response.data)
+                    setVoucherList(response.data);
                 }
 
             } else {
@@ -568,48 +581,69 @@ const Index: React.FC = () => {
                 {/* filter */}
 
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 800 }} aria-label="simple table">
-                        <TableHead style={{ backgroundColor: 'lightgrey' }}>
-                            <TableRow>
-                                <TableCell>Voucher No</TableCell>
-                                <TableCell>Date</TableCell>
-                                <TableCell>Total Amount</TableCell>
-                                <TableCell>Approval Status</TableCell>
-                                <TableCell>Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-
-                        <TableBody>
-                            {Array.isArray(voucherList) && voucherList.map((row, index) => (
-                                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
-                                    <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
-                                    <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
-                                    <TableCell component="th" scope="row">
-                                        {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
-                                        {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
-                                        {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
-                                    </TableCell>
-                                    <TableCell component="th" scope="row">
-                                        <Box display="flex" alignItems="flex-end" gap={2}>
-                                            <span className='pointer'><VoucherModelDetail rowData={row} onClick={() => console.log('VoucherModelDetail')} /></span>
-                                            {(row.approvalStatus?.toLowerCase() === 'pending' || row.approvalStatus?.toLowerCase() === 'rejected') && <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>}
-                                            <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
-                                        </Box>
-                                    </TableCell>
+                    {voucherList.length > 0 &&
+                        <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                            <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                <TableRow>
+                                    <TableCell>Voucher No</TableCell>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Total Amount</TableCell>
+                                    <TableCell>Approval Status</TableCell>
+                                    <TableCell>Action</TableCell>
                                 </TableRow>
-                            ))}
+                            </TableHead>
 
-                            {voucherList.length < 1 &&
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" colSpan={5}>
-                                        <Typography variant="body1" align='center'>No Voucher</Typography>
-                                    </TableCell>
+                            <TableBody>
+                                {Array.isArray(voucherList) && voucherList.map((row, index) => (
+                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row">{row.voucherNo}</TableCell>
+                                        <TableCell component="th" scope="row">{formatDateToDDMMYYYY(row.voucherDate as string)}</TableCell>
+                                        <TableCell component="th" scope="row">{row.voucherAmount}</TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {row.approvalStatus?.toLowerCase() === 'pending' && <b className='pending'>{capitalizeFirstLetter(ApprovalStatus.Pending)}</b>}
+                                            {row.approvalStatus?.toLowerCase() === 'approved' && <b className='approved'>{capitalizeFirstLetter(ApprovalStatus.Approved)}</b>}
+                                            {row.approvalStatus?.toLowerCase() === 'rejected' && <b className='rejected'>{capitalizeFirstLetter(ApprovalStatus.Rejected)}</b>}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            <Box display="flex" alignItems="flex-end" gap={2}>
+                                                <span className='pointer'><VoucherModelDetail rowData={row} onClick={() => console.log('VoucherModelDetail')} /></span>
+                                                {(row.approvalStatus?.toLowerCase() === 'pending' || row.approvalStatus?.toLowerCase() === 'rejected') && <span className='pointer' onClick={() => editHandler(row._id)}><EditIcon color='primary' /></span>}
+                                                <span className={'pointer'} onClick={() => deleteHandler(row._id)}><DeleteIcon color='error' /></span>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    }
+
+                    {
+                        voucherList.length < 1 &&
+                        <Table sx={{ minWidth: 800 }} aria-label="simple table">
+                            <TableHead style={{ backgroundColor: 'lightgrey' }}>
+                                <TableRow>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    <TableCell><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
                                 </TableRow>
-                            }
+                            </TableHead>
+                            <TableBody>
+                                {rows.map((rowIndex) => (
+                                    <TableRow key={rowIndex}>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                        <TableCell component="th" scope="row"> <Skeleton variant="text" sx={{ fontSize: '1rem' }} /></TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    }
 
-                        </TableBody>
-                    </Table>
+
                 </TableContainer>
 
                 <Modal open={toggleModal} onClose={toggleModalHandler} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
